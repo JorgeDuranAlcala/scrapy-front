@@ -3,9 +3,6 @@ export default {
   loginEndpoint: '/jwt/login',
   registerEndpoint: '/jwt/register',
   storageTokenKeyName: 'accessToken',
-  storedAccount: 'accountData',
-  storedTenantUser: 'userTenant',
-  isSuperAdmin: 'superAdmin',
-  storedActiveTenant: 'activeTenantId',
+  storedUser: 'user',
   onTokenExpiration: 'refreshToken' // logout | refreshToken
 }

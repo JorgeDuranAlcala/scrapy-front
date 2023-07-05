@@ -1,7 +1,7 @@
 import { restRequest } from '../rest-requests'
-import { Account } from 'src/types'
+import { type User } from 'src/types'
 
-interface Login extends Account {
+interface Login extends User {
   accessToken: string
 }
 async function login(email: string, password: string): Promise<Login> {

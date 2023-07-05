@@ -49,16 +49,13 @@ const MenuItemStyled = styled(MenuItem)<MenuItemProps>(({ theme }) => ({
 
 const Link = styled(NextLink)(() => ({
   '&': {
-    textDecoration: "none"
+    textDecoration: 'none'
   }
 }))
 
 const UserDropdown = (props: Props) => {
   // ** Translation
   const { t } = useTranslation()
-
-  // ** Abilities
-  const ability = useContext(AbilityContext)
 
   // ** Props
   const { settings } = props
@@ -68,7 +65,7 @@ const UserDropdown = (props: Props) => {
 
   // ** Hooks
   const router = useRouter()
-  const { logout, tenantUser, activeTenant } = useAuth()
+  const { logout, user } = useAuth()
 
   // ** Vars
   const { direction } = settings
@@ -76,8 +73,6 @@ const UserDropdown = (props: Props) => {
   const handleDropdownOpen = (event: SyntheticEvent) => {
     setAnchorEl(event.currentTarget)
   }
-
-  const canEditProfile = ability?.can('update', 'personal-account')
 
   const handleDropdownClose = (url?: string) => {
     if (url) {
@@ -146,66 +141,22 @@ const UserDropdown = (props: Props) => {
             </Badge>
             <Box sx={{ display: 'flex', ml: 2.5, alignItems: 'flex-start', flexDirection: 'column' }}>
               <Typography sx={{ fontWeight: 500 }}>John Doe</Typography>
-              { tenantUser && tenantUser.userRole.specialRol !== 'normal' &&
-                <Typography variant='body2'>{t(tenantUser.userRole.specialRol)}</Typography>
-              }
+              {user?.admin && <Typography variant='body2'>Admin</Typography>}
             </Box>
           </Box>
         </Box>
         <Divider sx={{ my: theme => `${theme.spacing(2)} !important` }} />
-        <MenuItemStyled sx={{ p: 0 }} onClick={() => handleDropdownClose()}>
-            <Box component={Link} sx={styles} href={`/users/edit${canEditProfile ? '/' : '/security'}`}>
-              <Icon icon='tabler:user-check' />
-              {t('my-profile')}
-            </Box>
-        </MenuItemStyled>
-        <MenuItemStyled sx={{ p: 0 }} onClick={() => handleDropdownClose()}>
-          <Box sx={styles}>
-            <Icon icon='tabler:message-2' />
-            {t('chat')}
-          </Box>
-        </MenuItemStyled>
-        <Divider sx={{ my: theme => `${theme.spacing(2)} !important` }} />
-        <Box>
-        { ability?.can('update', 'tenant-settings') && activeTenant !== null &&
+        {user?.admin && (
+          <Box>
             <MenuItemStyled sx={{ p: 0 }} onClick={() => handleDropdownClose()}>
-              <Box sx={styles} component={Link} href="/users/plugins">
-                <Icon icon='tabler:currency-dollar' />
-                {t('pricing')}
-              </Box>
-            </MenuItemStyled>
-        }
-        { ability?.can('read', 'users') &&
-            <MenuItemStyled sx={{ p: 0 }} onClick={() => handleDropdownClose()}>
-              <Box sx={styles} component={Link} href="/users/">
+              <Box sx={styles} component={Link} href='/users/'>
                 <Icon icon='tabler:users' />
                 {t('users')}
               </Box>
             </MenuItemStyled>
-        }
+            <Divider sx={{ my: theme => `${theme.spacing(2)} !important` }} />
           </Box>
-          <Box>
-        { ability?.can('update', 'tenant-settings') && activeTenant !== null &&
-            <MenuItemStyled sx={{ p: 0 }} onClick={() => handleDropdownClose()}>
-              <Box sx={styles} component={Link} href="/config">
-                <Icon icon='tabler:settings' />
-                {t('configurations')}
-              </Box>
-            </MenuItemStyled>
-        }
-        { ability?.can('get', 'help') &&
-            <MenuItemStyled sx={{ p: 0 }} onClick={() => handleDropdownClose()}>
-              <Box sx={styles}>
-                <Icon icon='tabler:help' />
-                {t('help')}
-              </Box>
-            </MenuItemStyled>
-        }
-        {(ability?.can('get', 'help') || ability?.can('update', 'tenant-settings')) &&
-          activeTenant !== null &&
-          <Divider sx={{ my: theme => `${theme.spacing(2)} !important` }} />
-        }
-        </Box>
+        )}
         <MenuItemStyled onClick={handleLogout} sx={{ py: 2, '& svg': { mr: 2, fontSize: '1.375rem' } }}>
           <Icon icon='tabler:logout' />
           Logout

@@ -81,21 +81,4 @@ export async function restRequestAuth(method: HTTPMethod = 'GET', path = '', opt
   }})
 }
 
-export const restRequestTenantAuth = async (method: HTTPMethod = 'GET', path = '', options: restRequestOptions ={}) => {
-  let tenantId = get(authConfig.storedActiveTenant)
-  const { headers } = options
-
-  // Check for tenantId inside of headers if its not inside storage service
-  if(headers) tenantId||= headers.Tenant
-
-  if(!tenantId) throw 'No Tenant Id'
-
-  return restRequestAuth(method, path, {
-    ...options,
-    headers:{
-      ...headers,
-      Tenant: tenantId
-    }
-  })
-}
 

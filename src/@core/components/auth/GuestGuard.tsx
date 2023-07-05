@@ -29,13 +29,13 @@ const GuestGuard = (props: GuestGuardProps) => {
       return
     }
 
-    if (get(authConfig.storedAccount)) {
+    if (get(authConfig.storedUser)) {
       router.replace('/')
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router.route])
 
-  if (auth.loading || (auth.account && auth.activeTenant)) {
+  if (auth.loading || auth.user) {
     return fallback
   }
 

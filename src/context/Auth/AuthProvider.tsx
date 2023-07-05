@@ -6,8 +6,7 @@ import {
   ErrCallbackType,
   LoginParams,
   //RegisterParams,
-  Account,
-  TenantUser
+  User,
 } from 'src/types'
 import AuthContext from './AuthContext'
 import { useQueryClient } from '@tanstack/react-query'
@@ -25,19 +24,13 @@ import {
 import { get, save, remove } from 'src/services'
 
 const {
-  storedAccount,
-  storedTenantUser,
-  storedActiveTenant,
   storageTokenKeyName,
-  isSuperAdmin
+  storedUser
 } = authConfig
 
 const AuthProvider = ({ children }: Props) => {
   // ** States
-  const [account, setAccount] = useState<Account | null>(null)
-  const [activeTenant, setActiveTenant] = useState<number | null>(null)
-  const [tenantUser, setTenantUser] = useState<TenantUser | null>(null)
-  const [superAdmin, setSuperAdmin] = useState(false)
+  const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState<boolean>(true)
   const queryClient = useQueryClient()
 
@@ -50,26 +43,15 @@ const AuthProvider = ({ children }: Props) => {
   useEffect(() => {
     const initAuth = async () => {
       try{
-        if(get(storageTokenKeyName)){
-          let acct: Account
+          const user = get(storedUser)
 
-          if(get(isSuperAdmin)){
-            const { userData } = await getSuperAdminData()
-            acct = userData
-            setSuperAdmin(true)
-          }
-          else {
-            const response = await getUserData()
+          if(!user) throw "Not logged in!"
 
-            const {actTenant, tenantUser} = response
-            acct = response.acct
+          // const response = await getUserData()
 
-            setActiveTenant(actTenant)
-            setTenantUser(tenantUser)
-          }
+          const userData: User = JSON.parse(user)
+          setUser(userData)
 
-          setAccount(acct)
-        }
       }catch(e){
         console.log(e)
         handleLogout()
@@ -85,17 +67,22 @@ const AuthProvider = ({ children }: Props) => {
   ///////////////////////////////
   const handleLogin = async (params: LoginParams, errorCallback?: ErrCallbackType) => {
     try{
-      const { accessToken, ...account } = await login(params.email, params.password)
+      // const { accessToken, ...user } = await login(params.email, params.password)
+      const accessToken = 'testest'
+      const user ={
+        email: "admin@gmail.com",
+        admin: true
+      }
       const returnUrl = router.query.returnUrl
 
       save(storageTokenKeyName, accessToken)
 
       // Add when get getUserData entrypoint is available
       // if(params.rememberMe){
-      save(storedAccount, account)
+      save(storedUser, user)
       // }
 
-      setAccount(account)
+      setUser(user)
 
       const redirectURL = returnUrl && returnUrl !== '/' ? returnUrl : '/'
 
@@ -107,36 +94,30 @@ const AuthProvider = ({ children }: Props) => {
     }
   }
   ///////////////////////////////
-  const handleSuperAdminLogin = async (params: LoginParams, errorCallback?: ErrCallbackType) => {
-    const { accessToken, ...accountData } = await superAdminLogin(params.email, params.password)
-    const returnUrl = router.query.returnUrl
+  // const handleSuperAdminLogin = async (params: LoginParams, errorCallback?: ErrCallbackType) => {
+  //   const { accessToken, ...accountData } = await superAdminLogin(params.email, params.password)
+  //   const returnUrl = router.query.returnUrl
 
-    const account = { user: accountData, tenants: [] }
+  //   const account = { user: accountData, tenants: [] }
 
-    save(storageTokenKeyName, accessToken)
-    save(isSuperAdmin, true)
+  //   save(storageTokenKeyName, accessToken)
+  //   save(isSuperAdmin, true)
 
-    save(storedAccount, account)
+  //   save(storedAccount, account)
 
-    setAccount(account)
-    setSuperAdmin(true)
+  //   setAccount(account)
+  //   setSuperAdmin(true)
 
-    const redirectURL = returnUrl && returnUrl !== '/' ? returnUrl : '/'
+  //   const redirectURL = returnUrl && returnUrl !== '/' ? returnUrl : '/'
 
-    router.replace(redirectURL as string)
-  }
+  //   router.replace(redirectURL as string)
+  // }
 
   ///////////////////////////////
   const handleLogout = (redirectToLogin = true) => {
-    setAccount(null)
-    setTenantUser(null)
-    setActiveTenant(null)
-    setSuperAdmin(false)
-    remove(storedAccount)
-    remove(storedTenantUser)
-    remove(storedActiveTenant)
+    setUser(null)
+    remove(storedUser)
     remove(storageTokenKeyName)
-    remove(isSuperAdmin)
     queryClient.removeQueries()
 
     if (redirectToLogin) router.push('/login')
@@ -183,15 +164,11 @@ const AuthProvider = ({ children }: Props) => {
   }
 
   const values = {
-    account,
-    activeTenant,
-    tenantUser,
+    user,
     loading,
-    superAdmin,
-    setAccount,
     setLoading,
     login: handleLogin,
-    superAdminLogin: handleSuperAdminLogin,
+    // superAdminLogin: handleSuperAdminLogin,
     logout: handleLogout,
     register: handleRegister
   }

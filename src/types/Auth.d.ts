@@ -1,5 +1,4 @@
 export type ErrCallbackType = (err?: { [key: string]: string }) => void
-import { Permissions } from "./Role"
 
 export type LoginParams = {
   email: string
@@ -55,32 +54,13 @@ export type UserDataType = {
   contact: string
 }
 
-export type UserRole = {
-  ID: number,
-  CreatedAt: string
-  UpdatedAt: string,
-  userId: number,
-  rolName: string
-  specialRol: string
-  tenantId: number
-}
 
-type Tenants = {
-  ID: number
-  name: string,
-  nif: string,
+export type User = {
+  admin: boolean,
   email: string
-}[]
-
-export type Account = {
-  user: UserDataType
-  tenants: Tenants
 }
 
-export type TenantUser = {
-  userRole: UserRole
-  usersPermission: Permissions
-}
+
 
 export type JWTStructure = {
   exp: 1682786714
@@ -91,15 +71,10 @@ export type JWTStructure = {
 
 export type AuthValuesType = {
   loading: boolean
-  account: Account | null
-  activeTenant: number | null
-  tenantUser: TenantUser | null
-  superAdmin?: boolean
+  user: User | null
   setLoading: (value: boolean) => void
-  setAccount: (value: UserDataType | null) => void
   login: (params: LoginParams, errorCallback?: ErrCallbackType) => void
-  superAdminLogin: (params: LoginParams, errorCallback?: ErrCallbackType) => void,
+  adminLogin: (params: LoginParams, errorCallback?: ErrCallbackType) => void,
   logout: (redirectToLogin?: boolean) => void
   register: (params: RegisterParams, errorCallback?: ErrCallbackType) => void
-  switchTenant: (id: number) => void
 }

@@ -121,12 +121,13 @@ const SuperAdminLoginPage = () => {
 
   const onSubmit = (data: FormData) => {
     const { email, password } = data
-    auth.superAdminLogin({ email, password, rememberMe }, () => {
-      setError('email', {
-        type: 'manual',
-        message: 'Email or Password is invalid'
-      })
-    })
+    // auth.superAdminLogin({ email, password, rememberMe }, () => {
+    //   setError('email', {
+    //     type: 'manual',
+    //     message: 'Email or Password is invalid'
+    //   })
+    // })
+    console.log('sign in')
   }
 
   const imageSource = skin === 'bordered' ? 'auth-v2-login-illustration-bordered' : 'auth-v2-login-illustration'

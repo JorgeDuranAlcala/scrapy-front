@@ -6,7 +6,6 @@ import { useRouter } from 'next/router'
 
 // ** Types
 import type { ACLObj, AppAbility } from 'src/configs/acl'
-import { allPermissions } from 'src/types'
 
 // ** Context Imports
 import { AbilityContext } from 'src/layouts/components/acl/Can'
@@ -20,8 +19,6 @@ import BlankLayout from 'src/@core/layouts/BlankLayout'
 
 // ** Hooks
 import { useAuth } from 'src/hooks'
-
-import { Permissions } from 'src/types'
 
 interface AclGuardProps {
   children: ReactNode
@@ -45,20 +42,9 @@ const AclGuard = (props: AclGuardProps) => {
   }
 
   // User is logged in, build ability for the user based on his role
-  if (auth.account && !ability) {
-    let role = 'superAdmin'
-    let accountPermissions: Permissions = []
-
-    if(auth.tenantUser){
-      const { userRole, usersPermission } = auth.tenantUser
-      role = userRole.specialRol
-      accountPermissions= usersPermission || []
-    }
-
-    if(auth.superAdmin && auth.activeTenant !== null)
-      accountPermissions = allPermissions(true)
-
-    setAbility(buildAbilityFor(role, accountPermissions))
+  if (auth.user && !ability) {
+    const userType = auth.user.admin ? 'admin' : 'normal'
+    setAbility(buildAbilityFor(userType))
   }
 
   // Check the access of current user and render pages

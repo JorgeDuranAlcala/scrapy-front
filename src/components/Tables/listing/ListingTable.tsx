@@ -70,9 +70,6 @@ const ListingTable = ({ cnaeOptions }: PageProps) => {
   const [accountID, setAccountID] = useState('')
   const [deleteModal, deleteHandler] = useDisclosure()
   const [commentsModal, commentsHandler] = useDisclosure()
-  const { tenantUser, superAdmin } = useAuth()
-
-  const hide = tenantUser?.userRole.specialRol === 'gestor' && !superAdmin
 
   const handleOpenModal = useCallback((openModal: () => void) => {
     return (id: string) => {
