@@ -1,9 +1,7 @@
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
-import Grid from '@mui/material/Grid'
 import InputLabel from '@mui/material/InputLabel'
 import Stack from '@mui/material/Stack'
-import { error } from 'console'
 
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
@@ -19,7 +17,7 @@ export const defaultUpdateUserForm: UpdateUserCredentials = {
 
 export const UpdateUserForm = () => {
   const { t } = useTranslation()
-  const { formState: { errors }, reset} = useFormContext()
+  const { reset} = useFormContext()
 
   return (
     <Stack spacing={5}>

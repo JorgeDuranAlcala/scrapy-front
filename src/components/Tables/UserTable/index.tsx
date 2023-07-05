@@ -13,7 +13,6 @@ import TableRow from '@mui/material/TableRow'
 import Paper from '@mui/material/Paper'
 import { useTranslation } from 'react-i18next'
 import { ThemeProvider } from '@mui/material'
-import { useDispatch } from 'react-redux'
 
 //* Icon imports
 import { useForm, FormProvider } from 'react-hook-form'
@@ -24,14 +23,12 @@ import stackTheme from 'src/@core/styles/stackTheme'
 // * Custom components
 import { defaultUserForm } from 'src/components/Forms'
 import { TablePagination } from 'src/components/Tables/pagination'
-import { RoleSelect } from 'src/components/Shared'
 
 // * Schemas
 import { userSchema } from 'src/schemas'
 
 // * Redux slices
 import { UserTableFormDrawer, UserTableRow } from './components'
-import { useQueryAndPush } from 'src/hooks'
 
 const ROWS_PER_PAGE = 5
 
@@ -86,37 +83,23 @@ const rows = [
   }
 ]
 
-type Row = {
-  username: string
-  role: string
-  nameAndLastname: string
-  phone: string
-  email: string
-  status: string
-}
+// type Row = {
+//   username: string
+//   role: string
+//   nameAndLastname: string
+//   phone: string
+//   email: string
+//   status: string
+// }
 
-type Props = {
-  displaySelect?: boolean
-  subject?: 'users' | 'tenant-system'
-  tooltip?: 'user' | 'tenant'
 
-  /* TODO: Implementar cuando se conecte con el backend
-    rows: Row[]
-  */
-}
+// const ROLES_FILTER = ['manager', 'super-admin'] as const
+// const ROLES_ARR = ROLES_FILTER as unknown as string[]
 
-const ROLES_FILTER = ['manager', 'super-admin'] as const
-const ROLES_ARR = ROLES_FILTER as unknown as string[]
-
-const UserTable = ({ displaySelect = false, subject= 'users', tooltip= 'user' }: Props) => {
+const UserTable = () => {
   const { t } = useTranslation()
 
-  const dispatch = useDispatch()
-
   const [visibleRows, setVisibleRows] = useState<typeof rows>(rows.slice(0, ROWS_PER_PAGE))
-
-  // const { push, query } = useRouter()
-  const { pushSingleQuery } = useQueryAndPush()
 
   const visibleRowsChange = (array: unknown) => {
     setVisibleRows(array as typeof rows)
@@ -146,9 +129,8 @@ const UserTable = ({ displaySelect = false, subject= 'users', tooltip= 'user' }:
                   sx={{minWidth: 300}}
                   size='small'
                   placeholder={t('search') as string} />
-                {displaySelect && <RoleSelect roles={ROLES_ARR} />}
               </Stack>
-              <Button variant='contained' onClick={() => pushSingleQuery('create', 't')}>
+              <Button variant='contained' onClick={() => {console.log("click")}}>
                 {t('add-user')}
               </Button>
             </Stack>

@@ -1,10 +1,7 @@
 import Link from 'next/link'
 
-import { Icon } from '@iconify/react'
 import Stack from '@mui/material/Stack'
 import { useTranslation } from 'react-i18next'
-import IconButton from "@mui/material/IconButton"
-import Tooltip from "@mui/material/Tooltip"
 import { GridColDef} from '@mui/x-data-grid'
 
 import { ActionButton } from 'src/components/Shared'
@@ -16,7 +13,6 @@ type optionActions = {
 
 const useColumns = ({openCommentsModal, openDeleteModal}: optionActions): GridColDef[] => {
   const { t } = useTranslation()
-  const text = t('review_subject', { subject: 'account' })
 
   return [
     {
@@ -55,7 +51,7 @@ const useColumns = ({openCommentsModal, openDeleteModal}: optionActions): GridCo
       width: 220,
       filterable: false,
       sortable: false,
-      renderCell: ({row: { id, comments }}) =>
+      renderCell: ({row: { comments }}) =>
       <Stack justifyContent='start' direction='row' spacing={0.25}>
         <ActionButton title={t('see')} icon='tabler:eye'
           buttonProps={{

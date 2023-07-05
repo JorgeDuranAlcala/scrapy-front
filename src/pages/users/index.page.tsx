@@ -13,7 +13,7 @@ const TableList = () => {
       <Box mb={5}>
         <UsersManagementTabs/>
       </Box>
-      <UserTable displaySelect />
+      <UserTable />
     </UsersLayout>
   )
 }

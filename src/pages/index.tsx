@@ -10,11 +10,6 @@ import Spinner from 'src/@core/components/spinner'
 // ** Hook Imports
 import { useAuth } from 'src/hooks'
 
-// ** Stotage service
-import { get } from 'src/services/storage'
-
-// **
-import { authConfig } from 'src/configs'
 
 /**
  *  Set Home URL based on User Roles
