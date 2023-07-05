@@ -17,7 +17,6 @@ module.exports = {
     '@fullcalendar/list',
     '@fullcalendar/timegrid'
   ],
-  pageExtensions: ['page.jsx', 'page.js', 'page.tsx', 'page.ts'],
   output: 'standalone',
   webpack: config => {
     config.resolve.alias = {
