@@ -19,7 +19,6 @@ import { UserForm, defaultUserForm } from 'src/components/Forms'
 // * Redux slices
 // import { componentOpen, selectOpened } from 'src/redux/slices'
 // import { useRouter } from 'next/router'
-import { useQueryAndPush } from 'src/hooks'
 import { useMemo } from 'react'
 
 const UserFormDrawer = () => {
@@ -29,17 +28,13 @@ const UserFormDrawer = () => {
   // const { close } = componentOpen.actions
   // const opened = useSelector(selectOpened)
 
-  const { query, pushRemoveQuery } = useQueryAndPush()
 
   const handleFormClose = () => {
     userForm.reset(defaultUserForm)
-    pushRemoveQuery(['create', 'edit'])
   }
 
-  const isOpen = useMemo(() => !!(query['create'] || query['edit']), [query])
-
   return (
-    <Drawer anchor='right' open={isOpen} onClose={handleFormClose}>
+    <Drawer anchor='right' open={false} onClose={handleFormClose}>
       <form
         onSubmit={userForm.handleSubmit(data => {
           console.log(data)

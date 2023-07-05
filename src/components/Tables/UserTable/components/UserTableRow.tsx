@@ -10,7 +10,6 @@ import { UserFormData } from 'src/components/Forms'
 import { ActionButton } from 'src/components/Shared'
 import { useTranslation } from 'react-i18next'
 
-import { useQueryAndPush } from 'src/hooks'
 
 interface TUserTableRow {
   row: {
@@ -29,10 +28,8 @@ function UserTableRow({ row, userForm}: TUserTableRow) {
   // const dispatch = useDispatch()
   // const { open } = componentOpen.actions
 
-  const { pushSingleQuery } = useQueryAndPush()
 
   const handleEditFormOpen = (data: typeof row) => {
-    pushSingleQuery('edit', data.username)
     userForm.reset(data)
   }
 

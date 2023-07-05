@@ -29,9 +29,6 @@ import { useForm, Controller } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useTranslation } from "react-i18next"
 
-// ** Custom components
-import { TenantChangeModal } from 'src/components/Shared'
-
 // ** Hooks
 import { useAuth } from 'src/hooks'
 import { useSettings } from 'src/@core/hooks/useSettings'
@@ -101,7 +98,6 @@ const SuperAdminLoginPage = () => {
   const { t } = useTranslation()
   const [rememberMe, setRememberMe] = useState<boolean>(true)
   const [showPassword, setShowPassword] = useState<boolean>(false)
-  const [openModal, setOpenModal] = useState(false)
 
   // ** Hooks
   const auth = useAuth()
@@ -279,12 +275,6 @@ const SuperAdminLoginPage = () => {
             </form>
           </Box>
         </Box>
-        { openModal &&
-          <TenantChangeModal
-            unclosable={true}
-            withButton={false}
-          />
-        }
       </RightWrapper>
     </Box>
   )

@@ -31,9 +31,6 @@ import { useForm, Controller } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useTranslation } from "react-i18next"
 
-// ** Custom components
-import { TenantChangeModal } from 'src/components/Shared'
-
 // ** Hooks
 import { useAuth } from 'src/hooks'
 import useBgColor from 'src/@core/hooks/useBgColor'
@@ -107,7 +104,6 @@ const LoginPage = () => {
   const { t } = useTranslation()
   const [rememberMe, setRememberMe] = useState<boolean>(true)
   const [showPassword, setShowPassword] = useState<boolean>(false)
-  const [openModal, setOpenModal] = useState(false)
 
   // ** Hooks
   const auth = useAuth()
@@ -138,9 +134,6 @@ const LoginPage = () => {
         message: 'Email or Password is invalid'
       })
     })
-    if(!auth.activeTenant){
-      setOpenModal(true)
-    }
   }
 
   const imageSource = skin === 'bordered' ? 'auth-v2-login-illustration-bordered' : 'auth-v2-login-illustration'
@@ -352,12 +345,6 @@ const LoginPage = () => {
             </form>
           </Box>
         </Box>
-        { openModal &&
-          <TenantChangeModal
-            unclosable={true}
-            withButton={false}
-          />
-        }
       </RightWrapper>
     </Box>
   )

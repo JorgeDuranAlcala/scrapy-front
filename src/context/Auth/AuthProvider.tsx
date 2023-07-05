@@ -21,9 +21,6 @@ import {
   superAdminLogin
 } from 'src/services/auth'
 
-// ** Tenant service
-import { getUserPermissions } from 'src/services/tenants'
-
 // ** Storage Service
 import { get, save, remove } from 'src/services'
 
@@ -102,10 +99,7 @@ const AuthProvider = ({ children }: Props) => {
 
       const redirectURL = returnUrl && returnUrl !== '/' ? returnUrl : '/'
 
-      if(account.tenants.length === 1){
-        await handleTenantChange(account.tenants[0].ID, false)
-        router.replace(redirectURL as string)
-      }
+      router.replace(redirectURL as string)
     }
     catch(e) {
       console.log(e)
@@ -188,25 +182,6 @@ const AuthProvider = ({ children }: Props) => {
     //   .catch((err: { [key: string]: string }) => (errorCallback ? errorCallback(err) : null))
   }
 
-  const handleTenantChange = async (id: number, redirectToHome = true) => {
-    try{
-      const tenantUser = await getUserPermissions(id)
-
-      if(!tenantUser) throw('Error while selecting tenant')
-
-      setActiveTenant(id)
-      setTenantUser(tenantUser)
-      save(storedActiveTenant, id)
-      save(storedTenantUser, tenantUser)
-      queryClient.removeQueries()
-
-      if(redirectToHome) router.replace('/')
-    }
-    catch(e) {
-      console.log(e)
-    }
-  }
-
   const values = {
     account,
     activeTenant,
@@ -218,7 +193,6 @@ const AuthProvider = ({ children }: Props) => {
     login: handleLogin,
     superAdminLogin: handleSuperAdminLogin,
     logout: handleLogout,
-    switchTenant: handleTenantChange,
     register: handleRegister
   }
 
