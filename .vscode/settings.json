@@ -1,0 +1,9 @@
+{
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "typescript.enablePromptUseWorkspaceTsdk": true,
+  "i18n-ally.localesPaths": [
+    "public/locales"
+  ],
+  "i18n-ally.keystyle": "flat",
+  "exportall.config.folderListener": []
+}

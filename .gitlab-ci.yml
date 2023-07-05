@@ -1,0 +1,30 @@
+image: docker:20.10.16
+services:
+  - docker:20.10.16-dind
+stages:
+  - build
+  - deploy
+
+deploy:
+  stage: deploy
+  image:
+    name: bitnami/kubectl:latest
+    entrypoint: [""]
+  script:
+    - kubectl config use-context erpsistemas/erp-frontend:erpfrontend-agent
+    - kubectl apply -f erp-deploy-frontend.yaml
+    - kubectl delete pods --selector=app=erpsystem-frontend-app
+  only:
+    - dev
+
+
+build:
+  stage: build
+  services:
+    - docker:20.10.16-dind
+  script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker build -t $CI_REGISTRY/erpsistemas/erp-frontend/erp-frontend:latest .
+    - docker push $CI_REGISTRY/erpsistemas/erp-frontend/erp-frontend:latest
+  only:
+    - dev
