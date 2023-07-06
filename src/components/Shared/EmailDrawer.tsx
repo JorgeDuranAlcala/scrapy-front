@@ -1,9 +1,8 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 import Button from "@mui/material/Button"
 import Drawer from "@mui/material/Drawer"
 import Stack from "@mui/material/Stack"
-import List from "@mui/material/List"
 
 import Typography from "@mui/material/Typography"
 import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete'
@@ -42,7 +41,7 @@ const defaultEmail: emailData = {
   message: ''
 }
 
-export const EmailDrawer = ({open, toggle, storedFileHandling}: EmailDrawerProps) => {
+export const EmailDrawer = ({open, toggle, storedFileHandling, recipients =[]}: EmailDrawerProps) => {
 
   // ** State
   const [files, setFiles] = useState<FileProp[]>([])
@@ -54,13 +53,13 @@ export const EmailDrawer = ({open, toggle, storedFileHandling}: EmailDrawerProps
     }
   })
 
+
   const emailFields = useForm({
     defaultValues: defaultEmail,
     mode: 'onBlur',
     resolver: yupResolver(EmailSchema)
   })
-  const { formState: {errors}, control }= emailFields
-
+  const { formState: {errors}, control, resetField }= emailFields
   const { t } = useTranslation()
   const { primaryLight } = useBgColor()
   const [ options, setOptions ] = useState<string[]>([])
@@ -70,6 +69,10 @@ export const EmailDrawer = ({open, toggle, storedFileHandling}: EmailDrawerProps
   const onSubmit = (data: typeof defaultEmail) => {
     console.log(data, files)
   }
+
+  useEffect(() => {
+    resetField('to', {defaultValue: recipients})
+  }, [recipients])
 
   const handleClose = () => {
     toggle();
@@ -181,6 +184,7 @@ export const EmailDrawer = ({open, toggle, storedFileHandling}: EmailDrawerProps
 type EmailDrawerProps = {
   open: boolean
   toggle: () => void
+  recipients?: string[]
   storedFileHandling?:{
     storedFiles: FileProp[]
     removeStoredFile: (file: FileProp) => void
