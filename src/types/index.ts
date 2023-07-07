@@ -1,5 +1,6 @@
 export * from './Auth.d';
 export * from './Locations';
+export * from './Statuses';
 export * from './apps/calendarTypes';
 export * from './apps/chatTypes';
 export * from './apps/emailTypes';
