@@ -23,10 +23,18 @@ const Home = () => {
   useEffect(() => {
     if (!router.isReady) {
       return
+
     }
+    if(auth.user)
+      router.push('/listings/fotocasa')
   }, [])
 
   return <Spinner />
+}
+
+Home.acl = {
+  action: 'see',
+  subject: 'user-pages'
 }
 
 export default Home
