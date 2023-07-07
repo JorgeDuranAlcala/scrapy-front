@@ -122,7 +122,7 @@ const DocumentsTable = ({search}: DocumentsTableProps) => {
 
 type DocumentsTableProps = {
   search: string
-  filter: string
+  filter?: string
 }
 
 export default DocumentsTable
