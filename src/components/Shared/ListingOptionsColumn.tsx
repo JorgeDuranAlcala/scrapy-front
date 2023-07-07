@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { useRouter } from 'next/router'
 
 import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
@@ -13,6 +14,7 @@ type Props = {
 
 const ListingOptionColumn = (props: Props) => {
   const {id, row: { comments, link, count, email }} = props
+  const { asPath } = useRouter()
 
   return (
     <Stack
@@ -46,7 +48,7 @@ const ListingOptionColumn = (props: Props) => {
         icon="tabler:paperclip"
         buttonProps={{
           component: Link,
-          href: `/documents/${id}`,
+          href: `${asPath}documents/${id}`,
           passHref: true,
           sx: { padding: "4px" },
         }}
