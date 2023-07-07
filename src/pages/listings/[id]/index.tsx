@@ -1,6 +1,3 @@
-// ** React Imports
-import { useState } from 'react'
-
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
 import CardTitle from '@mui/material/CardHeader'
@@ -11,14 +8,56 @@ import { yupResolver } from '@hookform/resolvers/yup'
 // Layout
 import ListingLayout from 'src/layouts/ListingLayout'
 
-import { ListingTable } from 'src/components/Tables'
+import { ListingTable, listingColumns } from 'src/components/Tables'
 
 import { SpecialFilters, defaultSpecialFilters, type SpecialFiltersData } from 'src/components/Shared'
 
 import { SpecialFilterSchema } from 'src/schemas'
 
+const ROWS= [
+  {
+    id: 1,
+    email: "test@gmail.com",
+    operation: 'test',
+    category: 'test',
+    title: 'title',
+    price: 3000,
+    meters: 1200,
+    sqrMtrPrice: 1200,
+    phone: 1200,
+    status: 'Contacto',
+    bathrooms: 2,
+    rooms: 2,
+    adSite: 'blah blah',
+    adDate: 12345,
+    adOwner: 'test',
+    userAd: 'test',
+    link: '#',
+    count:2
+  },
+  {
+    id: 2,
+    email: "test2@gmail.com",
+    operation: 'test',
+    category: 'test',
+    title: 'title',
+    price: 3000,
+    meters: 1200,
+    sqrMtrPrice: 1200,
+    phone: 1200,
+    status: 'Contacto',
+    bathrooms: 2,
+    rooms: 2,
+    adSite: 'blah blah',
+    adDate: 12345,
+    adOwner: 'test',
+    userAd: 'test',
+    link: '#',
+    count:3
+  }
+]
+
 const Listing = () => {
-  const [search, setSearch] = useState('')
   const specialFilters = useForm({
     defaultValues: defaultSpecialFilters,
     mode: 'onBlur',
@@ -36,11 +75,11 @@ const Listing = () => {
           <CardContent>
             <FormProvider {...specialFilters}>
               <form onSubmit={specialFilters.handleSubmit(onSubmit)}>
-                <SpecialFilters search={search} setSearch={setSearch} />
+                <SpecialFilters />
               </form>
             </FormProvider>
           </CardContent>
-          <ListingTable />
+          <ListingTable rows={ROWS} columnDefinition={listingColumns} />
         </Card>
       </ListingLayout>
     )
