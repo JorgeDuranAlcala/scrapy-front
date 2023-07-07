@@ -1,29 +1,33 @@
 import { useState } from 'react'
 
+import { useRouter } from 'next/router'
+
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
 import TextField from '@mui/material/TextField'
 
-import { useTranslation } from 'react-i18next'
+// Layout
+import ListingLayout from 'src/layouts/ListingLayout'
 
 import { FileUploader, FileProp } from 'src/components/Shared'
 import { DocumentsTable } from 'src/components/Tables'
 
 const Test = () => {
-  const { t } = useTranslation()
   const [files, setFiles] = useState<FileProp[]>([])
   const [search, setSearch] = useState('')
-  const [filter, setFilter] = useState('client')
+  const {
+    query: { listing }
+  } = useRouter()
 
   return (
-    <>
+    <ListingLayout>
       <Card>
         <CardContent>
-          <FileUploader {...{ files, setFiles, documentSaveRoute: filter }} />
+          <FileUploader {...{ files, setFiles, documentSaveRoute: listing as string }} />
         </CardContent>
         <CardContent sx={{ paddingBottom: '5px' }}>
           <TextField
-            placeholder={t('search') as string}
+            placeholder={'buscar'}
             size='small'
             sx={{ width: 300 }}
             value={search}
@@ -32,15 +36,15 @@ const Test = () => {
             }}
           />
         </CardContent>
-        <DocumentsTable search={search} filter={filter} />
+        <DocumentsTable search={search} filter={'something'} />
       </Card>
-    </>
+    </ListingLayout>
   )
 }
 
 Test.acl = {
-  subject: 'accounts',
-  action: 'read'
+  action: 'see',
+  subject: 'user-pages'
 }
 
 export default Test
