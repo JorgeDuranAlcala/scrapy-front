@@ -1,3 +1,7 @@
+import { memo } from 'react'
+import Link from 'next/link'
+import { useRouter } from 'next/router'
+
 import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
 import Grid from '@mui/material/Grid'
@@ -10,7 +14,7 @@ import Autocomplete from '@mui/material/Autocomplete'
 import { useFormContext, Controller } from 'react-hook-form'
 import { InferType } from 'yup'
 
-import { ControlledSelect } from 'src/components/Forms'
+import { ControlledSelect, ControlledTextField } from 'src/components/Forms'
 
 import { useAuth } from 'src/hooks'
 
@@ -18,10 +22,6 @@ import { STATUSES } from 'src/types'
 
 import { SpecialFilterSchema } from 'src/schemas'
 
-type SpecialFiltersProps = {
-  search: string
-  setSearch: (search: string) => void
-}
 
 export type SpecialFiltersData = InferType<typeof SpecialFilterSchema>
 
@@ -30,14 +30,16 @@ export const defaultSpecialFilters: SpecialFiltersData = {
   zone: '',
   status: '',
   operation: '',
-  category: ''
+  category: '',
+  search: ''
 }
 
 const OPERATION = ['Venta', 'Alquiler', 'Alquiler vacacional']
 const CATEGORIES = ['Pisos', 'Casas', 'Chalets', 'Terrenos', 'Locales']
 
-export const SpecialFilters = ({ search, setSearch }: SpecialFiltersProps) => {
+export const SpecialFilters = memo(() => {
   const { user } = useAuth()
+  const { asPath } = useRouter()
   const {
     control,
     formState: { errors }
@@ -96,24 +98,18 @@ export const SpecialFilters = ({ search, setSearch }: SpecialFiltersProps) => {
       </Grid>
       <Divider />
       <Stack direction='row' justifyContent='space-between' alignItems='center'>
-        <TextField
-          value={search}
-          size='small'
-          placeholder='Buscar'
-          sx={{ minWidth: '500px' }}
-          onChange={e => {
-            setSearch(e.target.value)
-          }}
-        />
+        <ControlledTextField name='search' label='Buscar' size='small' sx={{ maxWidth: "500px"}}/>
         <Stack direction='row' gap={5} alignItems='center'>
-          {user?.admin && (
-            <Button color='secondary' variant='outlined'>
-              Historial
-            </Button>
+          {user?.admin && !asPath.includes('history') && (
+            <Link href={`${asPath}history`} passHref>
+              <Button color='secondary' variant='outlined'>
+                Historial
+              </Button>
+            </Link>
           )}
           <Button variant='contained' type='submit'>Actualizar</Button>
         </Stack>
       </Stack>
     </Stack>
   )
-}
+})
