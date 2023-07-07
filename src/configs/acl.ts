@@ -16,6 +16,7 @@ export type ACLObj = {
 const defineRulesFor = (role: string) => {
   const { can, rules } = new AbilityBuilder(AppAbility)
 
+  can('see', 'user-pages')
   switch (role) {
     case "admin": {
       can('see', 'history')
