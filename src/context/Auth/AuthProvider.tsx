@@ -84,7 +84,7 @@ const AuthProvider = ({ children }: Props) => {
 
       setUser(user)
 
-      const redirectURL = returnUrl && returnUrl !== '/' ? returnUrl : '/'
+      const redirectURL = returnUrl && returnUrl !== '/' ? returnUrl : '/listings/fotocasa'
 
       router.replace(redirectURL as string)
     }
