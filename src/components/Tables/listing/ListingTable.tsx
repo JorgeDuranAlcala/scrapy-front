@@ -1,10 +1,10 @@
 import { useState, useCallback, memo } from 'react'
 
 import Box from '@mui/material/Box'
-import { DataGrid, esES } from '@mui/x-data-grid'
+import { DataGrid, esES, GridValidRowModel } from '@mui/x-data-grid'
 
 import ListingRow from './components/ListingTableRow'
-import useColumns from './hooks/useColumns'
+import useColumns from './ColumnDefs/listingColumns'
 
 import { CommentsModal, EmailDrawer } from 'src/components/Shared'
 
@@ -13,67 +13,23 @@ import { ModalContext } from 'src/context'
 // ** Hook imports
 import { useDisclosure } from 'src/hooks'
 
-type ListingRowProps = {
-  // filters: {
-  //   city: string
-  // }
+type Props = {
+  columnDefinition: typeof useColumns
+  rows: GridValidRowModel[]
 }
 
-const ROWS= [
-  {
-    id: 1,
-    email: "test@gmail.com",
-    operation: 'test',
-    category: 'test',
-    title: 'title',
-    price: 3000,
-    meters: 1200,
-    sqrMtrPrice: 1200,
-    phone: 1200,
-    status: 'contact',
-    bathrooms: 2,
-    rooms: 2,
-    adSite: 'blah blah',
-    adDate: 12345,
-    adOwner: 'test',
-    userAd: 'test',
-    link: '#',
-    count:2
-  },
-  {
-    id: 2,
-    email: "test2@gmail.com",
-    operation: 'test',
-    category: 'test',
-    title: 'title',
-    price: 3000,
-    meters: 1200,
-    sqrMtrPrice: 1200,
-    phone: 1200,
-    status: 'contact',
-    bathrooms: 2,
-    rooms: 2,
-    adSite: 'blah blah',
-    adDate: 12345,
-    adOwner: 'test',
-    userAd: 'test',
-    link: '#',
-    count:3
-  }
-]
-
-const ListingTable = (/*{ filters }: ListingRowProps*/) => {
+const ListingTable = ({columnDefinition, rows =[]}: Props) => {
   const [accountComments, setAccountComments] = useState('')
   const [adEmail, setAdEmail] = useState('')
   const [commentsModal, commentsHandler] = useDisclosure()
   const [emailModal, emailHandler] = useDisclosure()
 
-  const openEmailModal = useCallback((email: string) => {
+  const openEmailModal = (email: string) => {
       setAdEmail(email)
       emailHandler.open()
-  }, [])
+  }
 
-  const cols = useColumns({openEmailModal})
+  const cols = useCallback(() => columnDefinition({openEmailModal}), [])
 
   return (
     <Box mt={5} sx={{ height: 400, width: '100%' }}>
@@ -81,8 +37,8 @@ const ListingTable = (/*{ filters }: ListingRowProps*/) => {
         recipients={[adEmail]}
       />
       <DataGrid
-        rows={ROWS}
-        columns={cols}
+        rows={rows}
+        columns={cols()}
         initialState={{
           pagination: {
             paginationModel: {

@@ -10,10 +10,11 @@ type ControlledSelectProps = {
   name: string
   label: string
   options?: string[]
+  allowEmpty?: boolean
 } & Exclude<SelectProps, 'name' | 'label'>
 
 const ControlledSelect = (props: ControlledSelectProps) => {
-  const { name, label, options = [] ,children } = props
+  const { name, label, allowEmpty= true, options = [], children } = props
   const {
     control,
     formState: { errors }
@@ -42,6 +43,9 @@ const ControlledSelect = (props: ControlledSelectProps) => {
             label={label}
             labelId='related-account-label'
           >
+            {allowEmpty &&
+              <MenuItem value={''}>Ninguno</MenuItem>
+            }
             {children}
             {menuItems}
           </Select>
