@@ -2,13 +2,17 @@ const useNavigationRouting = () => {
   return [
     {
       title: 'Fotocasa',
-      path: "/listado/Fotocasa",
-      icon: "tabler:smart-home"
+      path: "/listings/fotocasa",
+      icon: "tabler:smart-home",
+      action: 'see',
+      subject: 'user-pages'
     },
     {
       title: 'Idealista',
-      path: '/listado/Idealista',
-      icon: 'tabler:smart-home'
+      path: '/listings/idealista',
+      icon: 'tabler:smart-home',
+      action: 'see',
+      subject: 'user-pages'
     },
   ]
 }
