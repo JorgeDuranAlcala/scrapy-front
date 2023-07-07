@@ -11,6 +11,7 @@ const specialFilterSchema = yup.object({
   status: yup.string(),
   operation: yup.string(),
   category: yup.string(),
+  search: yup.string()
 })
 
 export default specialFilterSchema
