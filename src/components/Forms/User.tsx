@@ -90,5 +90,6 @@ export type UserFormData = {
   phone: string
   email: string
   password: string
-  comments: string
+  comments: string,
+  status?: string
 }
