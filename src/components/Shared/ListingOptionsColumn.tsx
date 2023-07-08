@@ -10,6 +10,7 @@ import { Counter, ActionButton } from "src/components/Shared";
 
 type Props = {
   openEmailModal: (id: string) => void
+  openCommentsModal: (id: string, comments: string) => void
 } & GridRenderCellParams
 
 const ListingOptionColumn = (props: Props) => {
@@ -53,15 +54,13 @@ const ListingOptionColumn = (props: Props) => {
           sx: { padding: "4px" },
         }}
       />
-      <ActionButton
-        title="Info"
-        icon="tabler:info-circle-filled"
-        buttonProps={{ sx: { padding: "4px" } }}
-      />
-      {/* <ActionButton title='Comentarios'
-          icon={`majesticons:${comments.length === 0 ? 'comment-text-line' : 'comment-text'}`}
-          buttonProps={{onClick: () => {openCommentsModal(comments)('id') }}}
-        /> */}
+      <ActionButton title='Comentarios'
+          icon={`tabler:${comments && comments.length > 0 ? 'info-circle-filled' : 'info-circle'}`}
+          buttonProps={{
+              onClick: () => {props.openCommentsModal(id as string, comments) },
+              sx: { padding: "4px" }
+          }}
+        />
     </Stack>
   );
 };

@@ -4,12 +4,11 @@ import { StatusSelect } from '../components'
 import ListingOptionColumn from 'src/components/Shared/ListingOptionsColumn'
 
 type optionActions = {
-  // openDeleteModal: (id: string) => void
-  // openCommentsModal: (comments: string) => (id: string) => void
+  openCommentsModal: (id: string, comments: string) => void
   openEmailModal: (email: string) => void
 }
 
-const listingColumns = ({openEmailModal}: optionActions): GridColDef[] => {
+const listingColumns = ({openEmailModal, openCommentsModal}: optionActions): GridColDef[] => {
   return [
     {
       field: 'operation',
@@ -67,7 +66,10 @@ const listingColumns = ({openEmailModal}: optionActions): GridColDef[] => {
       filterable: false,
       sortable: false,
       renderCell: (row) =>
-        <ListingOptionColumn {...row} openEmailModal={openEmailModal}/>
+        <ListingOptionColumn {...row}
+          openEmailModal={openEmailModal}
+          openCommentsModal={openCommentsModal}
+        />
     }
   ]
 }

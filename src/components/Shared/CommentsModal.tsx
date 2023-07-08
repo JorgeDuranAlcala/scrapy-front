@@ -17,18 +17,14 @@ import yup from "src/@core/utils/customized-yup"
 import { ControlledTextField } from "src/components/Forms"
 import Icon from "src/@core/components/icon"
 
-// ** Context
-import { ModalContext } from "src/context"
-
 const commentsSchema = yup.object().shape({
   comments: yup.string().min(1)
 })
 
 type commentsData = { comments: string }
 
-export const CommentsModal = ({id, comments=''}: CommentModalProps) => {
+export const CommentsModal = ({id, comments='', opened, close}: CommentModalProps) => {
   const { t } = useTranslation()
-  const [opened, { close }] = useContext(ModalContext)
   const commentsForm = useForm({
     defaultValues: { comments },
     mode: 'onBlur',
@@ -85,4 +81,6 @@ export const CommentsModal = ({id, comments=''}: CommentModalProps) => {
 type CommentModalProps = {
   id: string
   comments?: string
+  opened: boolean,
+  close: () => void
 }

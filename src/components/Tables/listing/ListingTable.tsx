@@ -19,7 +19,8 @@ type Props = {
 }
 
 const ListingTable = ({columnDefinition, rows =[]}: Props) => {
-  const [accountComments, setAccountComments] = useState('')
+  const [comments, setComments] = useState('')
+  const [id, setID] = useState('')
   const [adEmail, setAdEmail] = useState('')
   const [commentsModal, commentsHandler] = useDisclosure()
   const [emailModal, emailHandler] = useDisclosure()
@@ -29,10 +30,19 @@ const ListingTable = ({columnDefinition, rows =[]}: Props) => {
       emailHandler.open()
   }
 
-  const cols = useCallback(() => columnDefinition({openEmailModal}), [])
+  const openCommentsModal = (id: string, comment: string) => {
+    setID(id)
+    setComments(comment)
+    commentsHandler.open()
+  }
+
+  const cols = useCallback(() => columnDefinition({openEmailModal, openCommentsModal}), [])
 
   return (
     <Box mt={5} sx={{ height: 400, width: '100%' }}>
+      <CommentsModal opened={commentsModal} close={commentsHandler.close}
+        comments={comments} id={id}
+      />
       <EmailDrawer open={emailModal} toggle={emailHandler.close}
         recipients={[adEmail]}
       />
