@@ -23,9 +23,12 @@ import stackTheme from 'src/@core/styles/stackTheme'
 // * Custom components
 import { defaultUserForm } from 'src/components/Forms'
 import { TablePagination } from 'src/components/Tables/pagination'
+import { EmailDrawer, DeleteModal } from 'src/components/Shared'
 
 // * Schemas
 import { userSchema } from 'src/schemas'
+
+import { useDisclosure } from 'src/hooks'
 
 // * Redux slices
 import { UserTableFormDrawer, UserTableRow } from './components'
@@ -35,69 +38,79 @@ const ROWS_PER_PAGE = 5
 const rows = [
   {
     username: 'test',
-    role: 'manager',
+    role: 'usuario',
     nameAndLastname: 'test',
     phone: 'test',
+    DNI: '234',
+    password: 'akd',
+    comments: 'este es un comentario',
     email: 'test1',
     status: 'test'
   },
   {
     username: 'test',
-    role: 'manager',
+    role: 'usuario',
     nameAndLastname: 'test',
     phone: 'test',
+    DNI: '234',
+    password: 'akd',
+    comments: 'este es un comentario',
     email: 'test2',
     status: 'test'
   },
   {
     username: 'test',
-    role: 'manager',
+    role: 'usuario',
     nameAndLastname: 'test',
     phone: 'test',
+    DNI: '234',
+    password: 'akd',
+    comments: 'este es un comentario',
     email: 'test3',
     status: 'test'
   },
   {
     username: 'test',
-    role: 'manager',
+    role: 'usuario',
     nameAndLastname: 'test',
     phone: 'test',
+    DNI: '234',
+    password: 'akd',
+    comments: 'este es un comentario',
     email: 'test4',
     status: 'test'
   },
   {
     username: 'test',
-    role: 'manager',
+    role: 'usuario',
     nameAndLastname: 'test',
     phone: 'test',
+    DNI: '234',
+    password: 'akd',
+    comments: 'este es un comentario',
     email: 'test5',
     status: 'test'
   },
   {
     username: 'test',
-    role: 'manager',
+    role: 'usuario',
     nameAndLastname: 'test',
     phone: 'test',
+    DNI: '234',
+    password: 'akd',
+    comments: 'este es un comentario',
     email: 'test6',
     status: 'test'
   }
 ]
 
-// type Row = {
-//   username: string
-//   role: string
-//   nameAndLastname: string
-//   phone: string
-//   email: string
-//   status: string
-// }
-
-
-// const ROLES_FILTER = ['manager', 'super-admin'] as const
-// const ROLES_ARR = ROLES_FILTER as unknown as string[]
-
 const UserTable = () => {
   const { t } = useTranslation()
+  const [editModalOpened, editFormModal] = useDisclosure()
+  const [deleteModalOpened, deleteModal] = useDisclosure()
+  const [emailDrawerOpened, emailDrawer] = useDisclosure()
+  const [email, setEmail] = useState('')
+  const [id, setID] = useState('')
 
   const [visibleRows, setVisibleRows] = useState<typeof rows>(rows.slice(0, ROWS_PER_PAGE))
 
@@ -111,14 +124,37 @@ const UserTable = () => {
     resolver: yupResolver(userSchema)
   })
 
+  const openEditForm = (data: typeof defaultUserForm) => {
+    userForm.reset(data)
+    editFormModal.open()
+  }
+
+  const openEmailDrawer = (email: string) => {
+    setEmail(email)
+    emailDrawer.open()
+  }
+
+  const openDeleteModal = (id: string) => {
+    setID(id)
+    deleteModal.open()
+  }
+
+  const deleteUser = () => {
+    console.log('delete id: ', id)
+  }
+
   const smCell = { '&.MuiTableCell-root': { width: 80 } }
   const mdCell = { '&.MuiTableCell-root': { width: 160 } }
   const lgCell = { '&.MuiTableCell-root': { width: 240 } }
 
   return (
     <>
+      <DeleteModal modalOpen={deleteModalOpened} close={deleteModal.close}
+        handleDelete={deleteUser} name='usuario' gender='este'
+      />
+      <EmailDrawer recipients={[email]} open={emailDrawerOpened} toggle={emailDrawer.close}/>
       <FormProvider {...userForm}>
-          <UserTableFormDrawer />
+          <UserTableFormDrawer opened={editModalOpened} close={editFormModal.close} />
       </FormProvider>
       <Card>
         <CardContent>
@@ -130,7 +166,7 @@ const UserTable = () => {
                   size='small'
                   placeholder={t('search') as string} />
               </Stack>
-              <Button variant='contained' onClick={() => {console.log("click")}}>
+              <Button variant='contained' onClick={() => {openEditForm(defaultUserForm)}}>
                 {t('add-user')}
               </Button>
             </Stack>
@@ -138,7 +174,6 @@ const UserTable = () => {
 
           <TableContainer component={Paper}>
             <Table sx={{ minWidth: 650 }} aria-label='simple table'>
-              {/* Table headers */}
               <TableHead>
                 <TableRow>
                   <TableCell>{t('user')}</TableCell>
@@ -165,7 +200,7 @@ const UserTable = () => {
                   <UserTableRow
                     key={row.email}
                     row={row}
-                    userForm={userForm}
+                    {...{openEmailDrawer, openDeleteModal, openEditForm}}
                   />
                 ))}
               </TableBody>

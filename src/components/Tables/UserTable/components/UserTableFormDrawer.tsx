@@ -12,29 +12,19 @@ import { useFormContext } from 'react-hook-form'
 import Icon from 'src/@core/components/icon'
 
 // * Custom components
-import { UserForm, defaultUserForm } from 'src/components/Forms'
+import { UserForm } from 'src/components/Forms'
 
-// * Schemas
+type UserFormDrawer = {
+  opened: boolean
+  close: () => void
+}
 
-// * Redux slices
-// import { componentOpen, selectOpened } from 'src/redux/slices'
-// import { useRouter } from 'next/router'
-import { useMemo } from 'react'
-
-const UserFormDrawer = () => {
+const UserFormDrawer = ({opened, close}: UserFormDrawer) => {
   const { t } = useTranslation()
   const userForm = useFormContext()
-  // const dispatch = useDispatch()
-  // const { close } = componentOpen.actions
-  // const opened = useSelector(selectOpened)
-
-
-  const handleFormClose = () => {
-    userForm.reset(defaultUserForm)
-  }
 
   return (
-    <Drawer anchor='right' open={false} onClose={handleFormClose}>
+    <Drawer anchor='right' open={opened} onClose={close}>
       <form
         onSubmit={userForm.handleSubmit(data => {
           console.log(data)
@@ -42,7 +32,7 @@ const UserFormDrawer = () => {
       >
         <Stack pt={5} px={5} direction='row' justifyContent='space-between' alignItems='center'>
           <Box typography={'h6'}>{t('user')}</Box>
-          <IconButton onClick={handleFormClose}>
+          <IconButton onClick={close}>
             <Icon icon='tabler:x' width={24} />
           </IconButton>
         </Stack>
@@ -51,7 +41,7 @@ const UserFormDrawer = () => {
           <Button type='submit' variant='contained'>
             {t('save')}
           </Button>
-          <Button color='secondary' variant='outlined' onClick={handleFormClose}>
+          <Button color='secondary' variant='outlined' onClick={close}>
             {t('cancel')}
           </Button>
         </Stack>

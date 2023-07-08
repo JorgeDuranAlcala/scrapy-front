@@ -20,6 +20,7 @@ const defineRulesFor = (role: string) => {
   switch (role) {
     case "admin": {
       can('see', 'history')
+      can('write', 'users')
       break
     }
     case "normal":{}
