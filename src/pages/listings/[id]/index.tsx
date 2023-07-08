@@ -53,7 +53,8 @@ const ROWS= [
     adOwner: 'test',
     userAd: 'test',
     link: '#',
-    count:3
+    count:3,
+    comments: 'este es un comentario'
   }
 ]
 
