@@ -15,16 +15,11 @@ interface TUserTableRow {
 
 function UserTableRow({ row, openEditForm, openDeleteModal, openEmailDrawer }: TUserTableRow) {
   const { t } = useTranslation()
-  // const dispatch = useDispatch()
-  // const { open } = componentOpen.actions
 
   return (
     <TableRow key={row.email}>
       <TableCell size='small' align='left'>
         Formulario no tiene campo de usuario
-      </TableCell>
-      <TableCell size='small' align='left'>
-        {row.role}
       </TableCell>
       <TableCell align='left'>{row.nameAndLastname}</TableCell>
       <TableCell align='left'>{row.phone}</TableCell>
