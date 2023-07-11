@@ -33,7 +33,7 @@ const ROWS= [
     bathrooms: 2,
     rooms: 2,
     adSite: 'blah blah',
-    adDate: 12345,
+    adDate: new Date,
     adOwner: 'test',
     link: '#',
     count:2
@@ -52,7 +52,7 @@ const ROWS= [
     bathrooms: 2,
     rooms: 2,
     adSite: 'blah blah',
-    adDate: 12345,
+    adDate: new Date,
     adOwner: 'test',
     link: '#',
     count:3

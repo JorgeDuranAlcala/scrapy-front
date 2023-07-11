@@ -41,8 +41,8 @@ const listingColumns = ({openEmailModal, openCommentsModal}: optionActions): Gri
       width: 100
     },
     {
-      field: 'user',
-      headerName: 'Usuario',
+      field: 'phone',
+      headerName: 'Teléfono',
       filterable: false,
       width: 120,
     },
