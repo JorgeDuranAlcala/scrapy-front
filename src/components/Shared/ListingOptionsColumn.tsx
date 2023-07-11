@@ -15,7 +15,7 @@ type Props = {
 
 const ListingOptionColumn = (props: Props) => {
   const {id, row: { comments, link, count, email }} = props
-  const { asPath } = useRouter()
+  const { query } = useRouter()
 
   return (
     <Stack
@@ -49,7 +49,7 @@ const ListingOptionColumn = (props: Props) => {
         icon="tabler:paperclip"
         buttonProps={{
           component: Link,
-          href: `${asPath}documents/${id}`,
+          href: `/listings/${query.id}/documents/${id}`,
           passHref: true,
           sx: { padding: "4px" },
         }}
