@@ -16,7 +16,7 @@ import { GridRowProps, GridRow } from '@mui/x-data-grid'
 const ListingTableRow = ({gridRowProps}: ListingRowProps) => {
   const [ opened, setOpen ] = useState(false)
 
-  const {bathrooms, rooms, adSite, adDate, adOwner, userAd} = gridRowProps.row as any
+  const {bathrooms, rooms, adSite, adDate, adOwner, user, email} = gridRowProps.row as any
 
   return (
     <>
@@ -36,12 +36,13 @@ const ListingTableRow = ({gridRowProps}: ListingRowProps) => {
           <Table size='small' aria-label='purchases'>
             <TableHead>
               <TableRow>
-                <TableCell align='left'>Baños</TableCell>
-                <TableCell align='left'>Habitaciones</TableCell>
+                <TableCell sx={{width: "5%"}} align='left'>Baños</TableCell>
+                <TableCell sx={{width: "5%"}} align='left'>Habitaciones</TableCell>
                 <TableCell align='left'>Publicado en</TableCell>
                 <TableCell align='left'>Fecha Anuncio</TableCell>
-                <TableCell align='left'>Nombre Anunciante</TableCell>
-                <TableCell align='left'>Usuario Anuncio</TableCell>
+                <TableCell sx={{width: "15%"}} align='left'>Nombre Anunciante</TableCell>
+                <TableCell sx={{width: "18%"}} align='left'>Email</TableCell>
+                <TableCell sx={{width: "18%"}} align='left'>Usuario</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -49,9 +50,10 @@ const ListingTableRow = ({gridRowProps}: ListingRowProps) => {
                 <TableCell align='left'>{bathrooms}</TableCell>
                 <TableCell align='left'>{rooms}</TableCell>
                 <TableCell align='left'>{adSite}</TableCell>
-                <TableCell align='left'>{adDate}</TableCell>
+                <TableCell align='left'>{adDate.toLocaleDateString()}</TableCell>
                 <TableCell align='left'>{adOwner}</TableCell>
-                <TableCell align='left'>{userAd}</TableCell>
+                <TableCell align='left'>{email}</TableCell>
+                <TableCell align='left'>{user}</TableCell>
               </TableRow>
             </TableBody>
           </Table>

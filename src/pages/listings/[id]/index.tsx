@@ -29,9 +29,9 @@ const ROWS= [
     bathrooms: 2,
     rooms: 2,
     adSite: 'blah blah',
-    adDate: 12345,
+    adDate: new Date(),
     adOwner: 'test',
-    userAd: 'test',
+    user: 'test',
     link: '#',
     count:2
   },
@@ -49,9 +49,9 @@ const ROWS= [
     bathrooms: 2,
     rooms: 2,
     adSite: 'blah blah',
-    adDate: 12345,
+    adDate: new Date(),
     adOwner: 'test',
-    userAd: 'test',
+    user: 'test',
     link: '#',
     count:3,
     comments: 'este es un comentario'
