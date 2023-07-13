@@ -181,7 +181,6 @@ const UserTable = () => {
             <Table sx={{ minWidth: 650 }} aria-label='simple table'>
               <TableHead>
                 <TableRow>
-                  <TableCell>{t('user')}</TableCell>
                   <TableCell align='left'>{t('name-and-lastname')}</TableCell>
                   <TableCell sx={lgCell} align='left'>
                     {t('phone_one')}
