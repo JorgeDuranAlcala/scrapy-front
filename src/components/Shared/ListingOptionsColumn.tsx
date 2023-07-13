@@ -28,27 +28,27 @@ const ListingOptionColumn = (props: Props) => {
     <GridActionsCellItem key={'email'} icon={<Icon width={24} icon='tabler:mail'/>} label='email'
       onClick={()=> {props.openEmailModal(email)}}
     />,
-    <Counter key='counter' value={count}/>,
     <ActionButton key='documents'
-      title={'Adjuntar'}
-      icon='tabler:paperclip'
-      buttonProps={{
-        component: Link,
-        href: `/listings/${props.listingSite}/documents/${id}`,
-        passHref: true,
-        sx: { padding: '4px' }
-      }}
+    title={'Adjuntar'}
+    icon='tabler:paperclip'
+    buttonProps={{
+      component: Link,
+      href: `/listings/${props.listingSite}/documents/${id}`,
+      passHref: true,
+      sx: { padding: '4px' }
+    }}
     />,
     <ActionButton key='comments'
-      title='Comentarios'
-      icon={`tabler:${comments && comments.length > 0 ? 'info-circle-filled' : 'info-circle'}`}
-      buttonProps={{
-        onClick: () => {
-          props.openCommentsModal(id as string, comments)
-        },
-        sx: { padding: '4px' }
-      }}
-    />
+    title='Comentarios'
+    icon={`tabler:${comments && comments.length > 0 ? 'info-circle-filled' : 'info-circle'}`}
+    buttonProps={{
+      onClick: () => {
+        props.openCommentsModal(id as string, comments)
+      },
+      sx: { padding: '4px' }
+    }}
+    />,
+    <Counter key='counter' value={count}/>
   ]
 }
 
