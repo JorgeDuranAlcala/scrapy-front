@@ -1,14 +1,15 @@
 import { GridColDef} from '@mui/x-data-grid'
 
 import { StatusSelect } from '../components'
-import ListingOptionColumn from 'src/components/Shared/ListingOptionsColumn'
+import listingOptionColumn from 'src/components/Shared/ListingOptionsColumn'
 
 type optionActions = {
   openCommentsModal: (id: string, comments: string) => void
   openEmailModal: (email: string) => void
+  route: string
 }
 
-const listingColumns = ({openEmailModal, openCommentsModal}: optionActions): GridColDef[] => {
+const listingColumns = ({openEmailModal, openCommentsModal, route}: optionActions): GridColDef[] => {
   return [
     {
       field: 'operation',
@@ -41,8 +42,8 @@ const listingColumns = ({openEmailModal, openCommentsModal}: optionActions): Gri
       width: 100
     },
     {
-      field: 'user',
-      headerName: 'Usuario',
+      field: 'phone',
+      headerName: 'Teléfono',
       filterable: false,
       width: 120,
     },
@@ -59,20 +60,27 @@ const listingColumns = ({openEmailModal, openCommentsModal}: optionActions): Gri
       field: 'status',
       headerName: 'Estado',
       filterable: false,
+      editable: true,
       width: 140,
-      renderCell: ({row: { status }}) => <StatusSelect value={status}/>
+      renderCell: (props) => <StatusSelect {...props}/>,
+      renderEditCell: (props) => <StatusSelect {...props}/>,
     },
     {
+      field: 'email',
+      headerName: 'Email',
+      editable: true,
+      sortable: false,
+      disableColumnMenu: true,
+      hideable: false,
+    },
+    {
+      type:'actions',
       field: 'options',
       headerName: 'Opciones',
       width: 260,
       filterable: false,
       sortable: false,
-      renderCell: (row) =>
-        <ListingOptionColumn {...row}
-          openEmailModal={openEmailModal}
-          openCommentsModal={openCommentsModal}
-        />
+      getActions: (row) => listingOptionColumn({...row, listingSite: route, openEmailModal, openCommentsModal})
     }
   ]
 }

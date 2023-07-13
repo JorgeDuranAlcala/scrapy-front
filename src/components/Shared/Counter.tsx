@@ -1,4 +1,4 @@
-import { useState, memo} from 'react'
+import { useState, memo, useEffect} from 'react'
 
 import Badge from "@mui/material/Badge"
 import Button from "@mui/material/Button"
@@ -14,12 +14,18 @@ export const Counter = memo(({value}: CounterProps) => {
   const [count, setCount] = useState<number>(value)
   const [savedCount, setSavedCount] =useState(value)
 
+
   const submitTimeout = setTimeout(() => {
     if(count !== savedCount){
       console.log('submit data', count)
       setSavedCount(count)
     }
   }, 1000)
+
+  useEffect(() => {
+    clearTimeout(submitTimeout)
+    return () => { clearTimeout(submitTimeout)}
+  },[])
 
   const handleCount = (option: string) => {
     const number = option == 'add'
@@ -28,7 +34,7 @@ export const Counter = memo(({value}: CounterProps) => {
 
     setCount(number)
 
-    if(number !== count) clearTimeout(submitTimeout)
+    // if(number !== count) clearTimeout(submitTimeout)
   }
 
   return (

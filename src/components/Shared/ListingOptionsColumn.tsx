@@ -1,68 +1,55 @@
-import Link from "next/link";
-import { useRouter } from 'next/router'
+import Link from 'next/link'
 
-import Box from "@mui/material/Box";
-import Stack from "@mui/material/Stack";
+import Icon from 'src/@core/components/icon'
 
-import { type GridRenderCellParams } from "@mui/x-data-grid";
+import { type GridRowParams, GridActionsCellItem } from '@mui/x-data-grid'
 
-import { Counter, ActionButton } from "src/components/Shared";
+import { Counter, ActionButton } from 'src/components/Shared'
 
 type Props = {
   openEmailModal: (id: string) => void
   openCommentsModal: (id: string, comments: string) => void
-} & GridRenderCellParams
+  listingSite: string
+} & Omit<GridRowParams, 'touchRippleRef'>
 
 const ListingOptionColumn = (props: Props) => {
-  const {id, row: { comments, link, count, email }} = props
-  const { asPath } = useRouter()
+  const {
+    id,
+    row: { comments, link, count, email }
+  } = props
 
-  return (
-    <Stack
-      justifyContent="start"
-      direction="row"
-      alignItems="center"
-      gap={0.25}
-    >
-      <a href={link}>
-        <ActionButton
-          title={"Ver"}
-          icon="tabler:eye"
-          buttonProps={{ sx: { padding: "4px" } }}
-        />
-      </a>
-      <ActionButton
-        title={"Enviar email"}
-        icon="tabler:mail"
-        buttonProps={{
-          onClick: () => {
-            props.openEmailModal(email);
-          },
-          sx: { padding: "4px" },
-        }}
-      />
-      <Box padding={"4px"}>
-        <Counter value={count} />
-      </Box>
-      <ActionButton
-        title={"Adjuntar"}
-        icon="tabler:paperclip"
-        buttonProps={{
-          component: Link,
-          href: `${asPath}documents/${id}`,
-          passHref: true,
-          sx: { padding: "4px" },
-        }}
-      />
-      <ActionButton title='Comentarios'
-          icon={`tabler:${comments && comments.length > 0 ? 'info-circle-filled' : 'info-circle'}`}
-          buttonProps={{
-              onClick: () => {props.openCommentsModal(id as string, comments) },
-              sx: { padding: "4px" }
-          }}
-        />
-    </Stack>
-  );
-};
+  return [
+    <GridActionsCellItem key={'view'} {...{href: link}}
+      icon={
+        <Icon width={24} icon='tabler:eye'/>
+      }
+    label='view'
+    />,
+    <GridActionsCellItem key={'email'} icon={<Icon width={24} icon='tabler:mail'/>} label='email'
+      onClick={()=> {props.openEmailModal(email)}}
+    />,
+    <Counter key='counter' value={count}/>,
+    <ActionButton key='documents'
+      title={'Adjuntar'}
+      icon='tabler:paperclip'
+      buttonProps={{
+        component: Link,
+        href: `/listings/${props.listingSite}/documents/${id}`,
+        passHref: true,
+        sx: { padding: '4px' }
+      }}
+    />,
+    <ActionButton key='comments'
+      title='Comentarios'
+      icon={`tabler:${comments && comments.length > 0 ? 'info-circle-filled' : 'info-circle'}`}
+      buttonProps={{
+        onClick: () => {
+          props.openCommentsModal(id as string, comments)
+        },
+        sx: { padding: '4px' }
+      }}
+    />
+  ]
+}
 
 export default ListingOptionColumn

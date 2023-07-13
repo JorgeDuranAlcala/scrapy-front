@@ -71,7 +71,8 @@ export const EmailDrawer = ({open, toggle, storedFileHandling, recipients =[]}: 
   }
 
   useEffect(() => {
-    resetField('to', {defaultValue: recipients})
+    if(recipients.length > 0)
+      resetField('to', {defaultValue: recipients})
   }, [recipients])
 
   const handleClose = () => {

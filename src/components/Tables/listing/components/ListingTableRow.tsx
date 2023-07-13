@@ -13,10 +13,12 @@ import TableRow from '@mui/material/TableRow'
 
 import { GridRowProps, GridRow } from '@mui/x-data-grid'
 
-const ListingTableRow = ({gridRowProps}: ListingRowProps) => {
+import EditEmail from './EmailField'
+
+const ListingTableRow = ({row, handleEmailChange, ...rest}: ListingRowProps) => {
   const [ opened, setOpen ] = useState(false)
 
-  const {bathrooms, rooms, adSite, adDate, adOwner, userAd} = gridRowProps.row as any
+  const {id, bathrooms, rooms, adSite, adDate, adOwner, user, email} = row as any
 
   return (
     <>
@@ -29,19 +31,20 @@ const ListingTableRow = ({gridRowProps}: ListingRowProps) => {
               <Icon icon={`tabler:${opened ? 'chevron-up' : 'chevron-down'}`} width={20}/>
           </IconButton>
         </Box>
-        <GridRow {...gridRowProps}/>
+        <GridRow {...{row, ...rest}}/>
       </Stack>
       <Collapse in={opened} timeout='auto'>
         <Box sx={{ margin: 2, width: "100%" }}>
           <Table size='small' aria-label='purchases'>
             <TableHead>
               <TableRow>
-                <TableCell align='left'>Baños</TableCell>
-                <TableCell align='left'>Habitaciones</TableCell>
+                <TableCell sx={{width: "5%"}} align='left'>Baños</TableCell>
+                <TableCell sx={{width: "5%"}} align='left'>Habitaciones</TableCell>
                 <TableCell align='left'>Publicado en</TableCell>
                 <TableCell align='left'>Fecha Anuncio</TableCell>
-                <TableCell align='left'>Nombre Anunciante</TableCell>
-                <TableCell align='left'>Usuario Anuncio</TableCell>
+                <TableCell sx={{width: "15%"}} align='left'>Nombre Anunciante</TableCell>
+                <TableCell sx={{width: "18%"}} align='left'>Email</TableCell>
+                <TableCell sx={{width: "18%"}} align='left'>Usuario</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -49,9 +52,14 @@ const ListingTableRow = ({gridRowProps}: ListingRowProps) => {
                 <TableCell align='left'>{bathrooms}</TableCell>
                 <TableCell align='left'>{rooms}</TableCell>
                 <TableCell align='left'>{adSite}</TableCell>
-                <TableCell align='left'>{adDate}</TableCell>
+                <TableCell align='left'>{adDate.toLocaleDateString()}</TableCell>
                 <TableCell align='left'>{adOwner}</TableCell>
-                <TableCell align='left'>{userAd}</TableCell>
+                <TableCell align='left'>
+                  <EditEmail email={email} id={id}
+                    handleEmailChange={handleEmailChange(rest.index)}
+                  />
+                </TableCell>
+                <TableCell align='left'>{user}</TableCell>
               </TableRow>
             </TableBody>
           </Table>
@@ -62,7 +70,7 @@ const ListingTableRow = ({gridRowProps}: ListingRowProps) => {
 }
 
 type ListingRowProps = {
-  gridRowProps: GridRowProps,
-}
+  handleEmailChange: (index: number) => (email: string) => void
+} & GridRowProps
 
 export default ListingTableRow

@@ -37,66 +37,72 @@ const ROWS_PER_PAGE = 5
 
 const rows = [
   {
-    username: 'test',
-    role: 'usuario',
     nameAndLastname: 'test',
     phone: 'test',
     DNI: '234',
+    job: '',
+    salary: undefined,
+    paymentMethod: '',
     password: 'akd',
     comments: 'este es un comentario',
     email: 'test1',
     status: 'test'
   },
   {
-    username: 'test',
-    role: 'usuario',
     nameAndLastname: 'test',
     phone: 'test',
     DNI: '234',
+    job: '',
+    salary: undefined,
+    paymentMethod: '',
     password: 'akd',
     comments: 'este es un comentario',
     email: 'test2',
     status: 'test'
   },
   {
-    username: 'test',
-    role: 'usuario',
     nameAndLastname: 'test',
     phone: 'test',
     DNI: '234',
+    job: '',
+    salary: undefined,
+    paymentMethod: '',
     password: 'akd',
     comments: 'este es un comentario',
     email: 'test3',
     status: 'test'
   },
   {
-    username: 'test',
-    role: 'usuario',
     nameAndLastname: 'test',
     phone: 'test',
     DNI: '234',
+    job: '',
+    salary: undefined,
+    paymentMethod: '',
     password: 'akd',
     comments: 'este es un comentario',
     email: 'test4',
     status: 'test'
   },
   {
-    username: 'test',
-    role: 'usuario',
     nameAndLastname: 'test',
     phone: 'test',
     DNI: '234',
+    job: '',
+    salary: undefined,
+    paymentMethod: '',
     password: 'akd',
     comments: 'este es un comentario',
     email: 'test5',
     status: 'test'
   },
   {
-    username: 'test',
-    role: 'usuario',
     nameAndLastname: 'test',
     phone: 'test',
     DNI: '234',
+    job: '',
+    salary: undefined,
+    paymentMethod: '',
     password: 'akd',
     comments: 'este es un comentario',
     email: 'test6',
@@ -144,7 +150,6 @@ const UserTable = () => {
   }
 
   const smCell = { '&.MuiTableCell-root': { width: 80 } }
-  const mdCell = { '&.MuiTableCell-root': { width: 160 } }
   const lgCell = { '&.MuiTableCell-root': { width: 240 } }
 
   return (
@@ -176,10 +181,6 @@ const UserTable = () => {
             <Table sx={{ minWidth: 650 }} aria-label='simple table'>
               <TableHead>
                 <TableRow>
-                  <TableCell>{t('user')}</TableCell>
-                  <TableCell sx={mdCell} align='left'>
-                    {t('role')}
-                  </TableCell>
                   <TableCell align='left'>{t('name-and-lastname')}</TableCell>
                   <TableCell sx={lgCell} align='left'>
                     {t('phone_one')}
