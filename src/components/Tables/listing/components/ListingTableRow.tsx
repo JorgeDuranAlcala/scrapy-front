@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, memo } from 'react'
 
 import { Icon } from '@iconify/react'
 import Box from '@mui/material/Box'
@@ -13,10 +13,12 @@ import TableRow from '@mui/material/TableRow'
 
 import { GridRowProps, GridRow } from '@mui/x-data-grid'
 
-const ListingTableRow = ({gridRowProps}: ListingRowProps) => {
+import EditEmail from './EmailField'
+
+const ListingTableRow = ({gridRowProps, handleEmailChange}: ListingRowProps) => {
   const [ opened, setOpen ] = useState(false)
 
-  const {bathrooms, rooms, adSite, adDate, adOwner, user, email} = gridRowProps.row as any
+  const {id, bathrooms, rooms, adSite, adDate, adOwner, user, email} = gridRowProps.row as any
 
   return (
     <>
@@ -52,7 +54,11 @@ const ListingTableRow = ({gridRowProps}: ListingRowProps) => {
                 <TableCell align='left'>{adSite}</TableCell>
                 <TableCell align='left'>{adDate.toLocaleDateString()}</TableCell>
                 <TableCell align='left'>{adOwner}</TableCell>
-                <TableCell align='left'>{email}</TableCell>
+                <TableCell align='left'>
+                  <EditEmail email={email} id={id}
+                    handleEmailChange={handleEmailChange(gridRowProps.index)}
+                  />
+                </TableCell>
                 <TableCell align='left'>{user}</TableCell>
               </TableRow>
             </TableBody>
@@ -65,6 +71,7 @@ const ListingTableRow = ({gridRowProps}: ListingRowProps) => {
 
 type ListingRowProps = {
   gridRowProps: GridRowProps,
+  handleEmailChange: (index: number) => (email: string) => void
 }
 
-export default ListingTableRow
+export default memo(ListingTableRow)
