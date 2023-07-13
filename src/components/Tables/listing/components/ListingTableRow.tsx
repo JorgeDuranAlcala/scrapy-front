@@ -1,4 +1,4 @@
-import { useState, memo } from 'react'
+import { useState } from 'react'
 
 import { Icon } from '@iconify/react'
 import Box from '@mui/material/Box'
@@ -15,10 +15,10 @@ import { GridRowProps, GridRow } from '@mui/x-data-grid'
 
 import EditEmail from './EmailField'
 
-const ListingTableRow = ({gridRowProps, handleEmailChange}: ListingRowProps) => {
+const ListingTableRow = ({row, handleEmailChange, ...rest}: ListingRowProps) => {
   const [ opened, setOpen ] = useState(false)
 
-  const {id, bathrooms, rooms, adSite, adDate, adOwner, user, email} = gridRowProps.row as any
+  const {id, bathrooms, rooms, adSite, adDate, adOwner, user, email} = row as any
 
   return (
     <>
@@ -31,7 +31,7 @@ const ListingTableRow = ({gridRowProps, handleEmailChange}: ListingRowProps) => 
               <Icon icon={`tabler:${opened ? 'chevron-up' : 'chevron-down'}`} width={20}/>
           </IconButton>
         </Box>
-        <GridRow {...gridRowProps}/>
+        <GridRow {...{row, ...rest}}/>
       </Stack>
       <Collapse in={opened} timeout='auto'>
         <Box sx={{ margin: 2, width: "100%" }}>
@@ -56,7 +56,7 @@ const ListingTableRow = ({gridRowProps, handleEmailChange}: ListingRowProps) => 
                 <TableCell align='left'>{adOwner}</TableCell>
                 <TableCell align='left'>
                   <EditEmail email={email} id={id}
-                    handleEmailChange={handleEmailChange(gridRowProps.index)}
+                    handleEmailChange={handleEmailChange(rest.index)}
                   />
                 </TableCell>
                 <TableCell align='left'>{user}</TableCell>
@@ -70,8 +70,7 @@ const ListingTableRow = ({gridRowProps, handleEmailChange}: ListingRowProps) => 
 }
 
 type ListingRowProps = {
-  gridRowProps: GridRowProps,
   handleEmailChange: (index: number) => (email: string) => void
-}
+} & GridRowProps
 
-export default memo(ListingTableRow)
+export default ListingTableRow
