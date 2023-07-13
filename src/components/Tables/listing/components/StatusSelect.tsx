@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, memo } from 'react'
 
 import Select from '@mui/material/Select'
 import MenuItem from '@mui/material/MenuItem'
@@ -7,7 +7,7 @@ import { type GridRenderCellParams } from '@mui/x-data-grid'
 import { STATUSES } from 'src/types'
 
 
-export const StatusSelect = ({value, id, api, field}: GridRenderCellParams) => {
+export const StatusSelect = memo(({value, id, api, field}: GridRenderCellParams) => {
   const [status, setStatus] = useState(value)
 
   const onChange= (option: string) => {
@@ -31,4 +31,4 @@ export const StatusSelect = ({value, id, api, field}: GridRenderCellParams) => {
         ))}
     </Select>
   )
-}
+})
