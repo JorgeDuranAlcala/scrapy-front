@@ -1,4 +1,6 @@
-import { useState, useCallback, memo } from 'react'
+import { useState, useCallback, memo, useMemo } from 'react'
+
+import { useRouter } from 'next/router'
 
 import Box from '@mui/material/Box'
 import { DataGrid, esES, GridValidRowModel } from '@mui/x-data-grid'
@@ -7,8 +9,6 @@ import ListingRow from './components/ListingTableRow'
 import useColumns from './ColumnDefs/listingColumns'
 
 import { CommentsModal, EmailDrawer } from 'src/components/Shared'
-
-import { ModalContext } from 'src/context'
 
 // ** Hook imports
 import { useDisclosure } from 'src/hooks'
@@ -19,6 +19,8 @@ type Props = {
 }
 
 const ListingTable = ({columnDefinition, rows =[]}: Props) => {
+  const { query } = useRouter()
+  const [tableRows, setTableRows] = useState(rows)
   const [comments, setComments] = useState('')
   const [id, setID] = useState('')
   const [adEmail, setAdEmail] = useState('')
@@ -36,28 +38,42 @@ const ListingTable = ({columnDefinition, rows =[]}: Props) => {
     commentsHandler.open()
   }
 
-  const cols = useCallback(() => columnDefinition({openEmailModal, openCommentsModal}), [])
+  const handleEmailChange= useCallback((index: number) => (email: string) => {
+    const newRows = rows.slice()
+    newRows[index].email = email
+    setTableRows(newRows)
+  }, [])
+
+  const cols = useMemo(() => (
+    columnDefinition({openEmailModal, openCommentsModal, route: query.id as string})
+    ), [openEmailModal, openCommentsModal])
 
   return (
-    <Box mt={5} sx={{ height: 400, width: '100%' }}>
+    <Box mt={5} sx={{ height: 600, width: '100%' }}>
       <CommentsModal opened={commentsModal} close={commentsHandler.close}
         comments={comments} id={id}
       />
       <EmailDrawer open={emailModal} toggle={emailHandler.close}
-        recipients={[adEmail]}
+        recipients={adEmail!== '' ? [adEmail] : undefined}
       />
       <DataGrid
-        rows={rows}
-        columns={cols()}
+
+        rows={tableRows}
+        columns={cols}
         initialState={{
           pagination: {
             paginationModel: {
               pageSize: 5
             }
+          },
+          columns: {
+            columnVisibilityModel: {
+              email: false
+            }
           }
         }}
         slots={{
-          row: props => <ListingRow gridRowProps={props} />
+          row: props => <ListingRow gridRowProps={props} handleEmailChange={handleEmailChange} />
         }}
         disableRowSelectionOnClick
         sx={{
