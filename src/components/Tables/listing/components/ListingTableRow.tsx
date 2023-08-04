@@ -42,7 +42,7 @@ const ListingTableRow = ({row, handleEmailChange, ...rest}: ListingRowProps) => 
                 <TableCell sx={{width: "5%"}} align='left'>Habitaciones</TableCell>
                 <TableCell align='left'>Publicado en</TableCell>
                 <TableCell align='left'>Fecha Anuncio</TableCell>
-                <TableCell sx={{width: "15%"}} align='left'>Nombre Anunciante</TableCell>
+                <TableCell sx={{width: "15%"}} align='left'>Nombre Propietario</TableCell>
                 <TableCell sx={{width: "18%"}} align='left'>Email</TableCell>
                 <TableCell sx={{width: "18%"}} align='left'>Usuario</TableCell>
               </TableRow>
