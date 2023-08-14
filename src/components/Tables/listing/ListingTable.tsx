@@ -38,9 +38,9 @@ const ListingTable = ({columnDefinition, rows =[]}: Props) => {
     commentsHandler.open()
   }, [])
 
-  const handleEmailChange= useCallback((index: number) => (email: string) => {
+  const handleSubRowChange= useCallback((index: number, column: string) => (data: string) => {
     const newRows = rows.slice()
-    newRows[index].email = email
+    newRows[index][column] = data
     setTableRows(newRows)
   }, [])
 
@@ -66,9 +66,9 @@ const ListingTable = ({columnDefinition, rows =[]}: Props) => {
       '& .MuiDataGrid-columnHeader:first-of-type': { marginLeft: '40px !important' }
     },
     slots: {
-      row: (props: GridRowProps) => <ListingRow handleEmailChange={handleEmailChange} {...props}/>
+      row: (props: GridRowProps) => <ListingRow handleSubRowChange={handleSubRowChange} {...props}/>
     }
-  }), [handleEmailChange])
+  }), [handleSubRowChange])
 
   return (
     <Box mt={5} sx={{ height: 375, width: '100%' }}>
