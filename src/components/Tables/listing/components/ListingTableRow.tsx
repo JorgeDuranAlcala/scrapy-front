@@ -15,7 +15,7 @@ import { GridRowProps, GridRow } from '@mui/x-data-grid'
 
 import EditEmail from './EmailField'
 
-const ListingTableRow = ({row, handleEmailChange, ...rest}: ListingRowProps) => {
+const ListingTableRow = ({row, handleSubRowChange, ...rest}: ListingRowProps) => {
   const [ opened, setOpen ] = useState(false)
 
   const {id, bathrooms, rooms, adSite, adDate, adOwner, user, email} = row as any
@@ -56,7 +56,7 @@ const ListingTableRow = ({row, handleEmailChange, ...rest}: ListingRowProps) => 
                 <TableCell align='left'>{adOwner}</TableCell>
                 <TableCell align='left'>
                   <EditEmail email={email} id={id}
-                    handleEmailChange={handleEmailChange(rest.index)}
+                    handleEmailChange={handleSubRowChange(rest.index, 'email')}
                   />
                 </TableCell>
                 <TableCell align='left'>{user}</TableCell>
@@ -70,7 +70,7 @@ const ListingTableRow = ({row, handleEmailChange, ...rest}: ListingRowProps) => 
 }
 
 type ListingRowProps = {
-  handleEmailChange: (index: number) => (email: string) => void
+  handleSubRowChange: (index: number, column: string) => (data: string) => void
 } & GridRowProps
 
 export default ListingTableRow
