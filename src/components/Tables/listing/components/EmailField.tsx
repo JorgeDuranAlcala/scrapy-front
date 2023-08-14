@@ -1,4 +1,4 @@
-import { useState, ChangeEvent, useEffect } from 'react'
+import { ChangeEvent, useEffect } from 'react'
 
 import TextField from '@mui/material/TextField'
 import InputAdornment from '@mui/material/InputAdornment'
@@ -7,6 +7,9 @@ import { useGridApiContext } from '@mui/x-data-grid'
 
 import yup from 'src/@core/utils/customized-yup'
 import toast from 'react-hot-toast'
+
+// ** hooks
+import { useDebouncedState } from 'src/hooks'
 
 const emailSchema = yup.string().email()
 
@@ -17,7 +20,7 @@ type Props = {
 }
 
 const EmailField = ({handleEmailChange, email, id}: Props) => {
-  const [editEmail, setEditEmail] = useState(email)
+  const [editEmail, debouncedEmail, setEmail] = useDebouncedState(email)
   const api = useGridApiContext()
   const savedEmail = api.current.getCellValue(id, 'email')
   let isValid = true
@@ -28,22 +31,16 @@ const EmailField = ({handleEmailChange, email, id}: Props) => {
     isValid = false
   }
 
-  const submitTimeout = setTimeout(() => {
+  useEffect(()=>{
     if(editEmail !== savedEmail && isValid){
       handleEmailChange(editEmail)
       toast.success('Email actualizado!')
     }
-  }, 1000)
-
-  useEffect(()=>{
-    clearTimeout(submitTimeout)
-    return ()=> { clearTimeout(submitTimeout)}
-  },[])
+  },[debouncedEmail])
 
   const onChange = (event: ChangeEvent<HTMLInputElement>) => {
     const newValue = event.target.value
-    setEditEmail(newValue)
-    clearTimeout(submitTimeout)
+    setEmail(newValue)
   }
 
   return (
@@ -52,7 +49,7 @@ const EmailField = ({handleEmailChange, email, id}: Props) => {
       onChange={onChange}
       size='small'
       error={!isValid}
-      helperText={!isValid && 'Email invalido'}
+      helperText={!isValid && 'Email inválido'}
       InputProps = {{
         endAdornment: ( savedEmail !== editEmail && isValid &&
           <InputAdornment position='end'>
