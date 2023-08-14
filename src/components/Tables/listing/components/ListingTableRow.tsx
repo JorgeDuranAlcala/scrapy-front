@@ -14,8 +14,9 @@ import TableRow from '@mui/material/TableRow'
 import { GridRowProps, GridRow } from '@mui/x-data-grid'
 
 import EditEmail from './EmailField'
+import AdSiteField from './AdSiteField'
 
-const ListingTableRow = ({row, handleEmailChange, ...rest}: ListingRowProps) => {
+const ListingTableRow = ({row, handleSubRowChange, ...rest}: ListingRowProps) => {
   const [ opened, setOpen ] = useState(false)
 
   const {id, bathrooms, rooms, adSite, adDate, adOwner, user, email} = row as any
@@ -51,12 +52,16 @@ const ListingTableRow = ({row, handleEmailChange, ...rest}: ListingRowProps) => 
               <TableRow>
                 <TableCell align='left'>{bathrooms}</TableCell>
                 <TableCell align='left'>{rooms}</TableCell>
-                <TableCell align='left'>{adSite}</TableCell>
+                <TableCell align='left'>
+                  <AdSiteField adSite={adSite} id={id}
+                    handleAdSiteChange={handleSubRowChange(rest.index, 'adSite')}
+                  />
+                </TableCell>
                 <TableCell align='left'>{adDate.toLocaleDateString()}</TableCell>
                 <TableCell align='left'>{adOwner}</TableCell>
                 <TableCell align='left'>
                   <EditEmail email={email} id={id}
-                    handleEmailChange={handleEmailChange(rest.index)}
+                    handleEmailChange={handleSubRowChange(rest.index, 'email')}
                   />
                 </TableCell>
                 <TableCell align='left'>{user}</TableCell>
@@ -70,7 +75,7 @@ const ListingTableRow = ({row, handleEmailChange, ...rest}: ListingRowProps) => 
 }
 
 type ListingRowProps = {
-  handleEmailChange: (index: number) => (email: string) => void
+  handleSubRowChange: (index: number, column: string) => (data: string) => void
 } & GridRowProps
 
 export default ListingTableRow
