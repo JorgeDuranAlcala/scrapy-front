@@ -38,6 +38,7 @@ const ListingTable = ({columnDefinition, rows =[]}: Props) => {
     commentsHandler.open()
   }, [])
 
+  // Use it to update state for columns inside the subrow
   const handleSubRowChange= useCallback((index: number, column: string) => (data: string) => {
     const newRows = rows.slice()
     newRows[index][column] = data
