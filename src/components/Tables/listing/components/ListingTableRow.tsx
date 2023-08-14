@@ -14,6 +14,7 @@ import TableRow from '@mui/material/TableRow'
 import { GridRowProps, GridRow } from '@mui/x-data-grid'
 
 import EditEmail from './EmailField'
+import AdSiteField from './AdSiteField'
 
 const ListingTableRow = ({row, handleSubRowChange, ...rest}: ListingRowProps) => {
   const [ opened, setOpen ] = useState(false)
@@ -51,7 +52,11 @@ const ListingTableRow = ({row, handleSubRowChange, ...rest}: ListingRowProps) =>
               <TableRow>
                 <TableCell align='left'>{bathrooms}</TableCell>
                 <TableCell align='left'>{rooms}</TableCell>
-                <TableCell align='left'>{adSite}</TableCell>
+                <TableCell align='left'>
+                  <AdSiteField adSite={adSite} id={id}
+                    handleAdSiteChange={handleSubRowChange(rest.index, 'adSite')}
+                  />
+                </TableCell>
                 <TableCell align='left'>{adDate.toLocaleDateString()}</TableCell>
                 <TableCell align='left'>{adOwner}</TableCell>
                 <TableCell align='left'>
