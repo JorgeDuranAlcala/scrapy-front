@@ -1,13 +1,11 @@
 // ** React Imports
-import { useState, ReactNode, MouseEvent } from 'react'
+import { useState, ReactNode } from 'react'
 
 // ** Next Imports
 import Link from 'next/link'
 
 // ** MUI Components
-import Alert from '@mui/material/Alert'
 import Button from '@mui/material/Button'
-import Divider from '@mui/material/Divider'
 import Checkbox from '@mui/material/Checkbox'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
@@ -33,7 +31,6 @@ import { useTranslation } from "react-i18next"
 
 // ** Hooks
 import { useAuth } from 'src/hooks'
-import useBgColor from 'src/@core/hooks/useBgColor'
 import { useSettings } from 'src/@core/hooks/useSettings'
 
 // ** Configs
@@ -91,8 +88,8 @@ const schema = yup.object().shape({
 })
 
 const defaultValues = {
-  password: '123456789',
-  email: 'admin@gmail.com'
+  password: '123456',
+  email: 'test@gmail.com'
 }
 
 interface FormData {
@@ -108,7 +105,6 @@ const LoginPage = () => {
   // ** Hooks
   const auth = useAuth()
   const theme = useTheme()
-  const bgColors = useBgColor()
   const { settings } = useSettings()
   const hidden = useMediaQuery(theme.breakpoints.down('md'))
 
