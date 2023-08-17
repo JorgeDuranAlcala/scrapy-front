@@ -17,5 +17,4 @@ export type AuthValuesType = {
   setLoading: (value: boolean) => void
   login: (params: LoginParams, errorCallback?: ErrCallbackType) => void
   logout: (redirectToLogin?: boolean) => void
-  register: (params: RegisterParams, errorCallback?: ErrCallbackType) => void
 }

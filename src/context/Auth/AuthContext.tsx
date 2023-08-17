@@ -8,9 +8,7 @@ const defaultProvider: AuthValuesType = {
   loading: true,
   setLoading: () => Boolean,
   login: () => Promise.resolve(),
-  adminLogin: () => Promise.resolve(),
   logout: () => Promise.resolve(),
-  register: () => Promise.resolve()
 }
 
 const AuthContext = createContext(defaultProvider)
