@@ -1,17 +1,18 @@
 import { restRequest } from '../rest-requests'
-import { type User } from 'src/types'
 
-interface Login extends User {
-  accessToken: string
+interface LoginResponse {
+  fullname: string
+  is_admin: boolean
 }
-async function login(email: string, password: string): Promise<Login> {
-
-  return await restRequest('POST', '/tenant/auth/login', {
+async function login(email: string, password: string): Promise<LoginResponse> {
+  const response = await restRequest('POST', '/users/login', {
     body: {
       email,
       password,
     }
   })
+
+  return response
 }
 
 export default login

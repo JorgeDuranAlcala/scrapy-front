@@ -100,7 +100,7 @@ export const SpecialFilters = memo(() => {
       <Stack direction='row' justifyContent='space-between' alignItems='center'>
         <ControlledTextField name='search' label='Buscar' size='small' sx={{ maxWidth: "500px"}}/>
         <Stack direction='row' gap={5} alignItems='center'>
-          {user?.admin && !asPath.includes('history') && (
+          {user?.is_admin && !asPath.includes('history') && (
             <Link href={`${asPath}history`} passHref>
               <Button color='secondary' variant='outlined'>
                 Historial

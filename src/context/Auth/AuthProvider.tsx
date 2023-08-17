@@ -5,7 +5,6 @@ import { authConfig } from 'src/configs'
 import {
   ErrCallbackType,
   LoginParams,
-  //RegisterParams,
   User,
 } from 'src/types'
 import AuthContext from './AuthContext'
@@ -14,10 +13,7 @@ import { useQueryClient } from '@tanstack/react-query'
 // ** Auth service
 import {
   getUserData,
-  getSuperAdminData,
   login,
-  register,
-  superAdminLogin
 } from 'src/services/auth'
 
 // ** Storage Service
@@ -39,17 +35,16 @@ const AuthProvider = ({ children }: Props) => {
 
   // Page load initial actions
   ///////////////////////////////
-  ///////////////////////////////
   useEffect(() => {
     const initAuth = async () => {
       try{
-          const user = get(storedUser)
+          const savedUser = get(storedUser)
 
-          if(!user) throw "Not logged in!"
+          if(!savedUser) throw "Not logged in!"
 
           // const response = await getUserData()
 
-          const userData: User = JSON.parse(user)
+          const userData: User = JSON.parse(savedUser)
           setUser(userData)
 
       }catch(e){
@@ -60,29 +55,23 @@ const AuthProvider = ({ children }: Props) => {
     }
 
     initAuth()
-
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   ///////////////////////////////
   const handleLogin = async (params: LoginParams, errorCallback?: ErrCallbackType) => {
     try{
-      // const { accessToken, ...user } = await login(params.email, params.password)
-      const accessToken = 'testest'
-      const user ={
-        email: "admin@gmail.com",
-        admin: true
-      }
-      const returnUrl = router.query.returnUrl
+      const {email, password, rememberMe} = params
+      const response = await login(email, password)
 
-      save(storageTokenKeyName, accessToken)
+      const returnUrl = router.query.returnUrl
 
       // Add when get getUserData entrypoint is available
       // if(params.rememberMe){
-      save(storedUser, user)
+      save(storedUser, response)
       // }
 
-      setUser(user)
+      setUser(response)
 
       const redirectURL = returnUrl && returnUrl !== '/' ? returnUrl : '/listings/fotocasa'
 
@@ -93,25 +82,6 @@ const AuthProvider = ({ children }: Props) => {
       errorCallback && errorCallback()
     }
   }
-  ///////////////////////////////
-  // const handleSuperAdminLogin = async (params: LoginParams, errorCallback?: ErrCallbackType) => {
-  //   const { accessToken, ...accountData } = await superAdminLogin(params.email, params.password)
-  //   const returnUrl = router.query.returnUrl
-
-  //   const account = { user: accountData, tenants: [] }
-
-  //   save(storageTokenKeyName, accessToken)
-  //   save(isSuperAdmin, true)
-
-  //   save(storedAccount, account)
-
-  //   setAccount(account)
-  //   setSuperAdmin(true)
-
-  //   const redirectURL = returnUrl && returnUrl !== '/' ? returnUrl : '/'
-
-  //   router.replace(redirectURL as string)
-  // }
 
   ///////////////////////////////
   const handleLogout = (redirectToLogin = true) => {
@@ -123,54 +93,12 @@ const AuthProvider = ({ children }: Props) => {
     if (redirectToLogin) router.push('/login')
   }
 
-  ///////////////////////////////
-  const handleRegister = async (
-    params: {
-      email: string
-      username: string
-      password: string
-    },
-    errorCallback?: ErrCallbackType
-  ) => {
-    try {
-      const response = await register(params.username)
-
-      // if (!response) {
-      //   if (errorCallback) errorCallback(res.data.error)
-      // } else {
-      //   handleLogin({
-      //     email: params.email,
-      //     password: params.password
-      //   })
-      // }
-    } catch (error) {
-      console.log(error)
-      // errorCallback && errorCallback(error)
-    }
-
-    // axios
-    //   .post(authConfig.registerEndpoint, params)
-    //   .then(res => {
-    //     if (res.data.error) {
-    //       if (errorCallback) errorCallback(res.data.error)
-    //     } else {
-    //       handleLogin({
-    //         email: params.email,
-    //         password: params.password
-    //       })
-    //     }
-    //   })
-    //   .catch((err: { [key: string]: string }) => (errorCallback ? errorCallback(err) : null))
-  }
-
   const values = {
     user,
     loading,
     setLoading,
     login: handleLogin,
-    // superAdminLogin: handleSuperAdminLogin,
     logout: handleLogout,
-    register: handleRegister
   }
 
   //@ts-ignore
