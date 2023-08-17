@@ -100,6 +100,9 @@ const UserDropdown = (props: Props) => {
     handleDropdownClose()
   }
 
+  const nameSeparated = user?.fullname.split(" ")
+  const [name, lastName] = nameSeparated || []
+
   return (
     <Fragment>
       <Badge
@@ -113,11 +116,12 @@ const UserDropdown = (props: Props) => {
         }}
       >
         <Avatar
-          alt='John Doe'
+          alt='user-avatar'
           onClick={handleDropdownOpen}
           sx={{ width: 40, height: 40 }}
-          src='/images/avatars/1.png'
-        />
+        >
+         {`${name[0].toUpperCase()}${lastName ? lastName[0].toUpperCase() : ''}`}
+        </Avatar>
       </Badge>
       <Menu
         anchorEl={anchorEl}
@@ -137,16 +141,18 @@ const UserDropdown = (props: Props) => {
                 horizontal: 'right'
               }}
             >
-              <Avatar alt='John Doe' src='/images/avatars/1.png' sx={{ width: '2.5rem', height: '2.5rem' }} />
+            <Avatar alt='user-avatar' sx={{ width: '2.5rem', height: '2.5rem' }}>
+              {`${name[0].toUpperCase()}${lastName ? lastName[0].toUpperCase() : ''}`}
+            </Avatar  >
             </Badge>
             <Box sx={{ display: 'flex', ml: 2.5, alignItems: 'flex-start', flexDirection: 'column' }}>
-              <Typography sx={{ fontWeight: 500 }}>John Doe</Typography>
-              {user?.admin && <Typography variant='body2'>Admin</Typography>}
+              <Typography sx={{ fontWeight: 500 }}>{`${name} ${lastName || ''}`}</Typography>
+              {user?.is_admin && <Typography variant='body2'>Admin</Typography>}
             </Box>
           </Box>
         </Box>
         <Divider sx={{ my: theme => `${theme.spacing(2)} !important` }} />
-        {user?.admin && (
+        {user?.is_admin && (
           <Box>
             <MenuItemStyled sx={{ p: 0 }} onClick={() => handleDropdownClose()}>
               <Box sx={styles} component={Link} href='/users/'>
