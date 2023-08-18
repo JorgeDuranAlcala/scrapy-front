@@ -1,15 +1,19 @@
 import yup from 'src/@core/utils/customized-yup'
 
 const userSchema = yup.object({
-  nameAndLastname: yup.string().min(1).required(),
-  DNI: yup.string().optional(),
-  job: yup.string().optional(),
+  id: yup.number().optional(),
+  fullname: yup.string().default('').min(1).required(),
+  dni: yup.string().default('').optional(),
+  job: yup.string().default('').optional(),
   salary: yup.number().positive().optional(),
-  paymentMethod: yup.string(),
-  phone: yup.string().phoneOrEmpty(),
-  email: yup.string().email("form-error.invalid-email").min(1).required(),
-  password: yup.string().min(8,'La contraseña debe tener un minimo de 8 caracteres').required(),
-  comments: yup.string()
+  payment_method: yup.string().default(''),
+  phone: yup.string().default('').phoneOrEmpty(),
+  email: yup.string().default('').email("form-error.invalid-email").min(1).required(),
+  password: yup.string().when('id', {
+    is: (id: number) => typeof id === 'number',
+    then: (schema) => schema.min(8,'La contraseña debe tener un minimo de 8 caracteres')
+  }),
+  comments: yup.string().default('')
 })
 
 export default userSchema

@@ -9,27 +9,15 @@ import { userSchema } from 'src/schemas'
 
 export type UserFormData = InferType<typeof userSchema> & { status?: string }
 
-export const defaultUserForm: UserFormData = {
-  nameAndLastname: '',
-  DNI: '',
-  job: '',
-  salary: undefined,
-  paymentMethod: '',
-  phone: '',
-  email: '',
-  password: '',
-  comments: ''
-}
-
 export const UserForm = () => {
 
   return (
     <Stack sx={{ minWidth: 400, padding: 5 }} spacing={6}>
-      <ControlledTextField name="nameAndLastname" label="name-and-lastName" required />
-      <ControlledTextField name="DNI" label="DNI"/>
+      <ControlledTextField name="fullname" label="name-and-lastName" required />
+      <ControlledTextField name="dni" label="DNI" required/>
       <ControlledTextField name="job" label="Puesto de Trabajo"/>
       <ControlledTextField name="salary" label="Sueldo"/>
-      <ControlledTextField name="paymentMethod" label="Forma de pago"/>
+      <ControlledTextField name="payment_method" label="Forma de pago"/>
       <ControlledTextField name='phone' label='phone_one' />
       <ControlledTextField name='email' label='email_access' required />
       <ControlledTextField name='password' label='password_access' required />
