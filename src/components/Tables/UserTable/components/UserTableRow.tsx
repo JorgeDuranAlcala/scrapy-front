@@ -9,7 +9,7 @@ import { useTranslation } from 'react-i18next'
 interface TUserTableRow {
   row: UserFormData
   openEditForm: (data: UserFormData) => void
-  openDeleteModal: (id: string) => void
+  openDeleteModal: (id: number) => void
   openEmailDrawer: (email: string) => void
 }
 
@@ -18,7 +18,7 @@ function UserTableRow({ row, openEditForm, openDeleteModal, openEmailDrawer }: T
 
   return (
     <TableRow key={row.email}>
-      <TableCell align='left'>{row.nameAndLastname}</TableCell>
+      <TableCell align='left'>{row.fullname}</TableCell>
       <TableCell align='left'>{row.phone}</TableCell>
       <TableCell sx={{width: "25%"}} align='left'>{row.email}</TableCell>
       <TableCell align='left'>{row.status}</TableCell>
@@ -38,7 +38,7 @@ function UserTableRow({ row, openEditForm, openDeleteModal, openEmailDrawer }: T
             icon={'tabler:trash'}
             buttonProps={{
               onClick: () => {
-                openDeleteModal('id')
+                openDeleteModal(row.id as number)
               }
             }}
           />

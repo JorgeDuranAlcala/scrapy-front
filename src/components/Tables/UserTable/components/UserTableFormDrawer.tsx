@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next'
 // import { useDispatch, useSelector } from 'react-redux'
 
 //* Icon imports
-import { useFormContext } from 'react-hook-form'
+import { FieldValues, useFormContext } from 'react-hook-form'
 
 import Icon from 'src/@core/components/icon'
 
@@ -17,18 +17,18 @@ import { UserForm } from 'src/components/Forms'
 type UserFormDrawer = {
   opened: boolean
   close: () => void
+  submit: (data: FieldValues) => void
+  loading?: boolean
 }
 
-const UserFormDrawer = ({opened, close}: UserFormDrawer) => {
+const UserFormDrawer = ({opened, close, submit, loading}: UserFormDrawer) => {
   const { t } = useTranslation()
   const userForm = useFormContext()
 
   return (
     <Drawer anchor='right' open={opened} onClose={close}>
       <form
-        onSubmit={userForm.handleSubmit(data => {
-          console.log(data)
-        })}
+        onSubmit={userForm.handleSubmit(submit)}
       >
         <Stack pt={5} px={5} direction='row' justifyContent='space-between' alignItems='center'>
           <Box typography={'h6'}>{t('user')}</Box>
@@ -38,7 +38,7 @@ const UserFormDrawer = ({opened, close}: UserFormDrawer) => {
         </Stack>
         <UserForm />
         <Stack direction='row' justifyContent='space-between' px={5} pb={10}>
-          <Button type='submit' variant='contained'>
+          <Button type='submit' variant='contained' disabled={loading}>
             {t('save')}
           </Button>
           <Button color='secondary' variant='outlined' onClick={close}>
