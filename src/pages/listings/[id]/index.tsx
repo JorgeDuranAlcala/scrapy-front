@@ -10,7 +10,7 @@ import ListingLayout from 'src/layouts/ListingLayout'
 
 import { ListingTable, listingColumns } from 'src/components/Tables'
 
-import { SpecialFilters, defaultSpecialFilters, type SpecialFiltersData } from 'src/components/Shared'
+import { SpecialFilters, type SpecialFiltersData } from 'src/components/Shared'
 
 import { SpecialFilterSchema } from 'src/schemas'
 
@@ -228,7 +228,7 @@ const ROWS= [
 
 const Listing = () => {
   const specialFilters = useForm({
-    defaultValues: defaultSpecialFilters,
+    defaultValues: SpecialFilterSchema.getDefault(),
     mode: 'onBlur',
     resolver: yupResolver(SpecialFilterSchema)
   })
