@@ -20,7 +20,7 @@ import {
 import { get, save, remove } from 'src/services'
 
 const {
-  storageTokenKeyName,
+  jwtRefresh,
   storedUser
 } = authConfig
 
@@ -48,7 +48,6 @@ const AuthProvider = ({ children }: Props) => {
           setUser(userData)
 
       }catch(e){
-        console.log(e)
         handleLogout()
       }
       setLoading(false)
@@ -65,10 +64,13 @@ const AuthProvider = ({ children }: Props) => {
       const response = await login(email, password)
 
       const returnUrl = router.query.returnUrl
+      const { jwt, refresh_token, ...user} = response
 
       // Add when get getUserData entrypoint is available
       // if(params.rememberMe){
-      save(storedUser, response)
+      save(storedUser, user)
+      save(authConfig.jwt, jwt)
+      save(jwtRefresh, refresh_token)
       // }
 
       setUser(response)
@@ -87,7 +89,8 @@ const AuthProvider = ({ children }: Props) => {
   const handleLogout = (redirectToLogin = true) => {
     setUser(null)
     remove(storedUser)
-    remove(storageTokenKeyName)
+    remove(authConfig.jwt)
+    remove(jwtRefresh)
     queryClient.removeQueries()
 
     if (redirectToLogin) router.push('/login')
@@ -101,7 +104,6 @@ const AuthProvider = ({ children }: Props) => {
     logout: handleLogout,
   }
 
-  //@ts-ignore
   return <AuthContext.Provider value={values}>{children}</AuthContext.Provider>
 }
 
