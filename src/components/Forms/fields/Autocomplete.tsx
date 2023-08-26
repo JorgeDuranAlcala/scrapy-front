@@ -42,7 +42,7 @@ const Autocomplete = ({ name, label, loading, error, options, isOptionEqualToVal
                 label={label}
                 inputProps={{
                   ...params.inputProps,
-                  autoComplete: 'new-password' // disable autocomplete and autofill
+                  autoComplete: 'off' // disable autocomplete and autofill
                 }}
                 error={Boolean(errors[name])}
                 helperText={errors[name] && 'Selecciona una poblacion'}
