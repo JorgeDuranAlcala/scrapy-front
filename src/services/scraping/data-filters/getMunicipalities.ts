@@ -1,4 +1,4 @@
-import { restRequest } from "src/services/rest-requests";
+import { restRequestAuth } from "src/services/rest-requests";
 
 type Municipality = {
   province_id: number
@@ -8,7 +8,7 @@ type Municipality = {
 
 const getMunicipalities = async (id?: number): Promise<Municipality[]> => {
   if (!id) return []
-  const response = await restRequest('GET', '/municipalities')
+  const response = await restRequestAuth('GET', `/municipalities/${id}`)
   return response.data
 }
 
