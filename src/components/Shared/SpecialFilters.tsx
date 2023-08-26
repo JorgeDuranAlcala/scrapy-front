@@ -21,7 +21,7 @@ import { STATUSES } from 'src/types'
 
 import { SpecialFilterSchema } from 'src/schemas'
 
-import { getProvinces, getMunicipalities } from 'src/services/data-filters'
+import { getProvinces, getMunicipalities } from 'src/services/scraping'
 
 export type SpecialFiltersData = InferType<typeof SpecialFilterSchema>
 
@@ -49,8 +49,7 @@ export const SpecialFilters = memo(() => {
     queryKey: ['municipalities', province],
     queryFn: async () => {
       if(!province) return []
-      const municipalities = await getMunicipalities(province.id)
-      return municipalities.filter(({province_id}) => province_id === province.id )
+      return await getMunicipalities(province.id)
     },
     refetchOnMount: false,
     refetchOnWindowFocus: false,
@@ -58,7 +57,7 @@ export const SpecialFilters = memo(() => {
   })
 
   useEffect(() => {
-    if(!province) resetField('municipality')
+    resetField('municipality')
   }, [province])
 
   return (
