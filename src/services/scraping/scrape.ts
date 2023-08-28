@@ -1,4 +1,4 @@
-import { restRequest } from "src/services/rest-requests";
+import { restRequestAuth } from "src/services/rest-requests";
 import { SpecialFiltersData } from "src/components/Shared";
 
 type data = {
@@ -8,14 +8,14 @@ type data = {
 
 const scrape = async ({filters, page}: data) => {
   const { province, municipality, ...extra } = filters
-  const response = await restRequest('GET', '/scrap', {
-    params: {...{
+  const response = await restRequestAuth('GET', '/scrap', {
+    params: {
       municipality: municipality?.name,
-      ...extra
-    },
+      ...extra,
       page}
   })
 
+  return response
 }
 
 export default scrape
