@@ -14,6 +14,13 @@ const useNavigationRouting = () => {
       action: 'see',
       subject: 'user-pages'
     },
+    {
+      title: 'Yaencontre',
+      path: '/listings/yaencontre',
+      icon: 'tabler:smart-home',
+      action: 'see',
+      subject: 'user-pages'
+    },
   ]
 }
 
