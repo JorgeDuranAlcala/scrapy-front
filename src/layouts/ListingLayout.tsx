@@ -3,7 +3,7 @@ import { useRouter } from 'next/router'
 // ** Spinner Import
 import Spinner from 'src/@core/components/spinner'
 
-const allowedRoutes = ['idealista', 'fotocasa']
+const allowedRoutes = ['idealista', 'fotocasa', 'yaencontre']
 
 type ListingLayout = {
   children: JSX.Element
