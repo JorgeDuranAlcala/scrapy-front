@@ -7,10 +7,6 @@ import { Router } from 'next/router'
 import type { NextPage } from 'next'
 import type { AppProps } from 'next/app'
 
-// ** Redux Imports
-import { Provider } from 'react-redux'
-import { store } from 'src/redux'
-
 // ** Loader Import
 import NProgress from 'nprogress'
 
@@ -119,9 +115,7 @@ const Guard = ({ children, authGuard, guestGuard }: GuardProps) => {
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 const AllProviders = ({ children }: PropsWithChildren) => {
   return (
-    <Provider store={store}>
       <AuthProvider>{children}</AuthProvider>
-    </Provider>
   )
 }
 
