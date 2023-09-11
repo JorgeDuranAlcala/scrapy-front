@@ -12,13 +12,25 @@ import TableHead from '@mui/material/TableHead'
 import TableRow from '@mui/material/TableRow'
 
 import { GridRowProps, GridRow } from '@mui/x-data-grid'
+import yup from 'src/@core/utils/customized-yup'
 
-import EditEmail from './EmailField'
-import SubRowField from './SubRowField'
+import SubRowField from '../../SubRowField'
+
+const emailSchema = yup.string().email().required()
+const numberSchema = yup.number().min(0)
+const validation = (schema: yup.AnySchema) => (value: string | number) => {
+  try{
+    schema.validateSync(value)
+    return true
+  }catch{
+    return false
+  }
+}
+const validEmail = validation(emailSchema)
+const isNumber = validation(numberSchema)
 
 const ListingTableRow = ({row, handleSubRowChange, ...rest}: ListingRowProps) => {
   const [ opened, setOpen ] = useState(false)
-
   const {id, bathrooms, rooms, adSite, adDate, adOwner, user, email} = row as any
 
   return (
@@ -50,19 +62,35 @@ const ListingTableRow = ({row, handleSubRowChange, ...rest}: ListingRowProps) =>
             </TableHead>
             <TableBody>
               <TableRow>
-                <TableCell align='left'>{bathrooms}</TableCell>
-                <TableCell align='left'>{rooms}</TableCell>
                 <TableCell align='left'>
-                  <SubRowField value={adSite} id={id}
+                  <SubRowField value={bathrooms} id={id} name='Baños' field='bathrooms'
+                    handleChange={handleSubRowChange(rest.index, 'bathrooms')}
+                    validate={{ fn: isNumber, msg: 'Valor debe ser un número'}}
+                  />
+                </TableCell>
+                <TableCell align='left'>
+                <SubRowField value={rooms} id={id} name='Habitaciones' field='rooms'
+                    handleChange={handleSubRowChange(rest.index, 'rooms')}
+                    validate={{ fn: isNumber, msg: 'Valor debe ser un número'}}
+                  />
+                </TableCell>
+                <TableCell align='left'>
+                  <SubRowField value={adSite} id={id} name='Publicado En'
                     handleChange={handleSubRowChange(rest.index, 'adSite')}
                     field='adSite'
                   />
                 </TableCell>
                 <TableCell align='left'>{adDate.toLocaleDateString()}</TableCell>
-                <TableCell align='left'>{adOwner}</TableCell>
                 <TableCell align='left'>
-                  <EditEmail email={email} id={id}
-                    handleEmailChange={handleSubRowChange(rest.index, 'email')}
+                  <SubRowField value={adOwner} id={id} name='Nombre Propietario'
+                      handleChange={handleSubRowChange(rest.index, 'adOwner')}
+                      field='adOwner'
+                    />
+                </TableCell>
+                <TableCell align='left'>
+                  <SubRowField value={email} id={id} name='Email' field='email'
+                    handleChange={handleSubRowChange(rest.index, 'email')}
+                    validate={{ fn: validEmail, msg: 'Email no válido'}}
                   />
                 </TableCell>
                 <TableCell align='left'>{user}</TableCell>
