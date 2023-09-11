@@ -11,39 +11,47 @@ import toast from 'react-hot-toast'
 import { useDebouncedState } from 'src/hooks'
 
 type Props = {
-  handleChange: (value: string) => void
+  handleChange: (email: string) => void
   value: string
   id: string
   field: string
+  name: string
+  validate?: {
+    fn: (value: string | number) => boolean
+    msg: string
+  }
 }
 
-// Used inside a DataGrid component that has a subrow
-// Example in /src/components/listing/components/ListingTableRow
-
-const SubRowField = ({handleChange, value, id, field}: Props) => {
-  const [ editAdSite, debouncedAdSite, setAdSite ] = useDebouncedState(value)
+const SubRowField = ({handleChange, value, id, name, field, validate}: Props) => {
+  const [editValue, debouncedValue, setValue] = useDebouncedState(value)
   const api = useGridApiContext()
-  const savedAdSite = api.current.getCellValue(id, field)
+  const savedValue = api.current.getCellValue(id, field)
+  let isValid = true
+
+  if(validate)
+    isValid = validate.fn(editValue)
 
   useEffect(()=>{
-    if(editAdSite !== savedAdSite){
-      handleChange(editAdSite)
-      toast.success('Actualizado!')
+    if(editValue !== savedValue && isValid){
+      handleChange(editValue)
+      toast.success(`${name} actualizado!`)
     }
-  },[debouncedAdSite])
+  },[debouncedValue])
 
   const onChange = (event: ChangeEvent<HTMLInputElement>) => {
     const newValue = event.target.value
-    setAdSite(newValue)
+    setValue(newValue)
   }
 
   return (
     <TextField
-      value={editAdSite || ''}
+      value={editValue || ''}
       onChange={onChange}
       size='small'
+      error={!isValid}
+      helperText={!isValid && validate && validate.msg}
       InputProps = {{
-        endAdornment: ( debouncedAdSite !== editAdSite &&
+        endAdornment: ( savedValue !== editValue && isValid &&
           <InputAdornment position='end'>
             <Loader size={20}/>
           </InputAdornment>)
