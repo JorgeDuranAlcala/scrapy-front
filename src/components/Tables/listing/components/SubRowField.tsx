@@ -11,19 +11,20 @@ import toast from 'react-hot-toast'
 import { useDebouncedState } from 'src/hooks'
 
 type Props = {
-  handleAdSiteChange: (adSite: string) => void
-  adSite: string
+  handleChange: (value: string) => void
+  value: string
   id: string
+  field: string
 }
 
-const AdSiteField = ({handleAdSiteChange, adSite, id}: Props) => {
-  const [ editAdSite, debouncedAdSite, setAdSite ] = useDebouncedState(adSite)
+const SubRowField = ({handleChange, value, id, field}: Props) => {
+  const [ editAdSite, debouncedAdSite, setAdSite ] = useDebouncedState(value)
   const api = useGridApiContext()
-  const savedAdSite = api.current.getCellValue(id, 'adSite')
+  const savedAdSite = api.current.getCellValue(id, field)
 
   useEffect(()=>{
     if(editAdSite !== savedAdSite){
-      handleAdSiteChange(editAdSite)
+      handleChange(editAdSite)
       toast.success('Actualizado!')
     }
   },[debouncedAdSite])
@@ -39,7 +40,7 @@ const AdSiteField = ({handleAdSiteChange, adSite, id}: Props) => {
       onChange={onChange}
       size='small'
       InputProps = {{
-        endAdornment: ( savedAdSite !== editAdSite &&
+        endAdornment: ( debouncedAdSite !== editAdSite &&
           <InputAdornment position='end'>
             <Loader size={20}/>
           </InputAdornment>)
@@ -48,4 +49,4 @@ const AdSiteField = ({handleAdSiteChange, adSite, id}: Props) => {
   )
 }
 
-export default AdSiteField
+export default SubRowField
