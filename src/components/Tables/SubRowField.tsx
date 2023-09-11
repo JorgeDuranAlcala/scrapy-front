@@ -17,6 +17,9 @@ type Props = {
   field: string
 }
 
+// Used inside a DataGrid component that has a subrow
+// Example in /src/components/listing/components/ListingTableRow
+
 const SubRowField = ({handleChange, value, id, field}: Props) => {
   const [ editAdSite, debouncedAdSite, setAdSite ] = useDebouncedState(value)
   const api = useGridApiContext()
