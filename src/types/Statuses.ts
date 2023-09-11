@@ -1,1 +1,1 @@
-export const STATUSES = ['Nuevo', 'VIP', 'Contacto', 'Alta', 'Baja', 'Spam']
+export const STATUSES = ['Nuevo', 'Contacto', 'Alta', 'Baja', 'Spam']

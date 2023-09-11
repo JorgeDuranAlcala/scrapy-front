@@ -3,7 +3,7 @@ import yup from 'src/@core/utils/customized-yup'
 const location = yup.object().shape({
   id: yup.number(),
   name: yup.string()
-}).nullable()
+}).nullable().default(null)
 
 const specialFilterSchema = yup.object({
   city: location,
@@ -11,7 +11,8 @@ const specialFilterSchema = yup.object({
   status: yup.string(),
   operation: yup.string(),
   category: yup.string(),
-  search: yup.string()
+  search: yup.string(),
+  vip: yup.boolean().default(false)
 })
 
 export default specialFilterSchema

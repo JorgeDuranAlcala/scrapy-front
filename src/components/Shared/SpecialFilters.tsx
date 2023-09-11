@@ -1,4 +1,3 @@
-import { memo } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 
@@ -10,6 +9,9 @@ import TextField from '@mui/material/TextField'
 
 import FormControl from '@mui/material/FormControl'
 import Autocomplete from '@mui/material/Autocomplete'
+import IconButton from '@mui/material/IconButton'
+
+import Icon from 'src/@core/components/icon'
 
 import { useFormContext, Controller } from 'react-hook-form'
 import { InferType } from 'yup'
@@ -25,25 +27,22 @@ import { SpecialFilterSchema } from 'src/schemas'
 
 export type SpecialFiltersData = InferType<typeof SpecialFilterSchema>
 
-export const defaultSpecialFilters: SpecialFiltersData = {
-  city: null,
-  zone: '',
-  status: '',
-  operation: '',
-  category: '',
-  search: ''
-}
+export const defaultSpecialFilters = SpecialFilterSchema.getDefault()
 
 const OPERATION = ['Venta', 'Alquiler', 'Alquiler vacacional']
 const CATEGORIES = ['Pisos', 'Casas', 'Chalets', 'Terrenos', 'Locales']
 
-export const SpecialFilters = memo(() => {
+export const SpecialFilters = () => {
   const { user } = useAuth()
   const { asPath } = useRouter()
   const {
     control,
+    setValue,
+    watch,
     formState: { errors }
   } = useFormContext()
+
+  const vip = watch('vip')
 
   return (
     <Stack gap={5}>
@@ -98,7 +97,12 @@ export const SpecialFilters = memo(() => {
       </Grid>
       <Divider />
       <Stack direction='row' justifyContent='space-between' alignItems='center'>
-        <ControlledTextField name='search' label='Buscar' size='small' sx={{ maxWidth: "500px"}}/>
+        <Stack direction='row' gap={3} alignItems={'center'}>
+          <ControlledTextField name='search' label='Buscar' size='small' sx={{ maxWidth: "500px"}}/>
+          <IconButton color='warning' onClick={() => setValue('vip', !vip)}>
+            <Icon icon={`tabler:star${vip ? '-filled': ''}`}/>
+          </IconButton>
+        </Stack>
         <Stack direction='row' gap={5} alignItems='center'>
           {user?.is_admin && !asPath.includes('history') && (
             <Link href={`${asPath}history`} passHref>
@@ -112,4 +116,4 @@ export const SpecialFilters = memo(() => {
       </Stack>
     </Stack>
   )
-})
+}
