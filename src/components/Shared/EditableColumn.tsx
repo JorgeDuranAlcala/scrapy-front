@@ -4,9 +4,9 @@ import OutlinedInput from "@mui/material/OutlinedInput"
 import CircularProgress from '@mui/material/CircularProgress';
 import InputAdornment from '@mui/material/InputAdornment';
 
-export const DescriptionColumn = ({value, id, api, field, row}: GridRenderEditCellParams) => {
+// Custom edit component for DataGrid
+export const EditableColumn = ({value, id, api, field}: GridRenderEditCellParams) => {
   const [currentValue, setCurrentValue] = useState(value)
-  const fileID = row.id
 
   const handleValueChange = (event: ChangeEvent<HTMLInputElement>) => {
     const newValue = event.target.value
