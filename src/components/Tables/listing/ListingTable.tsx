@@ -56,15 +56,11 @@ const ListingTable = ({columnDefinition, rows =[]}: Props) => {
           pageSize: 5
         }
       },
-      columns: {
-        columnVisibilityModel: {
-          email: false
-        }
-      }
     },
     sx:{
       '& .MuiDataGrid-row:hover': { backgroundColor: 'transparent' },
-      '& .MuiDataGrid-columnHeader:first-of-type': { marginLeft: '40px !important' }
+      '& .MuiDataGrid-columnHeader:first-of-type': { marginLeft: '40px !important' },
+      '& .MuiDataGrid-cell--editable': { cursor:'pointer'}
     },
     slots: {
       row: (props: GridRowProps) => <ListingRow handleSubRowChange={handleSubRowChange} {...props}/>
@@ -72,7 +68,7 @@ const ListingTable = ({columnDefinition, rows =[]}: Props) => {
   }), [handleSubRowChange])
 
   return (
-    <Box mt={5} sx={{ height: 375, width: '100%' }}>
+    <Box mt={5} sx={{ minHeight: 350, width: '100%' }}>
       <CommentsModal opened={commentsModal} close={commentsHandler.close}
         comments={comments} id={id}
       />
