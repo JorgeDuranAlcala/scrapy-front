@@ -1,22 +1,27 @@
-# Seleccionar la imagen base
-FROM node:18-alpine
-
-# Establecer el directorio de trabajo
+# Build stage
+FROM node:18-alpine as builder
 WORKDIR /node/scraper-frontend
 
-# Copiar los archivos del proyecto al contenedor
+COPY package.json yarn.lock ./
+RUN yarn install --frozen-lockfile
 COPY . .
+RUN yarn build
 
-COPY package*.json ./
+# Run stage
+FROM node:18-alpine as runner
+WORKDIR /node/scraper-frontend
 
-# Instalar las dependencias
-RUN npm i
+COPY --from=builder /node/scraper-frontend/package.json .
+COPY --from=builder /node/scraper-frontend/yarn.lock .
+COPY --from=builder /node/scraper-frontend/next.config.js .
+COPY --from=builder /node/scraper-frontend/public ./public
+COPY --from=builder /node/scraper-frontend/.next/standalone ./
+COPY --from=builder /node/scraper-frontend/.next/static ./.next/static
 
-# Compilar la aplicación
-RUN npm run build
+ENV NEXT_TELEMETRY_DISABLED 1
 
 # Exponer el puerto 3000
 EXPOSE 3000
 
 # Iniciar la aplicación
-CMD ["npm", "start"]
+CMD ["node", "server.js"]
