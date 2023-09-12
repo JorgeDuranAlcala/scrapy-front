@@ -87,4 +87,4 @@ const ListingTable = ({columnDefinition, rows =[]}: Props) => {
   )
 }
 
-export default ListingTable
+export default memo(ListingTable)
