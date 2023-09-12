@@ -7,11 +7,11 @@ const location = yup.object().shape({
 
 const specialFilterSchema = yup.object({
   city: location,
-  zone: yup.string(),
-  status: yup.string(),
-  operation: yup.string(),
-  category: yup.string(),
-  search: yup.string(),
+  zone: yup.string().default(''),
+  status: yup.string().default(''),
+  operation: yup.string().default(''),
+  category: yup.string().default(''),
+  search: yup.string().default(''),
   vip: yup.boolean().default(false)
 })
 
