@@ -18,82 +18,121 @@ import SubRowField from '../../SubRowField'
 
 const emailSchema = yup.string().email().required()
 const numberSchema = yup.number().min(0)
+
 const validation = (schema: yup.AnySchema) => (value: string | number) => {
-  try{
+  try {
     schema.validateSync(value)
     return true
-  }catch{
+  } catch {
     return false
   }
 }
 const validEmail = validation(emailSchema)
 const isNumber = validation(numberSchema)
 
-const ListingTableRow = ({row, handleSubRowChange, ...rest}: ListingRowProps) => {
-  const [ opened, setOpen ] = useState(false)
-  const {id, bathrooms, rooms, adSite, adDate, adOwner, user, email} = row as any
+const ListingTableRow = ({ row, handleSubRowChange, ...rest }: ListingRowProps) => {
+  const [opened, setOpen] = useState(false)
+  const { id, bathrooms, rooms, adSite, adDate, adOwner, user, email, vip } = row as any
+  console.log(rest, row)
 
   return (
     <>
-      <Stack direction={"row"} alignItems="center" justifyContent="center"
-        borderBottom={({palette})=> `${palette.divider} solid 1px`}
-        sx={({palette}) => ({"&:hover": {backgroundColor: palette.customColors.tableHeaderBg}})}
+      <Stack
+        direction={'row'}
+        alignItems='center'
+        justifyContent='center'
+        borderBottom={({ palette }) => `${palette.divider} solid 1px`}
+        sx={({ palette }) => ({ '&:hover': { backgroundColor: palette.customColors.tableHeaderBg } })}
       >
-        <Box px={"10px"}>
+        <Box px={'10px'}>
           <IconButton aria-label='expand row' size='small' onClick={() => setOpen(!opened)}>
-              <Icon icon={`tabler:${opened ? 'chevron-up' : 'chevron-down'}`} width={20}/>
+            <Icon icon={`tabler:${opened ? 'chevron-up' : 'chevron-down'}`} width={20} />
           </IconButton>
         </Box>
-        <GridRow {...{row, ...rest}}/>
+        <GridRow {...{ row, ...rest }} />
       </Stack>
       <Collapse in={opened} timeout='auto'>
-        <Box sx={{ margin: 2, width: "100%" }}>
+        <Box sx={{ margin: 2, width: '93%' }}>
           <Table size='small' aria-label='purchases'>
             <TableHead>
               <TableRow>
-                <TableCell sx={{width: "5%"}} align='left'>Baños</TableCell>
-                <TableCell sx={{width: "5%"}} align='left'>Habitaciones</TableCell>
+                <TableCell sx={{ width: '5%' }} align='left'>
+                  Baños
+                </TableCell>
+                <TableCell sx={{ width: '5%' }} align='left'>
+                  Habitaciones
+                </TableCell>
                 <TableCell align='left'>Publicado en</TableCell>
                 <TableCell align='left'>Fecha Anuncio</TableCell>
-                <TableCell sx={{width: "15%"}} align='left'>Nombre Propietario</TableCell>
-                <TableCell sx={{width: "18%"}} align='left'>Email</TableCell>
-                <TableCell sx={{width: "18%"}} align='left'>Usuario</TableCell>
+                <TableCell sx={{ width: '15%' }} align='left'>
+                  Nombre Propietario
+                </TableCell>
+                <TableCell sx={{ width: '18%' }} align='left'>
+                  Email
+                </TableCell>
+                <TableCell sx={{ width: '12%' }} align='left'>
+                  Usuario
+                </TableCell>
+                <TableCell sx={{ width: '5%' }}></TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               <TableRow>
                 <TableCell align='left'>
-                  <SubRowField value={bathrooms} id={id} name='Baños' field='bathrooms'
+                  <SubRowField
+                    value={bathrooms}
+                    id={id}
+                    name='Baños'
+                    field='bathrooms'
                     handleChange={handleSubRowChange(rest.index, 'bathrooms')}
-                    validate={{ fn: isNumber, msg: 'Valor debe ser un número'}}
+                    validate={{ fn: isNumber, msg: 'Valor debe ser un número' }}
                   />
                 </TableCell>
                 <TableCell align='left'>
-                <SubRowField value={rooms} id={id} name='Habitaciones' field='rooms'
+                  <SubRowField
+                    value={rooms}
+                    id={id}
+                    name='Habitaciones'
+                    field='rooms'
                     handleChange={handleSubRowChange(rest.index, 'rooms')}
-                    validate={{ fn: isNumber, msg: 'Valor debe ser un número'}}
+                    validate={{ fn: isNumber, msg: 'Valor debe ser un número' }}
                   />
                 </TableCell>
                 <TableCell align='left'>
-                  <SubRowField value={adSite} id={id} name='Publicado En'
+                  <SubRowField
+                    value={adSite}
+                    id={id}
+                    name='Publicado En'
                     handleChange={handleSubRowChange(rest.index, 'adSite')}
                     field='adSite'
                   />
                 </TableCell>
                 <TableCell align='left'>{adDate.toLocaleDateString()}</TableCell>
                 <TableCell align='left'>
-                  <SubRowField value={adOwner} id={id} name='Nombre Propietario'
-                      handleChange={handleSubRowChange(rest.index, 'adOwner')}
-                      field='adOwner'
-                    />
+                  <SubRowField
+                    value={adOwner}
+                    id={id}
+                    name='Nombre Propietario'
+                    handleChange={handleSubRowChange(rest.index, 'adOwner')}
+                    field='adOwner'
+                  />
                 </TableCell>
                 <TableCell align='left'>
-                  <SubRowField value={email} id={id} name='Email' field='email'
+                  <SubRowField
+                    value={email}
+                    id={id}
+                    name='Email'
+                    field='email'
                     handleChange={handleSubRowChange(rest.index, 'email')}
-                    validate={{ fn: validEmail, msg: 'Email no válido'}}
+                    validate={{ fn: validEmail, msg: 'Email no válido' }}
                   />
                 </TableCell>
                 <TableCell align='left'>{user}</TableCell>
+                <TableCell>
+                  <IconButton color='warning' onClick={() => handleSubRowChange(rest.index, 'vip')(!vip)}>
+                    <Icon icon={`tabler:star${vip ? '-filled' : ''}`} />
+                  </IconButton>
+                </TableCell>
               </TableRow>
             </TableBody>
           </Table>
@@ -104,7 +143,7 @@ const ListingTableRow = ({row, handleSubRowChange, ...rest}: ListingRowProps) =>
 }
 
 type ListingRowProps = {
-  handleSubRowChange: (index: number, column: string) => (data: string) => void
+  handleSubRowChange: (index: number, column: string) => (data: any) => void
 } & GridRowProps
 
 export default ListingTableRow

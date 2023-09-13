@@ -39,7 +39,7 @@ const ListingTable = ({columnDefinition, rows =[]}: Props) => {
   }, [])
 
   // Use it to update state for columns inside the subrow
-  const handleSubRowChange= useCallback((index: number, column: string) => (data: string) => {
+  const handleSubRowChange= useCallback((index: number, column: string) => (data: any) => {
     const newRows = rows.slice()
     newRows[index][column] = data
     setTableRows(newRows)
@@ -53,7 +53,7 @@ const ListingTable = ({columnDefinition, rows =[]}: Props) => {
     initialState: {
       pagination: {
         paginationModel: {
-          pageSize: 5
+          pageSize: 25
         }
       },
     },
@@ -68,7 +68,7 @@ const ListingTable = ({columnDefinition, rows =[]}: Props) => {
   }), [handleSubRowChange])
 
   return (
-    <Box mt={5} sx={{ minHeight: 350, width: '100%' }}>
+    <Box mt={5} sx={{ height: 400, width: '100%' }}>
       <CommentsModal opened={commentsModal} close={commentsHandler.close}
         comments={comments} id={id}
       />
@@ -78,9 +78,9 @@ const ListingTable = ({columnDefinition, rows =[]}: Props) => {
       <DataGrid
         rows={tableRows}
         columns={cols}
+
         {...dataGridProps}
         disableRowSelectionOnClick
-        pageSizeOptions={[5]}
         localeText={esES.components.MuiDataGrid.defaultProps.localeText}
       />
     </Box>
