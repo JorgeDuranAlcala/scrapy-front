@@ -21,7 +21,6 @@ function UserTableRow({ row, openEditForm, openDeleteModal, openEmailDrawer }: T
       <TableCell align='left'>{row.fullname}</TableCell>
       <TableCell align='left'>{row.phone}</TableCell>
       <TableCell sx={{width: "25%"}} align='left'>{row.email}</TableCell>
-      <TableCell align='left'>{row.status}</TableCell>
       <TableCell align='center'>
         <Stack justifyContent='center' direction='row' spacing={0.25}>
           <ActionButton
