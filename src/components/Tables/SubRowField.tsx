@@ -11,7 +11,7 @@ import toast from 'react-hot-toast'
 import { useDebouncedState } from 'src/hooks'
 
 type Props = {
-  handleChange: (email: string) => void
+  handleChange: (value: string) => void
   value: string
   id: string
   field: string
