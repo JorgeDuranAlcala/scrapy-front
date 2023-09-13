@@ -147,9 +147,6 @@ const UserTable = ({ rows, setSearch, search }: Props) => {
             <TableCell sx={lgCell} align='left'>
               {t('email')}
             </TableCell>
-            <TableCell sx={smCell} size='small' align='left'>
-              {t('status')}
-            </TableCell>
             <TableCell sx={smCell} align='center'>
               {t('options')}
             </TableCell>
