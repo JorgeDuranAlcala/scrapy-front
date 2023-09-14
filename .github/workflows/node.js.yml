@@ -19,6 +19,7 @@ jobs:
       
     - name: Build 
       run: | 
+        npm run build
         mkdir production
         cp -r ./.next/static production
         cp -r public production
