@@ -32,4 +32,23 @@ jobs:
         BRANCH: production # The branch name where you want to push the assets
         FOLDER: production # The directory where your assets are generated
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # GitHub will automatically add this - you don't need to bother getting a token
-        MESSAGE: "Build: ({sha}) {msg}" # The commit message
+        MESSAGE: "Build: ({sha}) {msg}" # The commit message  
+        
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Deploy to VPS
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        password: ${{ secrets.PASSWORD }}
+        key: ${{ secrets.PRIVATE_KEY }}
+        port: 22
+        script: |
+          cd ~/project/scraper-frontend
+          git checkout production
+          git pull
+          docker image build -t scraper-frontend .
+          docker container run -d --name frontend -p 3000:3000 scraper-frontend
+
