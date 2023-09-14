@@ -2,7 +2,7 @@ name: VPS deployment
 
 on:
   push:
-    branches: [ production ]
+    branches: [ "production" ]
 
 jobs:
   # This workflow contains a single job called "build"
