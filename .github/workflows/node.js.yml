@@ -1,4 +1,4 @@
-name: Node.js CI
+name: Build for production branch
 
 on:
   push:
@@ -21,9 +21,9 @@ jobs:
       run: | 
         npm run build
         mkdir production
-        cp -r ./.next/static production
-        cp -r public production
-        cp -r ./.next/standalone/* production 
+        cp -r ./.next/standalone/. production
+        cp -r ./.next/static production/.next
+        cp -r public production 
       
     - name: Push
       uses: s0/git-publish-subdir-action@develop
