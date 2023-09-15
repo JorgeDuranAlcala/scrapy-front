@@ -1,5 +1,0 @@
-gitops:
-  manifest_projects:
-  - id: gitlab.com/erpsistemas/erp-frontend
-    paths:
-    - glob: '/manifest/*.yaml'
