@@ -12,18 +12,19 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    
+
     - name: Install all dependencies
       run: npm ci
-      
-    - name: Build 
-      run: | 
+
+    - name: Build
+      run: |
         npm run build
         mkdir production
+        cp dockerfile production
         cp -r ./.next/standalone/. production
         cp -r ./.next/static production/.next
-        cp -r public production 
-      
+        cp -r public production
+
     - name: Push
       uses: s0/git-publish-subdir-action@develop
       env:
@@ -31,12 +32,12 @@ jobs:
         BRANCH: production # The branch name where you want to push the assets
         FOLDER: production # The directory where your assets are generated
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # GitHub will automatically add this - you don't need to bother getting a token
-        MESSAGE: "Build: ({sha}) {msg}" # The commit message  
-        
+        MESSAGE: "Build: ({sha}) {msg}" # The commit message
+
   deploy:
     needs: build
     runs-on: ubuntu-latest
-    
+
     steps:
     - name: Deploy to VPS
       uses: appleboy/ssh-action@master
