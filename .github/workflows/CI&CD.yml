@@ -51,6 +51,8 @@ jobs:
           cd ~/project/scraper-frontend
           git checkout production
           git pull
-          docker image build -t scraper-frontend .
-          docker container run -d --name frontend -p 3000:3000 scraper-frontend
+          docker image build -t $IMAGE_NAME .
+          docker container stop $CONTAINER_NAME
+          docker container rm $CONTAINER_NAME
+          docker container run -d --name $CONTAINER_NAME -p 3000:3000 $IMAGE_NAME
 
