@@ -51,8 +51,7 @@ jobs:
           cd ~/project/scraper-frontend
           git checkout production
           git pull
-          docker image build -t $IMAGE_NAME .
-          docker container stop $CONTAINER_NAME
-          docker container rm $CONTAINER_NAME
-          docker container run -d --name $CONTAINER_NAME -p 3000:3000 $IMAGE_NAME
-
+          docker image build -t ${{ vars.IMAGE_NAME }} .
+          docker container stop ${{ vars.CONTAINER_NAME }}
+          docker container rm ${{ vars.CONTAINER_NAME }}
+          docker container run -d --name ${{ vars.CONTAINER_NAME }} -p 3000:3000 ${{ vars.IMAGE_NAME }}
