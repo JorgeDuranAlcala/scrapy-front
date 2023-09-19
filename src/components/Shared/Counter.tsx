@@ -12,7 +12,7 @@ type CounterProps = {
 }
 
 export const Counter = memo(({ value }: CounterProps) => {
-  const [count, debouncedCount, setCount] = useDebouncedState(0)
+  const [count, /*debouncedCount*/, setCount] = useDebouncedState(0)
 
   const handleCount = (option: string) => {
     const number = option == 'add' ? 1 : -1
