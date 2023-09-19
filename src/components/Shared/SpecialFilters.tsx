@@ -24,7 +24,6 @@ import { STATUSES } from 'src/types'
 
 import { SpecialFilterSchema } from 'src/schemas'
 
-
 export type SpecialFiltersData = InferType<typeof SpecialFilterSchema>
 
 export const defaultSpecialFilters = SpecialFilterSchema.getDefault()
@@ -98,21 +97,23 @@ export const SpecialFilters = () => {
       <Divider />
       <Stack direction='row' justifyContent='space-between' alignItems='center'>
         <Stack direction='row' gap={3} alignItems={'center'}>
-          <ControlledTextField name='search' label='Buscar' size='small' sx={{ maxWidth: "500px"}}/>
+          <ControlledTextField name='search' label='Buscar' size='small' sx={{ minWidth: '300px', maxWidth: '500px' }} />
           <IconButton color='warning' onClick={() => setValue('vip', !vip)}>
-            <Icon icon={`tabler:star${vip ? '-filled': ''}`}/>
+            <Icon icon={`tabler:star${vip ? '-filled' : ''}`} />
           </IconButton>
         </Stack>
-        <Stack direction='row' gap={5} alignItems='center'>
-          {user?.is_admin && !asPath.includes('history') && (
+        {user?.is_admin && !asPath.includes('history') && (
+          <Stack direction='row' gap={5} alignItems='center'>
             <Link href={`${asPath}history`} passHref>
               <Button color='secondary' variant='outlined'>
                 Historial
               </Button>
             </Link>
-          )}
-          <Button variant='contained' type='submit'>Actualizar</Button>
-        </Stack>
+            <Button variant='contained' type='submit'>
+              Actualizar
+            </Button>
+          </Stack>
+        )}
       </Stack>
     </Stack>
   )
