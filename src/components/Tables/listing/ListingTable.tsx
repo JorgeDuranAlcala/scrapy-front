@@ -18,12 +18,12 @@ type PaginationModel = { pageSize: number, page: number }
 type Props = {
   columnDefinition: typeof useColumns
   rows: GridValidRowModel[]
-  paginationModel: PaginationModel
-  setPaginationModel: Dispatch<SetStateAction<PaginationModel>>
-  rowLength: number
+  // paginationModel: PaginationModel
+  // setPaginationModel: Dispatch<SetStateAction<PaginationModel>>
+  // rowLength: number
 }
 
-const ListingTable = ({columnDefinition, rows =[], rowLength, paginationModel, setPaginationModel}: Props) => {
+const ListingTable = ({columnDefinition, rows =[] /*rowLength, paginationModel, setPaginationModel*/}: Props) => {
   const { query } = useRouter()
   const [comments, setComments] = useState('')
   const [id, setID] = useState('')
