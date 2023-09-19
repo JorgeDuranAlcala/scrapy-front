@@ -18,7 +18,7 @@ const modalBodyStyle = {
   p: 10
 }
 
-const DeleteModal = ({handleDelete, modalOpen, close, name, gender, count}: DeleteModalProps) => {
+const DeleteModal = ({handleDelete, modalOpen, close, name, gender, count, disable=false}: DeleteModalProps) => {
   const { t } = useTranslation()
 
   const translation = t('delete-confirmation_context',{ name, gender, count} )
@@ -33,10 +33,10 @@ const DeleteModal = ({handleDelete, modalOpen, close, name, gender, count}: Dele
           </Box>
           <Box textAlign={'center'} color={'body'}>{capitalizedText}</Box>
           <Stack direction='row' spacing={5}>
-            <Button onClick={handleDelete} sx={{ width: 100 }} variant='contained'>
+            <Button onClick={handleDelete} sx={{ width: 100 }} variant='contained' disabled={disable}>
               {t('yes')}
             </Button>
-            <Button variant='outlined' sx={{ width: 100 }} onClick={close}>
+            <Button variant='outlined' sx={{ width: 100 }} onClick={close} disabled={disable}>
               {t('cancel')}
             </Button>
           </Stack>
@@ -53,6 +53,7 @@ type DeleteModalProps = {
   gender: string // Used for spanish translations
   count?: number
   handleDelete?: () => void
+  disable?: boolean
 }
 
 export default DeleteModal

@@ -1,17 +1,24 @@
+import { useState } from 'react'
+
+import { useRouter } from 'next/router'
+
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
 import CardTitle from '@mui/material/CardHeader'
 
+// ** Third party imports
 import { useForm, FormProvider } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
+import { useQuery, useMutation } from '@tanstack/react-query'
 
-// Layout
+// ** Layout
 import ListingLayout from 'src/layouts/ListingLayout'
 
+// ** Custom components
 import { ListingTable, listingColumns } from 'src/components/Tables'
+import { SpecialFilters, type SpecialFiltersData } from 'src/components/Shared'
 
-import { SpecialFilters, defaultSpecialFilters, type SpecialFiltersData } from 'src/components/Shared'
-
+// ** Schemas
 import { SpecialFilterSchema } from 'src/schemas'
 
 const ROWS = [
@@ -235,14 +242,25 @@ for(let i = 0; i<= 20; i++){
 }
 
 const Listing = () => {
+  const [paginationModel, setPaginationModel] = useState({
+    page: 1,
+    pageSize: 25
+  })
+  const { query } = useRouter()
+  const websiteName = query.id
+
   const specialFilters = useForm({
-    defaultValues: defaultSpecialFilters,
+    defaultValues: SpecialFilterSchema.getDefault(),
     mode: 'onBlur',
     resolver: yupResolver(SpecialFilterSchema)
   })
 
+  const filters = specialFilters.watch()
+
   const onSubmit = (data: SpecialFiltersData) => {
-    console.log(data)
+    // if(typeof websiteName === 'string')
+    //   // scrapeData.mutate({filters: data, page: websiteName})
+    // else console.log("Page is loading")
   }
 
   return (
@@ -262,9 +280,9 @@ const Listing = () => {
   )
 }
 
-Listing.acl = {
-  action: 'see',
-  subject: 'user-pages'
+Listing.acl={
+  action:'see',
+  subject:'user-pages'
 }
 
 export default Listing

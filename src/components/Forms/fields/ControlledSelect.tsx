@@ -28,7 +28,7 @@ const ControlledSelect = (props: ControlledSelectProps) => {
     <Controller
       name={name}
       control={control}
-      render={({ field }) => (
+      render={({ field: {value, ...controlledProps} }) => (
         <FormControl fullWidth error={Boolean(errors[name])}>
           <InputLabel
             id={`${label}-label`}
@@ -37,7 +37,8 @@ const ControlledSelect = (props: ControlledSelectProps) => {
             {label}
           </InputLabel>
           <Select
-            {...field}
+            value={value || ''}
+            {...controlledProps}
             {...props}
             id={label}
             label={label}

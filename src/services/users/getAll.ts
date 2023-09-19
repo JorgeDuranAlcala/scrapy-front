@@ -1,12 +1,17 @@
-import { restRequest } from 'src/services'
+import { restRequestAuth } from 'src/services'
 import { type UserFormData } from 'src/components/Forms'
 
-const getAll = async (page: number, search: string): Promise<UserFormData[]> => {
-  const response = await restRequest('GET', '/users/', {
-    // params: {search, page}
-  })
+type Response = {
+  users: UserFormData[],
+  total: number
+}
 
-  return response
+const getAll = async (page: number, limit: number,search: string): Promise<Response> => {
+  const response = await restRequestAuth('GET', '/users/paginate', {
+    params: {search, page, per_page: limit}
+  })
+  const [users, total] = response.data
+  return {users, total}
 }
 
 export default getAll
