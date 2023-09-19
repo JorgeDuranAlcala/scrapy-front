@@ -5,7 +5,6 @@ import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
 import Grid from '@mui/material/Grid'
 import Stack from '@mui/material/Stack'
-import TextField from '@mui/material/TextField'
 
 import FormControl from '@mui/material/FormControl'
 import Autocomplete from '@mui/material/Autocomplete'
@@ -13,16 +12,18 @@ import IconButton from '@mui/material/IconButton'
 
 import Icon from 'src/@core/components/icon'
 
-import { useFormContext, Controller } from 'react-hook-form'
+import { useFormContext } from 'react-hook-form'
 import { InferType } from 'yup'
+import { useQuery } from '@tanstack/react-query'
 
-import { ControlledSelect, ControlledTextField } from 'src/components/Forms'
+import { ControlledSelect, ControlledTextField, Autocomplete } from 'src/components/Forms'
 
 import { useAuth } from 'src/hooks'
 
 import { STATUSES } from 'src/types'
 
 import { SpecialFilterSchema } from 'src/schemas'
+import { getMunicipalities } from 'src/services/scraping'
 
 export type SpecialFiltersData = InferType<typeof SpecialFilterSchema>
 
@@ -41,49 +42,42 @@ export const SpecialFilters = () => {
     formState: { errors }
   } = useFormContext()
 
-  const vip = watch('vip')
+  const [vip] = watch('vip')
+
+
+  const municipalities = useQuery({
+    queryKey: ['municipalities', province],
+    queryFn: async () => {
+      return await getMunicipalities(province.id)
+    },
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false
+  })
+
 
   return (
     <Stack gap={5}>
       <Grid container spacing={3}>
-        <Grid item md={4} sm={12}>
+      <Grid item md={4} sm={12}>
           <FormControl fullWidth>
-            <Controller
-              name='city'
-              control={control}
-              rules={{ required: true }}
-              render={({ field: { onChange, value, ...rest } }) => (
-                <Autocomplete
-                  {...rest}
-                  loading={false}
-                  value={value}
-                  options={[]}
-                  onChange={(event, newValue) => {
-                    onChange(newValue || null)
-                  }}
-                  getOptionLabel={option => option.name || ''}
-                  isOptionEqualToValue={(option, value) => option.id === value.id}
-                  noOptionsText={false ? 'Error de busqueda, intente de nuevo' : 'Sin resultados'} // BACKEND NEEDED
-                  renderInput={params => (
-                    <TextField
-                      {...params}
-                      label={'Población'}
-                      inputProps={{
-                        ...params.inputProps,
-                        autoComplete: 'new-password' // disable autocomplete and autofill
-                      }}
-                      error={Boolean(errors.city)}
-                      helperText={errors.city && 'Selecciona una poblacion'}
-                    />
-                  )}
-                />
-              )}
+            <Autocomplete name="province" label="Provincia" isOptionEqualToValue={(option, value) => option.id === value.id}
+              loading={provinces.isLoading} options={provinces.data || []} error={provinces.isError}
             />
           </FormControl>
         </Grid>
-        <Grid item md={2} sm={12}>
+        <Grid item md={4} sm={12}>
+          <FormControl fullWidth>
+            <Autocomplete name="municipality" label="Población" isOptionEqualToValue={(option, value) => option.name === value.name}
+              loading={municipalities.isLoading} options={municipalities.data || []} error={municipalities.isError}
+            />
+          </FormControl>
+        </Grid>
+        <Grid item md={4} sm={12}>
           <ControlledSelect name='zone' label='Zona' options={['ejemplo1', 'ejemplo2']} />
         </Grid>
+      </Grid>
+      <Grid container spacing={3} justifyContent="center">
         <Grid item md={2} sm={12}>
           <ControlledSelect name='status' label='Estado' options={STATUSES} />
         </Grid>

@@ -1,4 +1,4 @@
-import { useState, useCallback, memo, useMemo } from 'react'
+import { useState, useCallback, memo, useMemo, Dispatch, SetStateAction} from 'react'
 
 import { useRouter } from 'next/router'
 
@@ -13,12 +13,17 @@ import { CommentsModal, EmailDrawer } from 'src/components/Shared'
 // ** Hook imports
 import { useDisclosure } from 'src/hooks'
 
+type PaginationModel = { pageSize: number, page: number }
+
 type Props = {
   columnDefinition: typeof useColumns
   rows: GridValidRowModel[]
+  paginationModel: PaginationModel
+  setPaginationModel: Dispatch<SetStateAction<PaginationModel>>
+  rowLength: number
 }
 
-const ListingTable = ({columnDefinition, rows =[]}: Props) => {
+const ListingTable = ({columnDefinition, rows =[], rowLength, paginationModel, setPaginationModel}: Props) => {
   const { query } = useRouter()
   const [comments, setComments] = useState('')
   const [id, setID] = useState('')

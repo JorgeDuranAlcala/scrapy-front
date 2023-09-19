@@ -4,6 +4,7 @@ const location = yup.object().shape({
   id: yup.number(),
   name: yup.string()
 }).nullable().default(null)
+}).nullable().default(null)
 
 const specialFilterSchema = yup.object({
   city: location,

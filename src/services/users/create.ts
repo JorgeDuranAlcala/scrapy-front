@@ -1,8 +1,8 @@
-import { restRequest } from 'src/services'
+import { restRequestAuth } from 'src/services'
 import { type UserFormData } from 'src/components/Forms'
 
 const create = async (data: UserFormData) => {
-  const response = await restRequest('POST', '/users/create', {
+  const response = await restRequestAuth('POST', '/users/create', {
     body: data
   })
 
