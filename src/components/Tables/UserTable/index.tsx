@@ -27,7 +27,7 @@ import { EmailDrawer, DeleteModal } from 'src/components/Shared'
 import { userSchema } from 'src/schemas'
 
 // * Services
-import { create, update, remove } from 'src/services/users'
+import { create, update, erase } from 'src/services/users'
 
 // * Custom hooks
 import { useDisclosure } from 'src/hooks'
@@ -100,7 +100,7 @@ const UserTable = ({ rows, setSearch, search, refetch }: Props) => {
 
   const deleteUser = useMutation({
     mutationKey: ['delete-user'],
-    mutationFn: remove,
+    mutationFn: erase,
     onError: (e: AxiosError) => {
       toast.error(e.message)
     },

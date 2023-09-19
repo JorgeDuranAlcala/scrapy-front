@@ -7,10 +7,10 @@ type data = {
 }
 
 const scrape = async ({filters, page}: data) => {
-  const { province, municipality, ...extra } = filters
+  const { city, ...extra } = filters
   const response = await restRequestAuth('GET', '/scrap', {
     params: {
-      municipality: municipality?.name,
+      municipality: city?.name,
       ...extra,
       page}
   })
