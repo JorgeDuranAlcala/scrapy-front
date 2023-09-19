@@ -243,7 +243,7 @@ for(let i = 0; i<= 20; i++){
 
 const Listing = () => {
   const [paginationModel, setPaginationModel] = useState({
-    page: 0,
+    page: 1,
     pageSize: 25
   })
   const { query } = useRouter()
@@ -257,26 +257,10 @@ const Listing = () => {
 
   const filters = specialFilters.watch()
 
-  const posts = useQuery({
-    queryKey: ['posts', paginationModel.page],
-    queryFn: () => {
-      return getPosts(filters, paginationModel.page)
-    },
-    keepPreviousData: true
-  })
-
-  const scrapeData = useMutation({
-    mutationKey: ['scrape-posts'],
-    mutationFn: scrape,
-    onSuccess: () => {
-      posts.refetch()
-    }
-  })
-
   const onSubmit = (data: SpecialFiltersData) => {
-    if(typeof websiteName === 'string')
-      scrapeData.mutate({filters: data, page: websiteName})
-    else console.log("Page is loading")
+    // if(typeof websiteName === 'string')
+    //   // scrapeData.mutate({filters: data, page: websiteName})
+    // else console.log("Page is loading")
   }
 
   return (
