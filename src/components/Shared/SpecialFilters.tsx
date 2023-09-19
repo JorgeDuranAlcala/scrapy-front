@@ -7,7 +7,6 @@ import Grid from '@mui/material/Grid'
 import Stack from '@mui/material/Stack'
 
 import FormControl from '@mui/material/FormControl'
-import Autocomplete from '@mui/material/Autocomplete'
 import IconButton from '@mui/material/IconButton'
 
 import Icon from 'src/@core/components/icon'
@@ -42,13 +41,13 @@ export const SpecialFilters = () => {
     formState: { errors }
   } = useFormContext()
 
-  const [vip] = watch('vip')
+  const vip = watch('vip')
 
 
   const municipalities = useQuery({
-    queryKey: ['municipalities', province],
+    queryKey: ['municipalities'],
     queryFn: async () => {
-      return await getMunicipalities(province.id)
+      return await getMunicipalities('')
     },
     refetchOnMount: false,
     refetchOnWindowFocus: false,
@@ -59,13 +58,6 @@ export const SpecialFilters = () => {
   return (
     <Stack gap={5}>
       <Grid container spacing={3}>
-      <Grid item md={4} sm={12}>
-          <FormControl fullWidth>
-            <Autocomplete name="province" label="Provincia" isOptionEqualToValue={(option, value) => option.id === value.id}
-              loading={provinces.isLoading} options={provinces.data || []} error={provinces.isError}
-            />
-          </FormControl>
-        </Grid>
         <Grid item md={4} sm={12}>
           <FormControl fullWidth>
             <Autocomplete name="municipality" label="Población" isOptionEqualToValue={(option, value) => option.name === value.name}
@@ -73,11 +65,9 @@ export const SpecialFilters = () => {
             />
           </FormControl>
         </Grid>
-        <Grid item md={4} sm={12}>
+        <Grid item md={2} sm={12}>
           <ControlledSelect name='zone' label='Zona' options={['ejemplo1', 'ejemplo2']} />
         </Grid>
-      </Grid>
-      <Grid container spacing={3} justifyContent="center">
         <Grid item md={2} sm={12}>
           <ControlledSelect name='status' label='Estado' options={STATUSES} />
         </Grid>
