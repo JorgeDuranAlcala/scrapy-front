@@ -2,7 +2,9 @@ import { GridColDef} from '@mui/x-data-grid'
 
 import { StatusSelect } from '../components'
 import listingOptionColumn from 'src/components/Shared/ListingOptionsColumn'
+import subRowColumns from './subRowColumns'
 import { EditableColumn } from 'src/components/Shared'
+import { STATUSES } from 'src/types'
 
 type optionActions = {
   openCommentsModal: (id: string, comments: string) => void
@@ -75,12 +77,12 @@ const listingColumns = ({openEmailModal, openCommentsModal, route}: optionAction
     },
     {
       field: 'status',
+      type: 'singleSelect',
       headerName: 'Estado',
       filterable: false,
       editable: true,
       width: 140,
-      renderCell: (props) => <StatusSelect {...props}/>,
-      renderEditCell: (props) => <StatusSelect {...props}/>,
+      valueOptions: STATUSES
     },
     {
       type: 'actions',
