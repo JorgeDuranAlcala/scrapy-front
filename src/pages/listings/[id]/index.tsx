@@ -33,7 +33,8 @@ const ROWS = [
     adOwner: 'test',
     user: 'test',
     link: '#',
-    count: 2
+    count: 2,
+    vip: false,
   },
   {
     id: 2,
@@ -54,7 +55,8 @@ const ROWS = [
     user: 'test',
     link: '#',
     count: 3,
-    comments: 'este es un comentario'
+    comments: 'este es un comentario',
+    vip: true,
   },
   {
     id: 3,
