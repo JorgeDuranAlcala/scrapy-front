@@ -66,14 +66,6 @@ const listingColumns = ({openEmailModal, openCommentsModal, route}: optionAction
       renderEditCell: (props) => <StatusSelect {...props}/>,
     },
     {
-      field: 'email',
-      headerName: 'Email',
-      editable: true,
-      sortable: false,
-      disableColumnMenu: true,
-      hideable: false,
-    },
-    {
       type:'actions',
       field: 'options',
       headerName: 'Opciones',

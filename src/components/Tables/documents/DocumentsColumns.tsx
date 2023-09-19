@@ -8,8 +8,7 @@ import { GridColDef} from '@mui/x-data-grid'
 
 import { useTranslation } from 'react-i18next'
 
-import { ActionButton } from 'src/components/Shared'
-import { DescriptionColumn } from "./DescriptionColumn"
+import { ActionButton, EditableColumn } from 'src/components/Shared'
 
 type optionActions = {
   downloadFiles: (id: string) => void
@@ -27,7 +26,7 @@ const DocumentsColumns = ({openMailModal, downloadFiles, deleteFile}: optionActi
       filterable: false,
       sortable: false,
       width: 250,
-      renderCell: ({row: {name, id}}) => (
+      renderCell: ({row: {name}}) => (
         <MuiLink component={Link} href={'#'}>
           {name}
         </MuiLink>
@@ -46,7 +45,7 @@ const DocumentsColumns = ({openMailModal, downloadFiles, deleteFile}: optionActi
             {description}
           </Box>
         </Tooltip>,
-      renderEditCell: (params) => <DescriptionColumn {...params}/>
+      renderEditCell: (params) => <EditableColumn {...params}/>
     },
     {
       field: 'uploadedBy',

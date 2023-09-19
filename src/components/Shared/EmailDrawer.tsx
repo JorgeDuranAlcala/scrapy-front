@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, memo } from 'react'
 
 import Button from "@mui/material/Button"
 import Drawer from "@mui/material/Drawer"
@@ -41,7 +41,7 @@ const defaultEmail: emailData = {
   message: ''
 }
 
-export const EmailDrawer = ({open, toggle, storedFileHandling, recipients =[]}: EmailDrawerProps) => {
+export const EmailDrawer = memo(({open, toggle, storedFileHandling, recipients =[]}: EmailDrawerProps) => {
 
   // ** State
   const [files, setFiles] = useState<FileProp[]>([])
@@ -180,7 +180,7 @@ export const EmailDrawer = ({open, toggle, storedFileHandling, recipients =[]}: 
       </Drawer>
     </FormProvider>
   )
-}
+})
 
 type EmailDrawerProps = {
   open: boolean

@@ -9,9 +9,7 @@ const path = require('path')
 module.exports = {
   trailingSlash: true,
   reactStrictMode: false,
-  experimental: {
-    outputStandalone: true
-  },
+  output: 'standalone',
   transpilePackages: [
     '@fullcalendar/common',
     '@fullcalendar/core',
