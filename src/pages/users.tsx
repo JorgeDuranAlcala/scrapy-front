@@ -15,9 +15,9 @@ const TableList = () => {
   const [page, setPage] = useState(0)
   const [search, debouncedSearch, setSearch] = useDebouncedState('')
 
-  const { data, isLoading, isError } = useQuery({
-    queryKey: ['get-users'],
-    queryFn: () => getAll(page, debouncedSearch),
+  const { data, isLoading, isError, refetch } = useQuery({
+    queryKey: ['get-users', debouncedSearch],
+    queryFn: () => getAll(page + 1, 25 , debouncedSearch),
     keepPreviousData: true,
     refetchOnMount: false,
     refetchOnWindowFocus: false
@@ -31,9 +31,9 @@ const TableList = () => {
           setPage={setPage}
           loading={isLoading || search != debouncedSearch}
           error={isError}
-          rows={data || []}
+          rows={(data && data.total) || 0}
         >
-          <UserTable rows={data || []} search={search} setSearch={setSearch} />
+          <UserTable rows={(data && data.users) || [] } search={search} setSearch={setSearch} refetch={()=> {refetch()}} />
         </TableWrapper>
       </CardContent>
     </Card>
