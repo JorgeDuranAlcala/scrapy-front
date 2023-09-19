@@ -3,22 +3,41 @@ import { GridActionsCellItem, GridColDef} from '@mui/x-data-grid'
 import { EditableColumn } from 'src/components/Shared'
 import Icon from 'src/@core/components/icon'
 
+import yup from 'src/@core/utils/customized-yup'
+
+const number = yup.number().min(0).required()
+const email = yup.string().email().required()
+
+const validator = (schema: yup.AnySchema, value: any)  => {
+  try{
+    schema.validateSync(value)
+    return false
+  }
+  catch(e){
+    return true
+  }
+}
+
 const subRowColumns = (setVip: (vip: boolean) => void): GridColDef[] => [
     {
       field: 'bathrooms',
       headerName: 'Baños',
+      editable: true,
       sortable: false,
       filterable: false,
       headerAlign: 'left',
       width: 100,
+      preProcessEditCellProps: (params) => ({ ...params.props, error: validator(number, params.props.value)}),
     },
     {
       field: 'rooms',
       headerName: 'Habitaciones',
       headerAlign: 'left',
+      editable: true,
       filterable: false,
       sortable: false,
       width: 150,
+      preProcessEditCellProps: (params) => ({ ...params.props, error: validator(number, params.props.value)}),
     },
     {
       field: 'adSite',
@@ -55,6 +74,8 @@ const subRowColumns = (setVip: (vip: boolean) => void): GridColDef[] => [
       filterable: false,
       sortable: false,
       editable: true,
+      renderEditCell: (props) => <EditableColumn  {...props}/>,
+      preProcessEditCellProps: (params) => ({...params, error: validator(email, params.props.value)}),
       width: 250,
     },
     {
@@ -63,7 +84,6 @@ const subRowColumns = (setVip: (vip: boolean) => void): GridColDef[] => [
       headerAlign: 'left',
       filterable: false,
       sortable: false,
-      // preProcessEditCellProps: (params) => ({}),
       width: 150,
       renderHeader: () => <></>,
     },
