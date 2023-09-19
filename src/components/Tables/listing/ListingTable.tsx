@@ -3,7 +3,7 @@ import { useState, useCallback, memo, useMemo } from 'react'
 import { useRouter } from 'next/router'
 
 import Box from '@mui/material/Box'
-import { DataGrid, esES, GridRowProps, GridValidRowModel } from '@mui/x-data-grid'
+import { DataGrid, esES, GridCellModesModel, GridValidRowModel, useGridApiRef } from '@mui/x-data-grid'
 
 import ListingRow from './components/ListingTableRow'
 import useColumns from './ColumnDefs/listingColumns'
@@ -20,7 +20,6 @@ type Props = {
 
 const ListingTable = ({columnDefinition, rows =[]}: Props) => {
   const { query } = useRouter()
-  const [tableRows, setTableRows] = useState(rows)
   const [comments, setComments] = useState('')
   const [id, setID] = useState('')
   const [adEmail, setAdEmail] = useState('')
@@ -28,21 +27,14 @@ const ListingTable = ({columnDefinition, rows =[]}: Props) => {
   const [emailModal, emailHandler] = useDisclosure()
 
   const openEmailModal = useCallback((email: string) => {
-      setAdEmail(email)
-      emailHandler.open()
+    setAdEmail(email)
+    emailHandler.open()
   }, [])
 
   const openCommentsModal = useCallback((id: string, comment: string) => {
     setID(id)
     setComments(comment)
     commentsHandler.open()
-  }, [])
-
-  // Use it to update state for columns inside the subrow
-  const handleSubRowChange= useCallback((index: number, column: string) => (data: any) => {
-    const newRows = rows.slice()
-    newRows[index][column] = data
-    setTableRows(newRows)
   }, [])
 
   const cols = useMemo(() => (
@@ -52,20 +44,33 @@ const ListingTable = ({columnDefinition, rows =[]}: Props) => {
   const dataGridProps = useMemo(() => ({
     initialState: {
       pagination: {
+        disableRowSelectionOnClick: true,
         paginationModel: {
-          pageSize: 25
+          pageSize: 10
         }
       },
     },
     sx:{
       '& .MuiDataGrid-row:hover': { backgroundColor: 'transparent' },
-      '& .MuiDataGrid-columnHeader:first-of-type': { marginLeft: '40px !important' },
-      '& .MuiDataGrid-cell--editable': { cursor:'pointer'}
+      '.MuiDataGrid-columnHeader:first-of-type': { marginLeft: '40px' },
+      '.MuiDataGrid-cell--editable': { cursor:'pointer'}
     },
+
+    /* TODO: pass the "mutate" method returned by the useMutation hook
+      to update server side data when making changes
+
+      slotProps: {
+      mutate
+      }
+    */
     slots: {
-      row: (props: GridRowProps) => <ListingRow handleSubRowChange={handleSubRowChange} {...props}/>
-    }
-  }), [handleSubRowChange])
+      row: ListingRow
+    },
+    disableVirtualization: true,
+    disableRowSelectionOnClick: true,
+    localeText: esES.components.MuiDataGrid.defaultProps.localeText,
+    columns: cols
+  }), [])
 
   return (
     <Box mt={5} sx={{ height: 400, width: '100%' }}>
@@ -76,15 +81,13 @@ const ListingTable = ({columnDefinition, rows =[]}: Props) => {
         recipients={adEmail!== '' ? [adEmail] : []}
       />
       <DataGrid
-        rows={tableRows}
-        columns={cols}
-
+        rows={rows}
+        pageSizeOptions={[10]}
         {...dataGridProps}
-        disableRowSelectionOnClick
-        localeText={esES.components.MuiDataGrid.defaultProps.localeText}
       />
     </Box>
   )
 }
+
 
 export default memo(ListingTable)

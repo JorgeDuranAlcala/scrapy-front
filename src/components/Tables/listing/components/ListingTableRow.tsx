@@ -1,39 +1,22 @@
-import { useState } from 'react'
+import { useState, memo, useMemo } from 'react'
 
 import { Icon } from '@iconify/react'
 import Box from '@mui/material/Box'
 import Collapse from '@mui/material/Collapse'
 import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
-import Table from '@mui/material/Table'
-import TableBody from '@mui/material/TableBody'
-import TableCell from '@mui/material/TableCell'
-import TableHead from '@mui/material/TableHead'
-import TableRow from '@mui/material/TableRow'
 
-import { GridRowProps, GridRow } from '@mui/x-data-grid'
-import yup from 'src/@core/utils/customized-yup'
+import { GridRowProps, GridRow, DataGrid, useGridApiContext, esES } from '@mui/x-data-grid'
 
-import SubRowField from '../../SubRowField'
+import subRowColumns from '../ColumnDefs/subRowColumns'
 
-const emailSchema = yup.string().email().required()
-const numberSchema = yup.number().min(0)
-
-const validation = (schema: yup.AnySchema) => (value: string | number) => {
-  try {
-    schema.validateSync(value)
-    return true
-  } catch {
-    return false
-  }
-}
-const validEmail = validation(emailSchema)
-const isNumber = validation(numberSchema)
-
-const ListingTableRow = ({ row, handleSubRowChange, ...rest }: ListingRowProps) => {
+const ListingTableRow = ({ row, ...props }: GridRowProps) => {
   const [opened, setOpen] = useState(false)
-  const { id, bathrooms, rooms, adSite, adDate, adOwner, user, email, vip } = row as any
-  console.log(rest, row)
+  const api = useGridApiContext()
+  const setVip = (vip: boolean) => {
+    api.current.updateRows([{ ...api.current.getRow(props.rowId), vip }])
+  }
+  const subCols = useMemo(() => subRowColumns(setVip), [])
 
   return (
     <>
@@ -49,101 +32,29 @@ const ListingTableRow = ({ row, handleSubRowChange, ...rest }: ListingRowProps) 
             <Icon icon={`tabler:${opened ? 'chevron-up' : 'chevron-down'}`} width={20} />
           </IconButton>
         </Box>
-        <GridRow {...{ row, ...rest }} />
+        <GridRow {...{ row, ...props }} />
       </Stack>
       <Collapse in={opened} timeout='auto'>
-        <Box sx={{ margin: 2, width: '93%' }}>
-          <Table size='small' aria-label='purchases'>
-            <TableHead>
-              <TableRow>
-                <TableCell sx={{ width: '5%' }} align='left'>
-                  Baños
-                </TableCell>
-                <TableCell sx={{ width: '5%' }} align='left'>
-                  Habitaciones
-                </TableCell>
-                <TableCell align='left'>Publicado en</TableCell>
-                <TableCell align='left'>Fecha Anuncio</TableCell>
-                <TableCell sx={{ width: '15%' }} align='left'>
-                  Nombre Propietario
-                </TableCell>
-                <TableCell sx={{ width: '18%' }} align='left'>
-                  Email
-                </TableCell>
-                <TableCell sx={{ width: '12%' }} align='left'>
-                  Usuario
-                </TableCell>
-                <TableCell sx={{ width: '5%' }}></TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              <TableRow>
-                <TableCell align='left'>
-                  <SubRowField
-                    value={bathrooms}
-                    id={id}
-                    name='Baños'
-                    field='bathrooms'
-                    handleChange={handleSubRowChange(rest.index, 'bathrooms')}
-                    validate={{ fn: isNumber, msg: 'Valor debe ser un número' }}
-                  />
-                </TableCell>
-                <TableCell align='left'>
-                  <SubRowField
-                    value={rooms}
-                    id={id}
-                    name='Habitaciones'
-                    field='rooms'
-                    handleChange={handleSubRowChange(rest.index, 'rooms')}
-                    validate={{ fn: isNumber, msg: 'Valor debe ser un número' }}
-                  />
-                </TableCell>
-                <TableCell align='left'>
-                  <SubRowField
-                    value={adSite}
-                    id={id}
-                    name='Publicado En'
-                    handleChange={handleSubRowChange(rest.index, 'adSite')}
-                    field='adSite'
-                  />
-                </TableCell>
-                <TableCell align='left'>{adDate.toLocaleDateString()}</TableCell>
-                <TableCell align='left'>
-                  <SubRowField
-                    value={adOwner}
-                    id={id}
-                    name='Nombre Propietario'
-                    handleChange={handleSubRowChange(rest.index, 'adOwner')}
-                    field='adOwner'
-                  />
-                </TableCell>
-                <TableCell align='left'>
-                  <SubRowField
-                    value={email}
-                    id={id}
-                    name='Email'
-                    field='email'
-                    handleChange={handleSubRowChange(rest.index, 'email')}
-                    validate={{ fn: validEmail, msg: 'Email no válido' }}
-                  />
-                </TableCell>
-                <TableCell align='left'>{user}</TableCell>
-                <TableCell>
-                  <IconButton color='warning' onClick={() => handleSubRowChange(rest.index, 'vip')(!vip)}>
-                    <Icon icon={`tabler:star${vip ? '-filled' : ''}`} />
-                  </IconButton>
-                </TableCell>
-              </TableRow>
-            </TableBody>
-          </Table>
+        <Box sx={{ height: 115 }}>
+          {opened &&
+              <DataGrid
+                rows={[row]}
+                columns={subCols}
+                processRowUpdate={(newRow) => {
+                  api.current.updateRows([newRow])
+                  return newRow
+                }}
+                localeText={esES.components.MuiDataGrid.defaultProps.localeText}
+                disableRowSelectionOnClick
+                hideFooter
+                hideFooterPagination
+                sx={{'.MuiDataGrid-columnHeader:first-of-type': { marginLeft: '0px' }}}
+              />
+          }
         </Box>
       </Collapse>
     </>
   )
 }
 
-type ListingRowProps = {
-  handleSubRowChange: (index: number, column: string) => (data: any) => void
-} & GridRowProps
-
-export default ListingTableRow
+export default memo(ListingTableRow)
