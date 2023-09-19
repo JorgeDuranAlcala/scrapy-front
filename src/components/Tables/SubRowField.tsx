@@ -3,7 +3,6 @@ import { ChangeEvent, useEffect } from 'react'
 import TextField from '@mui/material/TextField'
 import InputAdornment from '@mui/material/InputAdornment'
 import Loader from '@mui/material/CircularProgress'
-import { useGridApiContext } from '@mui/x-data-grid'
 
 import toast from 'react-hot-toast'
 
@@ -13,8 +12,6 @@ import { useDebouncedState } from 'src/hooks'
 type Props = {
   handleChange: (value: string) => void
   value: string
-  id: string
-  field: string
   name: string
   validate?: {
     fn: (value: string | number) => boolean
@@ -22,17 +19,15 @@ type Props = {
   }
 }
 
-const SubRowField = ({handleChange, value, id, name, field, validate}: Props) => {
+const SubRowField = ({handleChange, value, name, validate}: Props) => {
   const [editValue, debouncedValue, setValue] = useDebouncedState(value)
-  const api = useGridApiContext()
-  const savedValue = api.current.getCellValue(id, field)
   let isValid = true
 
   if(validate)
     isValid = validate.fn(editValue)
 
   useEffect(()=>{
-    if(editValue !== savedValue && isValid){
+    if(editValue !== value && isValid){
       handleChange(editValue)
       toast.success(`${name} actualizado!`)
     }
@@ -51,7 +46,7 @@ const SubRowField = ({handleChange, value, id, name, field, validate}: Props) =>
       error={!isValid}
       helperText={!isValid && validate && validate.msg}
       InputProps = {{
-        endAdornment: ( savedValue !== editValue && isValid &&
+        endAdornment: ( value !== editValue && isValid &&
           <InputAdornment position='end'>
             <Loader size={20}/>
           </InputAdornment>)
