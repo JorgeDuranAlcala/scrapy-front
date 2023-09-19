@@ -1,9 +1,9 @@
-import { restRequest } from 'src/services'
+import { restRequestAuth } from 'src/services'
 import { type UserFormData } from 'src/components/Forms'
 
-const update = async (data: UserFormData) => {
-  const response = await restRequest('PUT', '/users/create', {
-    body: data
+const update = async ({id, ...body}: UserFormData) => {
+  const response = await restRequestAuth('PUT', '/users/update', {
+    body: { user_id: id, ...body}
   })
 
   return response

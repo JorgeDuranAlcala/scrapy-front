@@ -27,7 +27,7 @@ import { EmailDrawer, DeleteModal } from 'src/components/Shared'
 import { userSchema } from 'src/schemas'
 
 // * Services
-import { create } from 'src/services/users'
+import { create, update, remove } from 'src/services/users'
 
 // * Custom hooks
 import { useDisclosure } from 'src/hooks'
@@ -39,9 +39,10 @@ type Props = {
   rows: UserFormData[]
   setSearch: (search: string) => void
   search: string
+  refetch: () => void
 }
 
-const UserTable = ({ rows, setSearch, search }: Props) => {
+const UserTable = ({ rows, setSearch, search, refetch }: Props) => {
   const { t } = useTranslation()
   const [editModalOpened, editFormModal] = useDisclosure()
   const [deleteModalOpened, deleteModal] = useDisclosure()
@@ -71,10 +72,6 @@ const UserTable = ({ rows, setSearch, search }: Props) => {
     deleteModal.open()
   }
 
-  const deleteUser = () => {
-    console.log('delete id: ', id)
-  }
-
   const createUser = useMutation({
     mutationKey: ['create-user'],
     mutationFn: create,
@@ -83,13 +80,44 @@ const UserTable = ({ rows, setSearch, search }: Props) => {
     },
     onSuccess: () => {
       toast.success('Usuario creado')
+      refetch()
       editFormModal.close()
     }
   })
 
+  const updateUser = useMutation({
+    mutationKey: ['update-user'],
+    mutationFn: update,
+    onError: (e: AxiosError) => {
+      toast.error(e.message)
+    },
+    onSuccess: () => {
+      toast.success('Usuario actualizado')
+      refetch()
+      editFormModal.close()
+    }
+  })
+
+  const deleteUser = useMutation({
+    mutationKey: ['delete-user'],
+    mutationFn: remove,
+    onError: (e: AxiosError) => {
+      toast.error(e.message)
+    },
+    onSuccess: () => {
+      toast.success('Usuario eliminado')
+      refetch()
+      deleteModal.close()
+    }
+  })
+
+  const removeUser = () => {
+    deleteUser.mutate(id as number)
+  }
+
   const onSubmit = (data: FieldValues) => {
     if (!id) createUser.mutate(data as UserFormData)
-    else console.log('Update the user', data)
+    else updateUser.mutate(data as UserFormData)
   }
 
   const smCell = { '&.MuiTableCell-root': { width: 80 } }
@@ -100,9 +128,10 @@ const UserTable = ({ rows, setSearch, search }: Props) => {
       <DeleteModal
         modalOpen={deleteModalOpened}
         close={deleteModal.close}
-        handleDelete={deleteUser}
+        handleDelete={removeUser}
         name='usuario'
         gender='este'
+        disable={deleteUser.isLoading}
       />
       <EmailDrawer recipients={[email]} open={emailDrawerOpened} toggle={emailDrawer.close} />
       <FormProvider {...userForm}>
