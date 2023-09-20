@@ -14,7 +14,7 @@ export const UserForm = () => {
   return (
     <Stack sx={{ minWidth: 400, padding: 5 }} spacing={6}>
       <ControlledTextField name="fullname" label="name-and-lastName" required />
-      <ControlledTextField name="dni" label="DNI" required/>
+      <ControlledTextField name="dni" label="DNI" transformValue={(value) => value.toLocaleUpperCase()}required/>
       <ControlledTextField name="job" label="Puesto de Trabajo"/>
       <ControlledTextField name="salary" label="Sueldo"/>
       <ControlledTextField name="payment_method" label="Forma de pago"/>
