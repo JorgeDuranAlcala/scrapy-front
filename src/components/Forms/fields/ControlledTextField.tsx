@@ -5,7 +5,7 @@ import FormControl from '@mui/material/FormControl'
 import { Controller, useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
-const ControlledTextField = ({name, label, required, helperText, ...props}: Props) => {
+const ControlledTextField = ({name, label, required, helperText, transformValue, ...props}: Props) => {
   const {
     control,
     formState: { errors }
@@ -32,7 +32,10 @@ const ControlledTextField = ({name, label, required, helperText, ...props}: Prop
           <TextField
             value={value || ''}
             onBlur={onBlur}
-            onChange={onChange}
+            onChange={(event) => {
+              if(transformValue) event.target.value = transformValue(event.target.value)
+              onChange(event)
+            }}
             label={t(label)}
             error={Boolean(error)}
             helperText={error && (helperText || t(error as string, { field: label})) }
@@ -48,6 +51,7 @@ const ControlledTextField = ({name, label, required, helperText, ...props}: Prop
 type Props = {
   name: string
   label: string
+  transformValue?: (value: string) => string
 } & TextFieldProps
 
 export default ControlledTextField
