@@ -7,17 +7,17 @@ import useMediaQuery from '@mui/material/useMediaQuery'
 
 import Link from 'next/link'
 
-import { useTranslation } from 'react-i18next'
+
 
 const FooterContent = () => {
   // ** Var
   const hidden = useMediaQuery((theme: Theme) => theme.breakpoints.down('md'))
-  const { t } = useTranslation()
+
 
   return (
     <Box sx={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between' }}>
       <Typography sx={{ mr: 2 }}>
-        {`${t('made-by')} `}
+        {`Fabricado por `}
         <MuiLink component={Link} href='/' passHref>
           ErpSistemas
         </MuiLink>
@@ -25,7 +25,7 @@ const FooterContent = () => {
       {hidden ? null : (
         <Box sx={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', '& :not(:last-child)': { mr: 4 } }}>
           <MuiLink component={Link} href='/customer-help' passHref>
-            {t('customer-support')}
+            Atención al cliente
           </MuiLink>
         </Box>
       )}
