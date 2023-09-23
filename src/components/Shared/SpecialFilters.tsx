@@ -17,7 +17,7 @@ import { useQuery } from '@tanstack/react-query'
 
 import { ControlledSelect, ControlledTextField, Autocomplete } from 'src/components/Forms'
 
-import { useAuth } from 'src/hooks'
+import { useAuth, useDebouncedState } from 'src/hooks'
 
 import { STATUSES } from 'src/types'
 
@@ -34,20 +34,18 @@ const CATEGORIES = ['Pisos', 'Casas', 'Chalets', 'Terrenos', 'Locales']
 export const SpecialFilters = () => {
   const { user } = useAuth()
   const { asPath } = useRouter()
+  const [municipality, debouncedMunicipality, setMunicipality] = useDebouncedState('')
   const {
-    control,
     setValue,
     watch,
-    formState: { errors }
   } = useFormContext()
 
-  const vip = watch('vip')
-
+  const [vip] = watch(['vip', 'municipality'])
 
   const municipalities = useQuery({
-    queryKey: ['municipalities'],
+    queryKey: ['municipalities', debouncedMunicipality],
     queryFn: async () => {
-      return await getMunicipalities('')
+      return await getMunicipalities(debouncedMunicipality)
     },
     refetchOnMount: false,
     refetchOnWindowFocus: false,
@@ -60,8 +58,12 @@ export const SpecialFilters = () => {
       <Grid container spacing={3}>
         <Grid item md={4} sm={12}>
           <FormControl fullWidth>
-            <Autocomplete name="municipality" label="Población" isOptionEqualToValue={(option, value) => option.name === value.name}
-              loading={municipalities.isLoading} options={municipalities.data || []} error={municipalities.isError}
+            <Autocomplete name="municipality" label="Población"
+              isOptionEqualToValue={(option, value) => option.name === value.name}
+              loading={municipalities.isLoading || municipality !== debouncedMunicipality}
+              options={municipalities.data || []} error={municipalities.isError}
+              onInputChange={(str: string) => {setMunicipality(str)}}
+              inputValue={municipality}
             />
           </FormControl>
         </Grid>
@@ -93,7 +95,7 @@ export const SpecialFilters = () => {
                 Historial
               </Button>
             </Link>
-            <Button variant='contained' type='submit'>
+            <Button variant='contained' type='submit' disabled={municipality.length === 0}>
               Actualizar
             </Button>
           </Stack>

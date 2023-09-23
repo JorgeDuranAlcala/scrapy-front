@@ -11,9 +11,11 @@ type AutocompleteProps = {
   loading: boolean
   error: boolean
   isOptionEqualToValue: (option: any, value: any) => any
+  onInputChange?: (str: string) => void
+  inputValue?: string
 }
 
-const Autocomplete = ({ name, label, loading, error, options, isOptionEqualToValue }: AutocompleteProps) => {
+const Autocomplete = ({ name, inputValue, label, loading, error, options, isOptionEqualToValue, onInputChange}: AutocompleteProps) => {
   const {
     control,
     formState: { errors }
@@ -33,6 +35,9 @@ const Autocomplete = ({ name, label, loading, error, options, isOptionEqualToVal
             onChange={(event, newValue) => {
               onChange(newValue || null)
             }}
+            loadingText="Cargando..."
+            inputValue={inputValue}
+            onInputChange={(_, newValue) => {onInputChange && onInputChange(newValue)}}
             getOptionLabel={option => option.name || ''}
             isOptionEqualToValue={isOptionEqualToValue}
             noOptionsText={error ? 'Error de busqueda, intente de nuevo' : 'Sin resultados'}

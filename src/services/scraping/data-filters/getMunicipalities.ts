@@ -6,9 +6,10 @@ type Municipality = {
   name: string
 }
 
-const getMunicipalities = async (search?: string): Promise<Municipality[]> => {
-  const response = await restRequestAuth('GET', `/municipalities/`, {
-    params: {search}
+const getMunicipalities = async (search: string): Promise<Municipality[]> => {
+  const term = search && search.length > 0 ? search : undefined
+  const response = await restRequestAuth('GET', `/municipalities`, {
+    params: {term}
   })
   return response.data
 }
