@@ -3,16 +3,20 @@ import { SpecialFiltersData } from "src/components/Shared";
 
 type data = {
   filters: SpecialFiltersData
-  page: string
+  website: string
 }
 
-const scrape = async ({filters, page}: data) => {
-  const { city, ...extra } = filters
+const scrape = async ({filters, website}: data) => {
+  const { municipality, is_vip, ...rest } = filters
+
+  const nonEmpty = Object.fromEntries(Object.entries(rest).filter(([, value]) => value !== ''))
+
   const response = await restRequestAuth('GET', '/scrap', {
     params: {
-      municipality: city?.name,
-      ...extra,
-      page}
+      municipality: municipality?.name,
+      ...nonEmpty,
+      page: website
+    }
   })
 
   return response
