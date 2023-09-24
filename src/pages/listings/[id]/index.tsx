@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 import { useRouter } from 'next/router'
 
@@ -21,233 +21,21 @@ import { SpecialFilters, type SpecialFiltersData } from 'src/components/Shared'
 // ** Schemas
 import { SpecialFilterSchema } from 'src/schemas'
 
-const ROWS = [
-  {
-    id: 1,
-    email: 'test@gmail.com',
-    operation: 'test',
-    category: 'test',
-    title: 'title',
-    price: 3000,
-    meters: 1200,
-    sqrMtrPrice: 1200,
-    phone: 1200,
-    status: 'Contacto',
-    bathrooms: 2,
-    rooms: 2,
-    adSite: 'blah blah',
-    adDate: new Date(),
-    adOwner: 'test',
-    user: 'test',
-    link: '#',
-    count: 2,
-    vip: false,
-  },
-  {
-    id: 2,
-    email: 'test2@gmail.com',
-    operation: 'test',
-    category: 'test',
-    title: 'title',
-    price: 3000,
-    meters: 1200,
-    sqrMtrPrice: 1200,
-    phone: 1200,
-    status: 'Contacto',
-    bathrooms: 2,
-    rooms: 2,
-    adSite: 'blah blah',
-    adDate: new Date(),
-    adOwner: 'test',
-    user: 'test',
-    link: '#',
-    count: 3,
-    comments: 'este es un comentario',
-    vip: true,
-  },
-  {
-    id: 3,
-    email: 'test2@gmail.com',
-    operation: 'test',
-    category: 'test',
-    title: 'title',
-    price: 3000,
-    meters: 1200,
-    sqrMtrPrice: 1200,
-    phone: 1200,
-    status: 'Contacto',
-    bathrooms: 2,
-    rooms: 2,
-    adSite: 'blah blah',
-    adDate: new Date(),
-    adOwner: 'test',
-    user: 'test',
-    link: '#',
-    count: 3,
-    comments: 'este es un comentario'
-  },
-  {
-    id: 4,
-    email: 'test2@gmail.com',
-    operation: 'test',
-    category: 'test',
-    title: 'title',
-    price: 3000,
-    meters: 1200,
-    sqrMtrPrice: 1200,
-    phone: 1200,
-    status: 'Contacto',
-    bathrooms: 2,
-    rooms: 2,
-    adSite: 'blah blah',
-    adDate: new Date(),
-    adOwner: 'test',
-    user: 'test',
-    link: '#',
-    count: 3,
-    comments: 'este es un comentario'
-  },
-  {
-    id: 5,
-    email: 'test2@gmail.com',
-    operation: 'test',
-    category: 'test',
-    title: 'title',
-    price: 3000,
-    meters: 1200,
-    sqrMtrPrice: 1200,
-    phone: 1200,
-    status: 'Contacto',
-    bathrooms: 2,
-    rooms: 2,
-    adSite: 'blah blah',
-    adDate: new Date(),
-    adOwner: 'test',
-    user: 'test',
-    link: '#',
-    count: 3,
-    comments: 'este es un comentario'
-  },
-  {
-    id: 6,
-    email: 'test2@gmail.com',
-    operation: 'test',
-    category: 'test',
-    title: 'title',
-    price: 3000,
-    meters: 1200,
-    sqrMtrPrice: 1200,
-    phone: 1200,
-    status: 'Contacto',
-    bathrooms: 2,
-    rooms: 2,
-    adSite: 'blah blah',
-    adDate: new Date(),
-    adOwner: 'test',
-    user: 'test',
-    link: '#',
-    count: 3,
-    comments: 'este es un comentario'
-  },
-  {
-    id: 7,
-    email: 'test2@gmail.com',
-    operation: 'test',
-    category: 'test',
-    title: 'title',
-    price: 3000,
-    meters: 1200,
-    sqrMtrPrice: 1200,
-    phone: 1200,
-    status: 'Contacto',
-    bathrooms: 2,
-    rooms: 2,
-    adSite: 'blah blah',
-    adDate: new Date(),
-    adOwner: 'test',
-    user: 'test',
-    link: '#',
-    count: 3,
-    comments: 'este es un comentario'
-  },
-  {
-    id: 8,
-    email: 'test2@gmail.com',
-    operation: 'test',
-    category: 'test',
-    title: 'title',
-    price: 3000,
-    meters: 1200,
-    sqrMtrPrice: 1200,
-    phone: 1200,
-    status: 'Contacto',
-    bathrooms: 2,
-    rooms: 2,
-    adSite: 'blah blah',
-    adDate: new Date(),
-    adOwner: 'test',
-    user: 'test',
-    link: '#',
-    count: 3,
-    comments: 'este es un comentario'
-  },
-  {
-    id: 9,
-    email: 'test2@gmail.com',
-    operation: 'test',
-    category: 'test',
-    title: 'title',
-    price: 3000,
-    meters: 1200,
-    sqrMtrPrice: 1200,
-    phone: 1200,
-    status: 'Contacto',
-    bathrooms: 2,
-    rooms: 2,
-    adSite: 'blah blah',
-    adDate: new Date(),
-    adOwner: 'test',
-    user: 'test',
-    link: '#',
-    count: 3,
-    comments: 'este es un comentario'
-  },
-  {
-    id: 10,
-    email: 'test2@gmail.com',
-    operation: 'test',
-    category: 'test',
-    title: 'title',
-    price: 3000,
-    meters: 1200,
-    sqrMtrPrice: 1200,
-    phone: 1200,
-    status: 'Contacto',
-    bathrooms: 2,
-    rooms: 2,
-    adSite: 'blah blah',
-    adDate: new Date(),
-    adOwner: 'test',
-    user: 'test',
-    link: '#',
-    count: 3,
-    comments: 'este es un comentario'
-  }
-]
+// ** Services
+import { scrape, getPosts } from 'src/services/scraping'
 
-for(let i = 0; i<= 20; i++){
-  const a = {...ROWS[0]}
-  a.id= i + 50
-  ROWS.push(a)
-}
+// ** Hooks
+import { useDebouncedState } from 'src/hooks'
 
 const Listing = () => {
   const [paginationModel, setPaginationModel] = useState({
-    page: 1,
+    page: 0,
     pageSize: 25
   })
+  const [, debouncedSearch, setSearch ] = useDebouncedState('')
   const { query } = useRouter()
   const websiteName = query.id
+  const { page, pageSize } = paginationModel
 
   const specialFilters = useForm({
     defaultValues: SpecialFilterSchema.getDefault(),
@@ -255,12 +43,38 @@ const Listing = () => {
     resolver: yupResolver(SpecialFilterSchema)
   })
 
-  const filters = specialFilters.watch()
+  const {search, ...filters} = specialFilters.watch()
+
+  useEffect(() => {
+    if(search !== debouncedSearch)
+      setSearch(search)
+  }, [search])
+
+  const {data, isLoading, ...posts} = useQuery({
+    queryKey: ['posts', filters, page, pageSize, debouncedSearch],
+    queryFn: async() => await getPosts(
+      {
+        ...filters,
+        search: debouncedSearch
+      },
+      page,
+      pageSize
+    ),
+    keepPreviousData: true
+  })
+
+  const scrapeData = useMutation({
+    mutationKey: ['scrape'],
+    mutationFn: scrape,
+    onSuccess: () => {
+      posts.refetch()
+    }
+  })
 
   const onSubmit = (data: SpecialFiltersData) => {
-    // if(typeof websiteName === 'string')
-    //   // scrapeData.mutate({filters: data, page: websiteName})
-    // else console.log("Page is loading")
+    if(typeof websiteName === 'string')
+      scrapeData.mutate({filters: data, website: websiteName})
+    else console.log("Page is loading")
   }
 
   return (
@@ -274,7 +88,10 @@ const Listing = () => {
             </form>
           </FormProvider>
         </CardContent>
-        <ListingTable rows={ROWS} columnDefinition={listingColumns} />
+        <ListingTable rows={(data && data.posts) || []} columnDefinition={listingColumns}
+          {...{paginationModel, setPaginationModel}} totalRows={(data && data.total) || 0}
+          loading={isLoading}
+        />
       </Card>
     </ListingLayout>
   )

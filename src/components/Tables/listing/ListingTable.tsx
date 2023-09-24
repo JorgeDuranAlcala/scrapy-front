@@ -18,12 +18,13 @@ type PaginationModel = { pageSize: number, page: number }
 type Props = {
   columnDefinition: typeof useColumns
   rows: GridValidRowModel[]
-  // paginationModel: PaginationModel
-  // setPaginationModel: Dispatch<SetStateAction<PaginationModel>>
-  // rowLength: number
+  paginationModel: PaginationModel
+  setPaginationModel: Dispatch<SetStateAction<PaginationModel>>
+  totalRows: number
+  loading?: boolean
 }
 
-const ListingTable = ({columnDefinition, rows =[] /*rowLength, paginationModel, setPaginationModel*/}: Props) => {
+const ListingTable = ({columnDefinition, rows =[], totalRows, loading, paginationModel, setPaginationModel}: Props) => {
   const { query } = useRouter()
   const [comments, setComments] = useState('')
   const [id, setID] = useState('')
@@ -32,7 +33,7 @@ const ListingTable = ({columnDefinition, rows =[] /*rowLength, paginationModel, 
   const [emailModal, emailHandler] = useDisclosure()
 
   const openEmailModal = useCallback((email: string) => {
-    setAdEmail(email)
+    if(email) setAdEmail(email)
     emailHandler.open()
   }, [])
 
@@ -47,14 +48,6 @@ const ListingTable = ({columnDefinition, rows =[] /*rowLength, paginationModel, 
     ), [])
 
   const dataGridProps = useMemo(() => ({
-    initialState: {
-      pagination: {
-        disableRowSelectionOnClick: true,
-        paginationModel: {
-          pageSize: 10
-        }
-      },
-    },
     sx:{
       '& .MuiDataGrid-row:hover': { backgroundColor: 'transparent' },
       '.MuiDataGrid-columnHeader:first-of-type': { marginLeft: '40px' },
@@ -87,8 +80,12 @@ const ListingTable = ({columnDefinition, rows =[] /*rowLength, paginationModel, 
       />
       <DataGrid
         rows={rows}
-        pageSizeOptions={[10]}
+        paginationMode="server"
         {...dataGridProps}
+        paginationModel={paginationModel}
+        loading={loading}
+        rowCount={totalRows}
+        onPaginationModelChange={setPaginationModel}
       />
     </Box>
   )
