@@ -40,7 +40,7 @@ export const SpecialFilters = () => {
     watch,
   } = useFormContext()
 
-  const [vip] = watch(['vip', 'municipality'])
+  const is_vip = watch('is_vip')
 
   const municipalities = useQuery({
     queryKey: ['municipalities', debouncedMunicipality],
@@ -84,8 +84,8 @@ export const SpecialFilters = () => {
       <Stack direction='row' justifyContent='space-between' alignItems='center'>
         <Stack direction='row' gap={3} alignItems={'center'}>
           <ControlledTextField name='search' label='Buscar' size='small' sx={{ minWidth: '300px', maxWidth: '500px' }} />
-          <IconButton color='warning' onClick={() => setValue('vip', !vip)}>
-            <Icon icon={`tabler:star${vip ? '-filled' : ''}`} />
+          <IconButton color='warning' onClick={() => setValue('is_vip', !is_vip)}>
+            <Icon icon={`tabler:star${is_vip ? '-filled' : ''}`} />
           </IconButton>
         </Stack>
         {user?.is_admin && !asPath.includes('history') && (
