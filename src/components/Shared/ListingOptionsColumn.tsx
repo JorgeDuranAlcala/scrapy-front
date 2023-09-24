@@ -15,7 +15,7 @@ type Props = {
 const ListingOptionColumn = (props: Props) => {
   const {
     id,
-    row: { comments, link, count, email }
+    row: { comments, link, calls, email }
   } = props
 
   return [
@@ -48,7 +48,7 @@ const ListingOptionColumn = (props: Props) => {
       sx: { padding: '4px' }
     }}
     />,
-    <Counter key='counter' value={count}/>
+    <Counter key='counter' value={calls}/>
   ]
 }
 
