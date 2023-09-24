@@ -25,8 +25,7 @@ import { useAuth } from 'src/hooks'
 // ** Type Imports
 import { Settings } from 'src/@core/context/settingsContext'
 
-// ** Third party imports
-import { useTranslation } from 'react-i18next'
+
 
 interface Props {
   settings: Settings
@@ -54,8 +53,7 @@ const Link = styled(NextLink)(() => ({
 }))
 
 const UserDropdown = (props: Props) => {
-  // ** Translation
-  const { t } = useTranslation()
+
 
   // ** Props
   const { settings } = props
@@ -157,7 +155,7 @@ const UserDropdown = (props: Props) => {
             <MenuItemStyled sx={{ p: 0 }} onClick={() => handleDropdownClose()}>
               <Box sx={styles} component={Link} href='/users/'>
                 <Icon icon='tabler:users' />
-                {t('users')}
+                Usuarios
               </Box>
             </MenuItemStyled>
             <Divider sx={{ my: theme => `${theme.spacing(2)} !important` }} />

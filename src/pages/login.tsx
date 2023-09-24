@@ -29,6 +29,7 @@ import { useForm, Controller } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useTranslation } from "react-i18next"
 
+
 // ** Hooks
 import { useAuth } from 'src/hooks'
 import { useSettings } from 'src/@core/hooks/useSettings'
@@ -194,10 +195,10 @@ const LoginPage = () => {
             </svg>
             <Box sx={{ my: 6 }}>
               <Typography sx={{ mb: 1.5, fontWeight: 500, fontSize: '1.625rem', lineHeight: 1.385 }}>
-                {`${t('welcome-message')} ${themeConfig.templateName}! 👋🏻`}
+                {`¡Bienvenido a ${themeConfig.templateName}! 👋🏻`}
               </Typography>
               <Typography sx={{ color: 'text.secondary' }}>
-                {t('sign-in-message')}
+                {'¡Entre a su cuenta!'}
               </Typography>
             </Box>
             <form noValidate autoComplete='off' onSubmit={handleSubmit(onSubmit)}>
@@ -222,7 +223,7 @@ const LoginPage = () => {
               </FormControl>
               <FormControl fullWidth sx={{ mb: 1.5 }}>
                 <InputLabel htmlFor='auth-login-v2-password' error={Boolean(errors.password)}>
-                  {t('password')}
+                Contraseña
                 </InputLabel>
                 <Controller
                   name='password'
@@ -232,7 +233,7 @@ const LoginPage = () => {
                     <OutlinedInput
                       value={value}
                       onBlur={onBlur}
-                      label={t('password')}
+                      label={'Contraseña'}
                       onChange={onChange}
                       id='auth-login-v2-password'
                       error={Boolean(errors.password)}
@@ -267,10 +268,10 @@ const LoginPage = () => {
                 }}
               >
                 <FormControlLabel
-                  label={t('remember-me')}
+                  label='Recuérdame'
                   control={<Checkbox checked={rememberMe} onChange={e => setRememberMe(e.target.checked)} />}
                 />
-                <LinkStyled href='/forgot-password'>{t('password-forgot')}</LinkStyled>
+                <LinkStyled href='/forgot-password'>Olvido de contraseña</LinkStyled>
               </Box>
               <Button fullWidth size='large' type='submit' variant='contained' sx={{ mb: 4 }}>
                 Login
