@@ -76,7 +76,7 @@ const listingColumns = ({openEmailModal, openCommentsModal, route}: optionAction
       width: 100,
     },
     {
-      field: 'status',
+      field: 'state',
       type: 'singleSelect',
       headerName: 'Estado',
       filterable: false,
