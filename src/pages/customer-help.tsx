@@ -2,7 +2,7 @@
 import { ReactNode } from 'react'
 
 // ** Next Import
-import Link from 'next/link'
+import { useRouter } from 'next/router'
 
 // ** MUI Components
 import Button from '@mui/material/Button'
@@ -12,7 +12,6 @@ import Box, { BoxProps } from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 
 import Icon from 'src/@core/components/icon'
-import { useTranslation } from 'react-i18next'
 
 // ** Layout Import
 import BlankLayout from 'src/@core/layouts/BlankLayout'
@@ -51,13 +50,13 @@ const Img = styled('img')(({ theme }) => ({
 }))
 
 const CustomerHelp = () => {
-  const { t } = useTranslation()
+  const router = useRouter()
   return (
     <Box className='content-center'>
       <Box sx={{ p: 5, display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
         <BoxWrapper sx={{backgroundColor: 'action.hover'}} mb={5} p={5}>
-          <Typography variant='h4'>{t('customer-support')}</Typography>
-          <Typography variant='h6'>{t('customer-support-hours', { start: '9:00', end: '22:00' })}</Typography>
+          <Typography variant='h4'>Atencion al cliente</Typography>
+          <Typography variant='h6'>Disponible de lunes a viernes de 9:00 a 22:00</Typography>
           <Stack justifyContent="space-around" direction={{ md: 'row' }} spacing={5}>
             <Stack alignItems='center' sx={{ backgroundColor: 'background' }} direction='row' spacing={3}>
               <Icon icon='tabler:phone' />
@@ -69,14 +68,19 @@ const CustomerHelp = () => {
             </Stack>
           </Stack>
         </BoxWrapper>
-        <Button LinkComponent={Link} href="/" variant="contained">
-          {t('back-home')}
+        <Button onClick={() => router.back()} variant="contained">
+          Regresar
         </Button>
         <Img height='500' alt='under-maintenance-illustration' src='/images/pages/misc-under-maintenance.png' />
       </Box>
       <FooterIllustrations />
     </Box>
   )
+}
+
+CustomerHelp.acl = {
+  action: 'see',
+  subject: 'user-pages'
 }
 
 CustomerHelp.getLayout = (page: ReactNode) => <BlankLayout>{page}</BlankLayout>
