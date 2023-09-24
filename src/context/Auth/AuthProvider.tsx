@@ -38,15 +38,8 @@ const AuthProvider = ({ children }: Props) => {
   useEffect(() => {
     const initAuth = async () => {
       try{
-          const savedUser = get(storedUser)
-
-          if(!savedUser) throw "Not logged in!"
-
-          // const response = await getUserData()
-
-          const userData: User = JSON.parse(savedUser)
-          setUser(userData)
-
+          const user = await getUserData()
+          setUser(user)
       }catch(e){
         handleLogout()
       }
