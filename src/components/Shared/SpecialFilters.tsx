@@ -71,7 +71,7 @@ export const SpecialFilters = () => {
           <ControlledSelect name='zone' label='Zona' options={['ejemplo1', 'ejemplo2']} />
         </Grid>
         <Grid item md={2} sm={12}>
-          <ControlledSelect name='status' label='Estado' options={STATUSES} />
+          <ControlledSelect name='status' label='Estado' options={STATUSES } />
         </Grid>
         <Grid item md={2} sm={12}>
           <ControlledSelect name='operation' label='Operación' options={OPERATION} />

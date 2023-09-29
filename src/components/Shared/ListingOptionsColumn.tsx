@@ -48,7 +48,7 @@ const ListingOptionColumn = (props: Props) => {
       sx: { padding: '4px' }
     }}
     />,
-    <Counter key='counter' value={calls}/>
+    <Counter key='counter' value={calls} id={id}/>
   ]
 }
 

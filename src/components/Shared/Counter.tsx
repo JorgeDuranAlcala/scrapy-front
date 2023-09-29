@@ -1,30 +1,56 @@
-import { memo } from 'react'
+import { memo, useEffect, useState } from 'react'
 
 import Badge from '@mui/material/Badge'
 import Button from '@mui/material/Button'
 import ButtonGroup from '@mui/material/ButtonGroup'
 
+import { useMutation } from '@tanstack/react-query'
+import { toast } from 'react-hot-toast'
+
 import Icon from 'src/@core/components/icon'
 import { useDebouncedState } from 'src/hooks'
 
+import { updateCalls } from 'src/services'
+
 type CounterProps = {
   value: number
+  id: number | string
 }
 
-export const Counter = memo(({ value }: CounterProps) => {
-  const [count, /*debouncedCount*/, setCount] = useDebouncedState(0)
+export const Counter = memo(({ value, id }: CounterProps) => {
+  const [calls, setCalls] = useState(value)
+  const [count, debouncedCount, setCount] = useDebouncedState(0)
+
+  const callsUpdate = useMutation({
+    mutationKey: ['update-calls'],
+    mutationFn: updateCalls,
+    onSuccess: () => {
+      toast.success('Datos actualizados')
+      setCalls(count + calls)
+      setCount(0)
+    },
+    onError: (e) => {
+      toast.error('Error al actualizar los datos')
+      setCount(0)
+    }
+  })
 
   const handleCount = (option: string) => {
     const number = option == 'add' ? 1 : -1
 
-    if (value + count + number <= 9 && value + count + number >= 0)
+    if (calls + count + number <= 9 && calls + count + number >= 0)
       setCount(count + number)
   }
+
+  useEffect(() => {
+    if(count != 0)
+      callsUpdate.mutate({post_id: id, calls: debouncedCount})
+  }, [debouncedCount])
 
   return (
     <ButtonGroup size='small' sx={{ maxHeight: '20px' }}>
       <Badge
-        badgeContent={count + value}
+        badgeContent={count + calls}
         color='primary'
         max={9}
         anchorOrigin={{

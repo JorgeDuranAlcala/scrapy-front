@@ -9,7 +9,7 @@ import { useFormContext, Controller } from 'react-hook-form'
 type ControlledSelectProps = {
   name: string
   label: string
-  options?: string[]
+  options?: string[] | [any, any][]
   allowEmpty?: boolean
 } & Exclude<SelectProps, 'name' | 'label'>
 
@@ -20,9 +20,17 @@ const ControlledSelect = (props: ControlledSelectProps) => {
     formState: { errors }
   } = useFormContext()
 
-  const menuItems = options.map(option =>
-    <MenuItem key={option} value={option}>{option}</MenuItem>
-  )
+  let menuItems: JSX.Element[]
+
+  if(typeof options[0] !== 'string')
+    menuItems = options.map(option =>
+      <MenuItem key={option as string} value={option}>{option}</MenuItem>
+    )
+  else
+    menuItems = options.map(([value, text]): any =>
+      <MenuItem key={value} value={value}>{text}</MenuItem>
+    )
+
 
   return (
     <Controller
