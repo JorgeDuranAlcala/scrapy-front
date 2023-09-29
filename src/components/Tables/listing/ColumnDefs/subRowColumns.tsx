@@ -85,7 +85,6 @@ const subRowColumns = (setVip: (vip: boolean) => void): GridColDef[] => [
       filterable: false,
       sortable: false,
       width: 150,
-      renderHeader: () => <></>,
     },
     {
       type: 'actions',
