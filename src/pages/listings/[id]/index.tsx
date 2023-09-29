@@ -63,7 +63,10 @@ const Listing = () => {
       page,
       pageSize
     ),
-    keepPreviousData: true
+    keepPreviousData: true,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
   })
 
   const scrapeData = useMutation({
@@ -71,7 +74,7 @@ const Listing = () => {
     mutationFn: scrape,
     onSuccess: () => {
       posts.refetch()
-    }
+    },
   })
 
   const postUpdate = useMutation({
