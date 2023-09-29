@@ -27,13 +27,13 @@ const listingColumns = ({openEmailModal, openCommentsModal, route}: optionAction
       field: 'title',
       headerName: 'Título',
       filterable: false,
-      width: 300
+      width: 280
     },
     {
       field: 'price',
       headerName: 'Precio',
       filterable: false,
-      width: 80
+      width: 100
     },
     {
       field: 'meters',
@@ -45,31 +45,28 @@ const listingColumns = ({openEmailModal, openCommentsModal, route}: optionAction
       field: 'phone',
       headerName: 'Teléfono',
       filterable: false,
-      width: 120,
+      width: 150,
     },
     {
-      field: 'timestamp',
+      field: 'date',
       headerName: 'Hora',
       filterable: false,
       valueFormatter: ({value}: {value: Date}) => {
         return value.toLocaleTimeString('es-ES', {hour12: true, hour: "numeric", minute: "numeric"})
       },
-      width: 100,
+      width: 120,
     },
     {
       field: 'status',
       headerName: 'Estado',
       filterable: false,
-      editable: true,
-      width: 140,
-      renderCell: (props) => <StatusSelect {...props}/>,
-      renderEditCell: (props) => <StatusSelect {...props}/>,
+      width: 100,
     },
     {
       type:'actions',
       field: 'options',
       headerName: 'Opciones',
-      width: 260,
+      width: 220,
       filterable: false,
       sortable: false,
       getActions: (row) => listingOptionColumn({...row, listingSite: route, openEmailModal, openCommentsModal})

@@ -5,6 +5,7 @@ import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
 import Grid from '@mui/material/Grid'
 import Stack from '@mui/material/Stack'
+import CircularProgress from '@mui/material/CircularProgress'
 
 import FormControl from '@mui/material/FormControl'
 import IconButton from '@mui/material/IconButton'
@@ -17,7 +18,7 @@ import { useQuery } from '@tanstack/react-query'
 
 import { ControlledSelect, ControlledTextField, Autocomplete } from 'src/components/Forms'
 
-import { useAuth } from 'src/hooks'
+import { useAuth, useDebouncedState } from 'src/hooks'
 
 import { STATUSES } from 'src/types'
 
@@ -31,37 +32,44 @@ export const defaultSpecialFilters = SpecialFilterSchema.getDefault()
 const OPERATION = ['Venta', 'Alquiler', 'Alquiler vacacional']
 const CATEGORIES = ['Pisos', 'Casas', 'Chalets', 'Terrenos', 'Locales']
 
-export const SpecialFilters = () => {
+type Props = {
+  isScraping?: boolean
+}
+
+export const SpecialFilters = ({ isScraping = false }: Props) => {
   const { user } = useAuth()
   const { asPath } = useRouter()
-  const {
-    control,
-    setValue,
-    watch,
-    formState: { errors }
-  } = useFormContext()
+  const [municipality, debouncedMunicipality, setMunicipality] = useDebouncedState('')
+  const { setValue, watch } = useFormContext()
 
-  const vip = watch('vip')
-
+  const is_vip = watch('is_vip')
 
   const municipalities = useQuery({
-    queryKey: ['municipalities'],
+    queryKey: ['municipalities', debouncedMunicipality],
     queryFn: async () => {
-      return await getMunicipalities('')
+      return await getMunicipalities(debouncedMunicipality)
     },
     refetchOnMount: false,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false
   })
 
-
   return (
     <Stack gap={5}>
       <Grid container spacing={3}>
         <Grid item md={4} sm={12}>
           <FormControl fullWidth>
-            <Autocomplete name="municipality" label="Población" isOptionEqualToValue={(option, value) => option.name === value.name}
-              loading={municipalities.isLoading} options={municipalities.data || []} error={municipalities.isError}
+            <Autocomplete
+              name='municipality'
+              label='Población'
+              isOptionEqualToValue={(option, value) => option.name === value.name}
+              loading={municipalities.isLoading || municipality !== debouncedMunicipality}
+              options={municipalities.data || []}
+              error={municipalities.isError}
+              onInputChange={(str: string) => {
+                setMunicipality(str)
+              }}
+              inputValue={municipality}
             />
           </FormControl>
         </Grid>
@@ -81,9 +89,14 @@ export const SpecialFilters = () => {
       <Divider />
       <Stack direction='row' justifyContent='space-between' alignItems='center'>
         <Stack direction='row' gap={3} alignItems={'center'}>
-          <ControlledTextField name='search' label='Buscar' size='small' sx={{ minWidth: '300px', maxWidth: '500px' }} />
-          <IconButton color='warning' onClick={() => setValue('vip', !vip)}>
-            <Icon icon={`tabler:star${vip ? '-filled' : ''}`} />
+          <ControlledTextField
+            name='search'
+            label='Buscar'
+            size='small'
+            sx={{ minWidth: '300px', maxWidth: '500px' }}
+          />
+          <IconButton color='warning' onClick={() => setValue('is_vip', !is_vip)}>
+            <Icon icon={`tabler:star${is_vip ? '-filled' : ''}`} />
           </IconButton>
         </Stack>
         {user?.is_admin && !asPath.includes('history') && (
@@ -93,7 +106,9 @@ export const SpecialFilters = () => {
                 Historial
               </Button>
             </Link>
-            <Button variant='contained' type='submit'>
+            <Button variant='contained' type='submit' disabled={municipality.length === 0 || isScraping}
+              endIcon={isScraping && <CircularProgress size={16}/>}
+            >
               Actualizar
             </Button>
           </Stack>

@@ -16,28 +16,31 @@ import yup from "src/@core/utils/customized-yup"
 // ** Custom components
 import { ControlledTextField } from "src/components/Forms"
 import Icon from "src/@core/components/icon"
+import {toast } from 'react-hot-toast'
 
 const commentsSchema = yup.object().shape({
   comments: yup.string().min(1)
 })
 
-type commentsData = { comments: string }
+type commentsData = { comment: string }
 
-export const CommentsModal = ({id, comments='', opened, close}: CommentModalProps) => {
+export const CommentsModal = ({id, comments='', opened, close, submit}: CommentModalProps) => {
   const { t } = useTranslation()
   const commentsForm = useForm({
-    defaultValues: { comments },
+    defaultValues: { comment: comments },
     mode: 'onBlur',
     resolver: yupResolver(commentsSchema),
   })
 
   const onSubmit = (data: commentsData) => {
+    toast.error('backend no permite editar comentario')
+    if(submit) submit(data)
     console.log(data, id)
   }
 
   useEffect(() => {
     if(opened)
-      commentsForm.reset({comments})
+      commentsForm.reset({comment: comments})
   }, [opened])
 
   return (
@@ -80,6 +83,7 @@ export const CommentsModal = ({id, comments='', opened, close}: CommentModalProp
 
 type CommentModalProps = {
   id: string
+  submit?: (data: any) => void
   comments?: string
   opened: boolean,
   close: () => void

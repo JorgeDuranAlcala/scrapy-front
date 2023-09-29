@@ -3,7 +3,7 @@ import { useState, useCallback, memo, useMemo, Dispatch, SetStateAction} from 'r
 import { useRouter } from 'next/router'
 
 import Box from '@mui/material/Box'
-import { DataGrid, esES, GridCellModesModel, GridValidRowModel, useGridApiRef } from '@mui/x-data-grid'
+import { DataGrid, esES, GridValidRowModel } from '@mui/x-data-grid'
 
 import ListingRow from './components/ListingTableRow'
 import useColumns from './ColumnDefs/listingColumns'
@@ -16,14 +16,24 @@ import { useDisclosure } from 'src/hooks'
 type PaginationModel = { pageSize: number, page: number }
 
 type Props = {
+  editable?: boolean
   columnDefinition: typeof useColumns
   rows: GridValidRowModel[]
-  // paginationModel: PaginationModel
-  // setPaginationModel: Dispatch<SetStateAction<PaginationModel>>
-  // rowLength: number
+  paginationModel: PaginationModel
+  setPaginationModel: Dispatch<SetStateAction<PaginationModel>>
+  totalRows: number
+  loading?: boolean
+  update?: (data: GridValidRowModel) => void
 }
 
-const ListingTable = ({columnDefinition, rows =[] /*rowLength, paginationModel, setPaginationModel*/}: Props) => {
+const sameContent = (hash1: any, hash2: any) => {
+  for(const key in hash1)
+    if(hash1[key] != hash2[key]) return false
+
+  return true
+}
+
+const ListingTable = ({columnDefinition, rows =[], totalRows, loading, paginationModel, setPaginationModel, update, editable = true}: Props) => {
   const { query } = useRouter()
   const [comments, setComments] = useState('')
   const [id, setID] = useState('')
@@ -32,7 +42,7 @@ const ListingTable = ({columnDefinition, rows =[] /*rowLength, paginationModel, 
   const [emailModal, emailHandler] = useDisclosure()
 
   const openEmailModal = useCallback((email: string) => {
-    setAdEmail(email)
+    if(email) setAdEmail(email)
     emailHandler.open()
   }, [])
 
@@ -47,27 +57,12 @@ const ListingTable = ({columnDefinition, rows =[] /*rowLength, paginationModel, 
     ), [])
 
   const dataGridProps = useMemo(() => ({
-    initialState: {
-      pagination: {
-        disableRowSelectionOnClick: true,
-        paginationModel: {
-          pageSize: 10
-        }
-      },
-    },
     sx:{
       '& .MuiDataGrid-row:hover': { backgroundColor: 'transparent' },
       '.MuiDataGrid-columnHeader:first-of-type': { marginLeft: '40px' },
       '.MuiDataGrid-cell--editable': { cursor:'pointer'}
     },
-
-    /* TODO: pass the "mutate" method returned by the useMutation hook
-      to update server side data when making changes
-
-      slotProps: {
-      mutate
-      }
-    */
+    slotProps: { row: {editable: editable ? 'editable' : '' }},
     slots: {
       row: ListingRow
     },
@@ -80,15 +75,23 @@ const ListingTable = ({columnDefinition, rows =[] /*rowLength, paginationModel, 
   return (
     <Box mt={5} sx={{ height: 400, width: '100%' }}>
       <CommentsModal opened={commentsModal} close={commentsHandler.close}
-        comments={comments} id={id}
+        comments={comments} id={id} submit={update}
       />
       <EmailDrawer open={emailModal} toggle={emailHandler.close}
         recipients={adEmail!== '' ? [adEmail] : []}
       />
       <DataGrid
         rows={rows}
-        pageSizeOptions={[10]}
+        paginationMode="server"
         {...dataGridProps}
+        paginationModel={paginationModel}
+        loading={loading}
+        processRowUpdate={(newValue, prevValue) => {
+          if(update && !sameContent(newValue, prevValue)) update(newValue)
+          return newValue
+        }}
+        rowCount={totalRows}
+        onPaginationModelChange={setPaginationModel}
       />
     </Box>
   )

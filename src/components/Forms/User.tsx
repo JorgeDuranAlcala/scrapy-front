@@ -7,7 +7,7 @@ import { InferType } from 'yup'
 import { ControlledTextField } from 'src/components/Forms'
 import { userSchema } from 'src/schemas'
 
-export type UserFormData = InferType<typeof userSchema> & { status?: string }
+export type UserFormData = InferType<typeof userSchema>
 
 export const UserForm = () => {
 

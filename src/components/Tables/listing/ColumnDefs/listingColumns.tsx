@@ -1,4 +1,4 @@
-import { GridColDef} from '@mui/x-data-grid'
+import { GridColDef, type ValueOptions} from '@mui/x-data-grid'
 
 import { StatusSelect } from '../components'
 import listingOptionColumn from 'src/components/Shared/ListingOptionsColumn'
@@ -11,8 +11,6 @@ type optionActions = {
   openEmailModal: (email: string) => void
   route: string
 }
-
-const NAN_VALIDATION = 'El valor debe ser un numero'
 
 const listingColumns = ({openEmailModal, openCommentsModal, route}: optionActions): GridColDef[] => {
   return [
@@ -33,7 +31,6 @@ const listingColumns = ({openEmailModal, openCommentsModal, route}: optionAction
       headerName: 'Título',
       filterable: false,
       editable: true,
-      renderEditCell: (props) => <EditableColumn  {...props}/>,
       width: 280
     },
     {
@@ -42,7 +39,6 @@ const listingColumns = ({openEmailModal, openCommentsModal, route}: optionAction
       headerName: 'Precio',
       filterable: false,
       editable: true,
-      renderEditCell: (props) => <EditableColumn msg={NAN_VALIDATION} {...props}/>,
       preProcessEditCellProps: (params) => ({ ...params.props, error: Number.isNaN(params.props.value)}),
       width: 100
     },
@@ -52,7 +48,6 @@ const listingColumns = ({openEmailModal, openCommentsModal, route}: optionAction
       headerName: 'Metros 2',
       filterable: false,
       editable: true,
-      renderEditCell: (props) => <EditableColumn msg={NAN_VALIDATION} {...props}/>,
       preProcessEditCellProps: (params) => ({ ...params.props, error: Number.isNaN(params.props.value)}),
       width: 100,
     },
@@ -67,22 +62,19 @@ const listingColumns = ({openEmailModal, openCommentsModal, route}: optionAction
     },
     {
       field: 'phone',
-      type: 'number',
       headerName: 'Teléfono',
       filterable: false,
       editable: true,
-      // preProcessEditCellProps: (params) => ({}),
-      renderEditCell: (props) => <EditableColumn {...props}/>,
       width: 100,
     },
     {
-      field: 'status',
+      field: 'state',
       type: 'singleSelect',
       headerName: 'Estado',
       filterable: false,
       editable: true,
       width: 140,
-      valueOptions: STATUSES
+      valueOptions: STATUSES as any
     },
     {
       type: 'actions',

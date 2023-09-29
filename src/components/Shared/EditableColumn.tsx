@@ -1,6 +1,6 @@
-import { useState, useEffect, ChangeEvent } from "react"
-import { GridRenderEditCellParams } from '@mui/x-data-grid'
-import TextField from "@mui/material/TextField"
+import { useState, ChangeEvent } from "react"
+import { GridRenderEditCellParams, GridEditInputCell } from '@mui/x-data-grid'
+import TextField from "@mui/material/Input"
 import CircularProgress from '@mui/material/CircularProgress';
 import InputAdornment from '@mui/material/InputAdornment';
 import Tooltip from "@mui/material/Tooltip";
@@ -21,12 +21,6 @@ export const EditableColumn = ({value, id, api, field, error, msg = ''}: Editabl
     api.setEditCellValue({id, field, value: newValue, debounceMs: 1000})
   }
 
-  useEffect(() => {
-    // Save changes when no changes have been made in 2 seconds
-    if(value == currentValue)
-      console.log("submit value: ", currentValue)
-  }, [value])
-
   return (
       <TextField
         autoFocus
@@ -35,14 +29,13 @@ export const EditableColumn = ({value, id, api, field, error, msg = ''}: Editabl
         value={currentValue}
         onChange={handleValueChange}
         error={error}
-        helperText={error && <Tooltip title={msg}><Icon icon="tabler:alert-circle"/></Tooltip>}
-        InputProps={{
-          endAdornment: value != currentValue && !error
-          ? <InputAdornment position="end">
-              <CircularProgress size={10}/>
-            </InputAdornment>
+        sx={{paddingBottom: 0, fontSize: 'inherit'}}
+        inputProps={{style: {paddingBottom: 0, paddingTop: 0}}}
+        disableUnderline
+        endAdornment={ error
+          ? <Tooltip title={msg}><Icon width={24} icon="tabler:alert-circle"/></Tooltip>
           : undefined
-        }}
+        }
       />
   )
 }

@@ -5,20 +5,17 @@ import {type User } from 'src/types'
 // ** Storage Service
 import { get } from 'src/services'
 
-// const { storedUser } = authConfig
+const { storedUser, jwt, jwtRefresh } = authConfig
 
 async function getUserData() /*Promise<UserData>*/ {
-  // const account = get(storedAccount)
-  // const activeTenant = get(storedActiveTenant)
+  const user = get(storedUser)
+  const token = get(jwt)
+  const refreshToken = get(jwtRefresh)
 
-  // if(!account || !activeTenant) throw "Missing session info"
+  if(!user || !token || !refreshToken)
+    throw "not signed in!"
 
-  // const acct = JSON.parse(account)
-  // const actTenant = JSON.parse(activeTenant)
-
-  // const tenantUser: TenantUser = await restRequestAuth('GET', '/tenant/auth/get-tenant')
-
-  return 'test'
+  return JSON.parse(user)
 }
 
 export default getUserData
