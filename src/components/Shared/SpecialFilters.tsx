@@ -5,6 +5,7 @@ import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
 import Grid from '@mui/material/Grid'
 import Stack from '@mui/material/Stack'
+import CircularProgress from '@mui/material/CircularProgress'
 
 import FormControl from '@mui/material/FormControl'
 import IconButton from '@mui/material/IconButton'
@@ -31,14 +32,15 @@ export const defaultSpecialFilters = SpecialFilterSchema.getDefault()
 const OPERATION = ['Venta', 'Alquiler', 'Alquiler vacacional']
 const CATEGORIES = ['Pisos', 'Casas', 'Chalets', 'Terrenos', 'Locales']
 
-export const SpecialFilters = () => {
+type Props = {
+  isScraping?: boolean
+}
+
+export const SpecialFilters = ({ isScraping = false }: Props) => {
   const { user } = useAuth()
   const { asPath } = useRouter()
   const [municipality, debouncedMunicipality, setMunicipality] = useDebouncedState('')
-  const {
-    setValue,
-    watch,
-  } = useFormContext()
+  const { setValue, watch } = useFormContext()
 
   const is_vip = watch('is_vip')
 
@@ -52,17 +54,21 @@ export const SpecialFilters = () => {
     refetchOnReconnect: false
   })
 
-
   return (
     <Stack gap={5}>
       <Grid container spacing={3}>
         <Grid item md={4} sm={12}>
           <FormControl fullWidth>
-            <Autocomplete name="municipality" label="Población"
+            <Autocomplete
+              name='municipality'
+              label='Población'
               isOptionEqualToValue={(option, value) => option.name === value.name}
               loading={municipalities.isLoading || municipality !== debouncedMunicipality}
-              options={municipalities.data || []} error={municipalities.isError}
-              onInputChange={(str: string) => {setMunicipality(str)}}
+              options={municipalities.data || []}
+              error={municipalities.isError}
+              onInputChange={(str: string) => {
+                setMunicipality(str)
+              }}
               inputValue={municipality}
             />
           </FormControl>
@@ -71,7 +77,7 @@ export const SpecialFilters = () => {
           <ControlledSelect name='zone' label='Zona' options={['ejemplo1', 'ejemplo2']} />
         </Grid>
         <Grid item md={2} sm={12}>
-          <ControlledSelect name='status' label='Estado' options={STATUSES } />
+          <ControlledSelect name='status' label='Estado' options={STATUSES} />
         </Grid>
         <Grid item md={2} sm={12}>
           <ControlledSelect name='operation' label='Operación' options={OPERATION} />
@@ -83,7 +89,12 @@ export const SpecialFilters = () => {
       <Divider />
       <Stack direction='row' justifyContent='space-between' alignItems='center'>
         <Stack direction='row' gap={3} alignItems={'center'}>
-          <ControlledTextField name='search' label='Buscar' size='small' sx={{ minWidth: '300px', maxWidth: '500px' }} />
+          <ControlledTextField
+            name='search'
+            label='Buscar'
+            size='small'
+            sx={{ minWidth: '300px', maxWidth: '500px' }}
+          />
           <IconButton color='warning' onClick={() => setValue('is_vip', !is_vip)}>
             <Icon icon={`tabler:star${is_vip ? '-filled' : ''}`} />
           </IconButton>
@@ -95,7 +106,9 @@ export const SpecialFilters = () => {
                 Historial
               </Button>
             </Link>
-            <Button variant='contained' type='submit' disabled={municipality.length === 0}>
+            <Button variant='contained' type='submit' disabled={municipality.length === 0 || isScraping}
+              endIcon={isScraping && <CircularProgress size={16}/>}
+            >
               Actualizar
             </Button>
           </Stack>

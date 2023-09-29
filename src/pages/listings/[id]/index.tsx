@@ -102,7 +102,7 @@ const Listing = () => {
         <CardContent>
           <FormProvider {...specialFilters}>
             <form onSubmit={specialFilters.handleSubmit(onSubmit)}>
-              <SpecialFilters />
+              <SpecialFilters isScraping={scrapeData.isLoading} />
             </form>
           </FormProvider>
         </CardContent>
