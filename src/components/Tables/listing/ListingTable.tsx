@@ -16,6 +16,7 @@ import { useDisclosure } from 'src/hooks'
 type PaginationModel = { pageSize: number, page: number }
 
 type Props = {
+  editable?: boolean
   columnDefinition: typeof useColumns
   rows: GridValidRowModel[]
   paginationModel: PaginationModel
@@ -32,7 +33,7 @@ const sameContent = (hash1: any, hash2: any) => {
   return true
 }
 
-const ListingTable = ({columnDefinition, rows =[], totalRows, loading, paginationModel, setPaginationModel, update}: Props) => {
+const ListingTable = ({columnDefinition, rows =[], totalRows, loading, paginationModel, setPaginationModel, update, editable = true}: Props) => {
   const { query } = useRouter()
   const [comments, setComments] = useState('')
   const [id, setID] = useState('')
@@ -61,6 +62,7 @@ const ListingTable = ({columnDefinition, rows =[], totalRows, loading, paginatio
       '.MuiDataGrid-columnHeader:first-of-type': { marginLeft: '40px' },
       '.MuiDataGrid-cell--editable': { cursor:'pointer'}
     },
+    slotProps: { row: {editable: editable ? 'editable' : '' }},
     slots: {
       row: ListingRow
     },

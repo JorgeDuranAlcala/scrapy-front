@@ -7,6 +7,7 @@ import { type GridRowParams, GridActionsCellItem } from '@mui/x-data-grid'
 import { Counter, ActionButton } from 'src/components/Shared'
 
 type Props = {
+  edit?: boolean
   openEmailModal: (id: string) => void
   openCommentsModal: (id: string, comments: string) => void
   listingSite: string
@@ -14,11 +15,12 @@ type Props = {
 
 const ListingOptionColumn = (props: Props) => {
   const {
+    edit = true,
     id,
     row: { comments, link, calls, email }
   } = props
 
-  return [
+  const actions: JSX.Element[] =  [
     <GridActionsCellItem key={'view'} {...{href: link}}
       icon={
         <Icon width={24} icon='tabler:eye'/>
@@ -37,19 +39,24 @@ const ListingOptionColumn = (props: Props) => {
       passHref: true,
       sx: { padding: '4px' }
     }}
-    />,
-    <ActionButton key='comments'
-    title='Comentarios'
-    icon={`tabler:${comments && comments.length > 0 ? 'info-circle-filled' : 'info-circle'}`}
-    buttonProps={{
-      onClick: () => {
-        props.openCommentsModal(id as string, comments)
-      },
-      sx: { padding: '4px' }
-    }}
-    />,
-    <Counter key='counter' value={calls} id={id}/>
+    />
   ]
+  if(edit)
+    actions.concat([
+      <ActionButton key='comments'
+      title='Comentarios'
+      icon={`tabler:${comments && comments.length > 0 ? 'info-circle-filled' : 'info-circle'}`}
+      buttonProps={{
+        onClick: () => {
+          props.openCommentsModal(id as string, comments)
+        },
+        sx: { padding: '4px' }
+      }}
+      />,
+      <Counter key='counter' value={calls} id={id}/>
+    ])
+
+  return actions
 }
 
 export default ListingOptionColumn

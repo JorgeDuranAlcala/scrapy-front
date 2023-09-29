@@ -28,13 +28,15 @@ const ListingTableRow = ({ row, ...props }: GridRowProps) => {
     }
   })
   const setVip = (vip: boolean) => {
-    const data = { ...api.current.getRow(props.rowId), vip }
-    postUpdate.mutate(data)
-    api.current.updateRows([data])
+    if(props.editable === 'editable'){
+      const data = { ...api.current.getRow(props.rowId), vip }
+      postUpdate.mutate(data)
+      api.current.updateRows([data])
+    }
   }
 
 
-  const subCols = useMemo(() => subRowColumns(setVip), [])
+  const subCols = useMemo(() => subRowColumns(setVip, props.editable === 'editable'), [])
 
   return (
     <>

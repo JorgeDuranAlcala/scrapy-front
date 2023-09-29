@@ -18,11 +18,11 @@ const validator = (schema: yup.AnySchema, value: any)  => {
   }
 }
 
-const subRowColumns = (setVip: (vip: boolean) => void): GridColDef[] => [
+const subRowColumns = (setVip: (vip: boolean) => void, editable = true): GridColDef[] => [
     {
       field: 'bathrooms',
       headerName: 'Baños',
-      editable: true,
+      editable,
       sortable: false,
       filterable: false,
       headerAlign: 'left',
@@ -33,7 +33,7 @@ const subRowColumns = (setVip: (vip: boolean) => void): GridColDef[] => [
       field: 'rooms',
       headerName: 'Habitaciones',
       headerAlign: 'left',
-      editable: true,
+      editable,
       filterable: false,
       sortable: false,
       width: 150,
@@ -45,7 +45,7 @@ const subRowColumns = (setVip: (vip: boolean) => void): GridColDef[] => [
       headerAlign: 'left',
       filterable: false,
       sortable: false,
-      editable: true,
+      editable,
       renderEditCell: (props) => <EditableColumn  {...props}/>,
       width: 250,
     },
@@ -64,7 +64,7 @@ const subRowColumns = (setVip: (vip: boolean) => void): GridColDef[] => [
       headerAlign: 'left',
       filterable: false,
       sortable: false,
-      editable: true,
+      editable,
       width: 250,
     },
     {
@@ -73,7 +73,7 @@ const subRowColumns = (setVip: (vip: boolean) => void): GridColDef[] => [
       headerAlign: 'left',
       filterable: false,
       sortable: false,
-      editable: true,
+      editable,
       renderEditCell: (props) => <EditableColumn  {...props}/>,
       preProcessEditCellProps: (params) => ({...params, error: validator(email, params.props.value)}),
       width: 250,

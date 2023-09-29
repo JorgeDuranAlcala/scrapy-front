@@ -1,3 +1,5 @@
+import { useState } from 'react'
+
 import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
@@ -6,6 +8,7 @@ import Stack from '@mui/material/Stack'
 
 import { useForm, FormProvider } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
+import { useQuery } from '@tanstack/react-query'
 
 import UseBgColor from 'src/@core/hooks/useBgColor'
 
@@ -18,61 +21,17 @@ import { SpecialFilters, defaultSpecialFilters, type SpecialFiltersData } from '
 
 import { SpecialFilterSchema } from 'src/schemas'
 
-const ROWS= [
-  {
-    id: 1,
-    email: "test@gmail.com",
-    operation: 'test',
-    category: 'test',
-    title: 'title',
-    price: 3000,
-    meters: 1200,
-    user: 'tester',
-    timestamp: new Date,
-    status: 'Contacto',
-    bathrooms: 2,
-    rooms: 2,
-    adSite: 'blah blah',
-    adDate: new Date,
-    adOwner: 'test',
-    link: '#',
-    count:2
-  },
-  {
-    id: 2,
-    email: "test2@gmail.com",
-    operation: 'test',
-    category: 'test',
-    title: 'title',
-    price: 3000,
-    meters: 1200,
-    user: 'tester',
-    timestamp: new Date,
-    status: 'Contacto',
-    bathrooms: 2,
-    rooms: 2,
-    adSite: 'blah blah',
-    adDate: new Date,
-    adOwner: 'test',
-    link: '#',
-    count:3
-  }
-]
+import { getHistory } from 'src/services/posts'
 
 type InfoTagProps = {
   title: string | number
   color: keyof ReturnType<typeof UseBgColor>
 }
 
-const InfoTag = ({title, color}: InfoTagProps) => {
+const InfoTag = ({ title, color }: InfoTagProps) => {
   const colors = UseBgColor()
-  return  (
-    <Box {...colors[color]}
-      padding="20px"
-      minWidth={120}
-      textAlign='center'
-      borderRadius={2.5}
-    >
+  return (
+    <Box {...colors[color]} padding='20px' minWidth={120} textAlign='center' borderRadius={2.5}>
       {title}
     </Box>
   )
@@ -85,41 +44,63 @@ const ListingHistory = () => {
     resolver: yupResolver(SpecialFilterSchema)
   })
 
+  const [paginationModel, setPaginationModel] = useState({
+    page: 0,
+    pageSize: 25
+  })
+
+  const { data, isLoading } = useQuery({
+    queryKey: ['get-history', paginationModel.page],
+    queryFn: async () => {
+      return await getHistory({ page: paginationModel.page })
+    }
+  })
 
   const onSubmit = (data: SpecialFiltersData) => {
     console.log(data)
   }
 
-    return (
-      <ListingLayout>
-        <Card>
-          <CardTitle title='Filtros especiales' sx={{ textTransform: 'uppercase' }} />
-          <CardContent>
-            <FormProvider {...specialFilters}>
-              <form onSubmit={specialFilters.handleSubmit(onSubmit)}>
-                <SpecialFilters />
-              </form>
-            </FormProvider>
-          </CardContent>
-          <CardContent sx={{paddingBottom: "0px"}}>
-            <Stack direction="row" gap={3}>
-              <InfoTag
-                title={(new(Date)).toLocaleDateString('es-ES', {
-                  day: 'numeric', month: 'numeric', year: 'numeric'
-                })}
-                color='primaryLight'/>
-              <InfoTag title={'placeholder'} color='infoLight'/>
-            </Stack>
-          </CardContent>
-          <ListingTable rows={ROWS} columnDefinition={listingHistoryColumns} />
-        </Card>
-      </ListingLayout>
-    )
+  return (
+    <ListingLayout>
+      <Card>
+        <CardTitle title='Filtros especiales' sx={{ textTransform: 'uppercase' }} />
+        <CardContent>
+          <FormProvider {...specialFilters}>
+            <form onSubmit={specialFilters.handleSubmit(onSubmit)}>
+              <SpecialFilters />
+            </form>
+          </FormProvider>
+        </CardContent>
+        <CardContent sx={{ paddingBottom: '0px' }}>
+          <Stack direction='row' gap={3}>
+            <InfoTag
+              title={new Date().toLocaleDateString('es-ES', {
+                day: 'numeric',
+                month: 'numeric',
+                year: 'numeric'
+              })}
+              color='primaryLight'
+            />
+            <InfoTag title={'placeholder'} color='infoLight' />
+          </Stack>
+        </CardContent>
+        <ListingTable
+          rows={data?.history || []}
+          columnDefinition={listingHistoryColumns}
+          paginationModel={paginationModel}
+          setPaginationModel={setPaginationModel}
+          totalRows={data?.total || 0}
+          loading={isLoading}
+          editable={false}
+        />
+      </Card>
+    </ListingLayout>
+  )
 }
 
-ListingHistory.acl={
-  action:'see',
-  subject:'user-pages'
+ListingHistory.acl = {
+  action: 'see',
+  subject: 'user-pages'
 }
 
 export default ListingHistory
