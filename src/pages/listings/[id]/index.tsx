@@ -6,10 +6,13 @@ import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
 import CardTitle from '@mui/material/CardHeader'
 
+import { type GridValidRowModel } from '@mui/x-data-grid'
+
 // ** Third party imports
 import { useForm, FormProvider } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useQuery, useMutation } from '@tanstack/react-query'
+import { toast } from 'react-hot-toast'
 
 // ** Layout
 import ListingLayout from 'src/layouts/ListingLayout'
@@ -22,7 +25,7 @@ import { SpecialFilters, type SpecialFiltersData } from 'src/components/Shared'
 import { SpecialFilterSchema } from 'src/schemas'
 
 // ** Services
-import { scrape, getPosts } from 'src/services/scraping'
+import { scrape, getPosts, updatePost } from 'src/services/scraping'
 
 // ** Hooks
 import { useDebouncedState } from 'src/hooks'
@@ -71,6 +74,18 @@ const Listing = () => {
     }
   })
 
+  const postUpdate = useMutation({
+    mutationKey: ['update-post'],
+    mutationFn: updatePost,
+    onSuccess: () => {
+      toast.success('Dato actualizado')
+    },
+    onError: (e) => {
+      console.log(e)
+      toast.error('Backend no permite editar este dato')
+    }
+  })
+
   const onSubmit = (data: SpecialFiltersData) => {
     if(typeof websiteName === 'string')
       scrapeData.mutate({filters: data, website: websiteName})
@@ -90,7 +105,7 @@ const Listing = () => {
         </CardContent>
         <ListingTable rows={(data && data.posts) || []} columnDefinition={listingColumns}
           {...{paginationModel, setPaginationModel}} totalRows={(data && data.total) || 0}
-          loading={isLoading}
+          loading={isLoading} update={postUpdate.mutate}
         />
       </Card>
     </ListingLayout>

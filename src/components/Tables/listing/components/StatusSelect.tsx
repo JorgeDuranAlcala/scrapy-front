@@ -26,8 +26,8 @@ export const StatusSelect = memo(({value, id, api, field}: GridRenderCellParams)
 
   return (
     <Select fullWidth size="small" value={value} onChange={(e) => onChange(e.target.value)}>
-        {STATUSES.map(status => (
-          <MenuItem key={status} value={status}>{status}</MenuItem>
+        {STATUSES.map(([id, status]) => (
+          <MenuItem key={id} value={id}>{status.toLocaleUpperCase()}</MenuItem>
         ))}
     </Select>
   )

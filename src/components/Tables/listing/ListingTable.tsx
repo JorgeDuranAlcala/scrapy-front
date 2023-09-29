@@ -3,7 +3,7 @@ import { useState, useCallback, memo, useMemo, Dispatch, SetStateAction} from 'r
 import { useRouter } from 'next/router'
 
 import Box from '@mui/material/Box'
-import { DataGrid, esES, GridCellModesModel, GridValidRowModel, useGridApiRef } from '@mui/x-data-grid'
+import { DataGrid, esES, GridValidRowModel } from '@mui/x-data-grid'
 
 import ListingRow from './components/ListingTableRow'
 import useColumns from './ColumnDefs/listingColumns'
@@ -22,9 +22,17 @@ type Props = {
   setPaginationModel: Dispatch<SetStateAction<PaginationModel>>
   totalRows: number
   loading?: boolean
+  update?: (data: GridValidRowModel) => void
 }
 
-const ListingTable = ({columnDefinition, rows =[], totalRows, loading, paginationModel, setPaginationModel}: Props) => {
+const sameContent = (hash1: any, hash2: any) => {
+  for(const key in hash1)
+    if(hash1[key] != hash2[key]) return false
+
+  return true
+}
+
+const ListingTable = ({columnDefinition, rows =[], totalRows, loading, paginationModel, setPaginationModel, update}: Props) => {
   const { query } = useRouter()
   const [comments, setComments] = useState('')
   const [id, setID] = useState('')
@@ -53,14 +61,6 @@ const ListingTable = ({columnDefinition, rows =[], totalRows, loading, paginatio
       '.MuiDataGrid-columnHeader:first-of-type': { marginLeft: '40px' },
       '.MuiDataGrid-cell--editable': { cursor:'pointer'}
     },
-
-    /* TODO: pass the "mutate" method returned by the useMutation hook
-      to update server side data when making changes
-
-      slotProps: {
-      mutate
-      }
-    */
     slots: {
       row: ListingRow
     },
@@ -73,7 +73,7 @@ const ListingTable = ({columnDefinition, rows =[], totalRows, loading, paginatio
   return (
     <Box mt={5} sx={{ height: 400, width: '100%' }}>
       <CommentsModal opened={commentsModal} close={commentsHandler.close}
-        comments={comments} id={id}
+        comments={comments} id={id} submit={update}
       />
       <EmailDrawer open={emailModal} toggle={emailHandler.close}
         recipients={adEmail!== '' ? [adEmail] : []}
@@ -84,6 +84,10 @@ const ListingTable = ({columnDefinition, rows =[], totalRows, loading, paginatio
         {...dataGridProps}
         paginationModel={paginationModel}
         loading={loading}
+        processRowUpdate={(newValue, prevValue) => {
+          if(update && !sameContent(newValue, prevValue)) update(newValue)
+          return newValue
+        }}
         rowCount={totalRows}
         onPaginationModelChange={setPaginationModel}
       />

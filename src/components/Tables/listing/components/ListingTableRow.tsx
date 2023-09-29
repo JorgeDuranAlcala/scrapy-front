@@ -1,4 +1,4 @@
-import { useState, memo, useMemo } from 'react'
+import React, { useState, memo, useMemo } from 'react'
 
 import { Icon } from '@iconify/react'
 import Box from '@mui/material/Box'
@@ -6,16 +6,34 @@ import Collapse from '@mui/material/Collapse'
 import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
 
+import { useMutation } from '@tanstack/react-query'
+import { toast } from 'react-hot-toast'
+
 import { GridRowProps, GridRow, DataGrid, useGridApiContext, esES } from '@mui/x-data-grid'
 
 import subRowColumns from '../ColumnDefs/subRowColumns'
+import { updatePost } from 'src/services'
 
 const ListingTableRow = ({ row, ...props }: GridRowProps) => {
   const [opened, setOpen] = useState(false)
   const api = useGridApiContext()
+  const postUpdate = useMutation({
+    mutationKey: ['update-post'],
+    mutationFn: updatePost,
+    onSuccess: () => {
+      toast.success('Dato actualizado')
+     },
+    onError: (e) => {
+      toast.error("Error backend: AttributeError: 'bool' object has no attribute 'lower'")
+    }
+  })
   const setVip = (vip: boolean) => {
-    api.current.updateRows([{ ...api.current.getRow(props.rowId), vip }])
+    const data = { ...api.current.getRow(props.rowId), vip }
+    postUpdate.mutate(data)
+    api.current.updateRows([data])
   }
+
+
   const subCols = useMemo(() => subRowColumns(setVip), [])
 
   return (
@@ -41,6 +59,7 @@ const ListingTableRow = ({ row, ...props }: GridRowProps) => {
                 rows={[row]}
                 columns={subCols}
                 processRowUpdate={(newRow) => {
+                  postUpdate.mutate(newRow)
                   api.current.updateRows([newRow])
                   return newRow
                 }}
