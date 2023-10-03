@@ -25,16 +25,15 @@ const ListingTableRow = ({ row, ...props }: GridRowProps) => {
      },
     onError: (e) => {
       toast.error("Error backend: AttributeError: 'bool' object has no attribute 'lower'")
+      const {is_vip, ...data} = row as any
+      api.current.updateRows([{...data, is_vip: !is_vip}])
     }
   })
   const setVip = (vip: boolean) => {
-    if(props.editable === 'editable'){
-      const data = { ...api.current.getRow(props.rowId), vip }
+      const data = { ...api.current.getRow(props.rowId), is_vip: vip }
       postUpdate.mutate(data)
       api.current.updateRows([data])
-    }
   }
-
 
   const subCols = useMemo(() => subRowColumns(setVip, props.editable === 'editable'), [])
 
