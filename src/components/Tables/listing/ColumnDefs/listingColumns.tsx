@@ -1,15 +1,13 @@
-import { GridColDef, type ValueOptions} from '@mui/x-data-grid'
+import { GridColDef} from '@mui/x-data-grid'
 
-import { StatusSelect } from '../components'
 import listingOptionColumn from 'src/components/Shared/ListingOptionsColumn'
-import subRowColumns from './subRowColumns'
-import { EditableColumn } from 'src/components/Shared'
 import { STATUSES } from 'src/types'
 
 type optionActions = {
   openCommentsModal: (id: string, comments: string) => void
   openEmailModal: (email: string) => void
   route: string
+  edit?: boolean
 }
 
 const listingColumns = ({openEmailModal, openCommentsModal, route}: optionActions): GridColDef[] => {
@@ -55,9 +53,7 @@ const listingColumns = ({openEmailModal, openCommentsModal, route}: optionAction
       field: 'sqrMtrPrice',
       headerName: 'Precio M2',
       filterable: false,
-      valueGetter: ({row: { sqrMtrPrice, price}}) => {
-        return price * sqrMtrPrice
-      },
+      valueGetter: ({row: { price, meters}}) => Math.ceil(price / meters),
       width: 120,
     },
     {
@@ -74,7 +70,10 @@ const listingColumns = ({openEmailModal, openCommentsModal, route}: optionAction
       filterable: false,
       editable: true,
       width: 140,
-      valueOptions: STATUSES as any
+      valueFormatter: ({value}) => !value || value === '' ? 'Ninguno' : STATUSES[value][1],
+      valueOptions: STATUSES as any,
+      getOptionLabel: ([, name]: any) => name,
+      getOptionValue: ([id, ]: any) => id
     },
     {
       type: 'actions',
@@ -82,7 +81,7 @@ const listingColumns = ({openEmailModal, openCommentsModal, route}: optionAction
       headerName: 'Opciones',
       headerAlign: 'left',
       width: 260,
-      getActions: (row) => listingOptionColumn({...row, listingSite: route, openEmailModal, openCommentsModal})
+      getActions: (row) => listingOptionColumn({...row, listingSite: route, openEmailModal, openCommentsModal })
     }
   ]
 }
