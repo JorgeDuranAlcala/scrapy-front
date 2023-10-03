@@ -20,7 +20,7 @@ const ListingOptionColumn = (props: Props) => {
     row: { comments, link, calls, email }
   } = props
 
-  const actions: JSX.Element[] =  [
+  let actions: JSX.Element[] =  [
     <GridActionsCellItem key={'view'} {...{href: link}}
       icon={
         <Icon width={24} icon='tabler:eye'/>
@@ -42,7 +42,7 @@ const ListingOptionColumn = (props: Props) => {
     />
   ]
   if(edit)
-    actions.concat([
+    actions = actions.concat([
       <ActionButton key='comments'
       title='Comentarios'
       icon={`tabler:${comments && comments.length > 0 ? 'info-circle-filled' : 'info-circle'}`}
