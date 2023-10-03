@@ -14,7 +14,7 @@ const getPosts = async (data: GridValidRowModel) => {
     meters,
     price_per_meter,
     phone,
-    vip
+    is_vip
   } = data
   const response = await restRequestAuth('PUT', '/posts/data', {
     body: {
@@ -29,7 +29,7 @@ const getPosts = async (data: GridValidRowModel) => {
       meters,
       price_per_meter,
       phone,
-      is_vip: vip
+      is_vip
     }
   })
 
