@@ -14,7 +14,7 @@ type ControlledSelectProps = {
 } & Exclude<SelectProps, 'name' | 'label'>
 
 const ControlledSelect = (props: ControlledSelectProps) => {
-  const { name, label, allowEmpty= true, options = [], children } = props
+  const { name, label, allowEmpty= false, options = [], children, ...rest } = props
   const {
     control,
     formState: { errors }
@@ -22,12 +22,12 @@ const ControlledSelect = (props: ControlledSelectProps) => {
 
   let menuItems: JSX.Element[]
 
-  if(typeof options[0] !== 'string')
+  if(typeof options[0] === 'string')
     menuItems = options.map(option =>
       <MenuItem key={option as string} value={option}>{option}</MenuItem>
     )
   else
-    menuItems = options.map(([value, text]): any =>
+    menuItems = options.map(([value, text]) =>
       <MenuItem key={value} value={value}>{text}</MenuItem>
     )
 
@@ -47,7 +47,7 @@ const ControlledSelect = (props: ControlledSelectProps) => {
           <Select
             value={value || ''}
             {...controlledProps}
-            {...props}
+            {...rest}
             id={label}
             label={label}
             labelId='related-account-label'
