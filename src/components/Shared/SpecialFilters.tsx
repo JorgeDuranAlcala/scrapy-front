@@ -1,3 +1,4 @@
+import { memo } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 
@@ -36,7 +37,7 @@ type Props = {
   isScraping?: boolean
 }
 
-export const SpecialFilters = ({ isScraping = false }: Props) => {
+export const SpecialFilters = memo(({ isScraping = false }: Props) => {
   const { user } = useAuth()
   const { asPath } = useRouter()
   const [municipality, debouncedMunicipality, setMunicipality] = useDebouncedState('')
@@ -80,10 +81,10 @@ export const SpecialFilters = ({ isScraping = false }: Props) => {
           <ControlledSelect name='status' label='Estado' options={STATUSES} />
         </Grid>
         <Grid item md={2} sm={12}>
-          <ControlledSelect name='operation' label='Operación' options={OPERATION} />
+          <ControlledSelect name='operation' label='Operación' allowEmpty={true} options={OPERATION} />
         </Grid>
         <Grid item md={2} sm={12}>
-          <ControlledSelect name='category' label='Categoría' options={CATEGORIES} />
+          <ControlledSelect name='category' label='Categoría' allowEmpty={true} options={CATEGORIES} />
         </Grid>
       </Grid>
       <Divider />
@@ -116,4 +117,4 @@ export const SpecialFilters = ({ isScraping = false }: Props) => {
       </Stack>
     </Stack>
   )
-}
+})
