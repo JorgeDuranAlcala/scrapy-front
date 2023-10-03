@@ -1,6 +1,5 @@
 import { GridColDef} from '@mui/x-data-grid'
 
-import { StatusSelect } from '../components'
 import listingOptionColumn from 'src/components/Shared/ListingOptionsColumn'
 
 type optionActions = {
@@ -69,7 +68,7 @@ const listingColumns = ({openEmailModal, openCommentsModal, route}: optionAction
       width: 220,
       filterable: false,
       sortable: false,
-      getActions: (row) => listingOptionColumn({...row, listingSite: route, openEmailModal, openCommentsModal})
+      getActions: (row) => listingOptionColumn({...row, listingSite: route, openEmailModal, openCommentsModal, edit: false})
     }
   ]
 }
