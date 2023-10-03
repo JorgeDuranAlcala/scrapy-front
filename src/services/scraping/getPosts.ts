@@ -21,7 +21,7 @@ const getPosts = async (filters: SpecialFiltersData, website: any, page: number,
     id: i,
     adOwner: owner,
     // TODO: Have backend send date in the format 'YY-MM-DD'
-    adDate: date,
+    // adDate: date,
     status: !state_id || state_id == 1 ? '' : state_id,
     published_in: source,
     sqrMtrPrice: price_per_meter,
