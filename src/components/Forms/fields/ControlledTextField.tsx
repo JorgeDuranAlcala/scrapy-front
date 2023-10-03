@@ -1,3 +1,4 @@
+import { memo } from 'react'
 import TextField, { type TextFieldProps } from '@mui/material/TextField'
 import FormControl from '@mui/material/FormControl'
 
@@ -54,4 +55,4 @@ type Props = {
   transformValue?: (value: string) => string
 } & TextFieldProps
 
-export default ControlledTextField
+export default memo(ControlledTextField)
