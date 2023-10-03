@@ -40,13 +40,14 @@ const subRowColumns = (setVip: (vip: boolean) => void, editable = true): GridCol
       preProcessEditCellProps: (params) => ({ ...params.props, error: validator(number, params.props.value)}),
     },
     {
-      field: 'adSite',
+      field: 'published_in',
       headerName: 'Publicado en',
       headerAlign: 'left',
       filterable: false,
       sortable: false,
       editable,
       renderEditCell: (props) => <EditableColumn  {...props}/>,
+      valueGetter: ({value}) => (value ? value : ''),
       width: 250,
     },
     {
@@ -74,6 +75,7 @@ const subRowColumns = (setVip: (vip: boolean) => void, editable = true): GridCol
       filterable: false,
       sortable: false,
       editable,
+      valueGetter: (({value}) => value ? value : ''),
       renderEditCell: (props) => <EditableColumn  {...props}/>,
       preProcessEditCellProps: (params) => ({...params, error: validator(email, params.props.value)}),
       width: 250,
@@ -88,16 +90,16 @@ const subRowColumns = (setVip: (vip: boolean) => void, editable = true): GridCol
     },
     {
       type: 'actions',
-      field: 'vip',
+      field: 'is_vip',
       width: 50,
       renderHeader: () => <></>,
-      getActions: ({row: {vip}, id, ...props}) => [
+      getActions: ({row: {is_vip}}) => [
         <GridActionsCellItem
           key='vip'
           label='VIP'
           color={'warning'}
-          icon={<Icon width={24} icon={`tabler:star${vip ? '-filled' : ''}`} />}
-          onClick={() => {setVip(!vip)}}
+          icon={<Icon width={24} icon={`tabler:star${is_vip ? '-filled' : ''}`} />}
+          onClick={() => {editable && setVip(!is_vip)}}
         />
       ]
     }
