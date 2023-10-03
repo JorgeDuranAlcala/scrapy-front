@@ -53,5 +53,5 @@ jobs:
           git pull
           docker image build -t ${{ vars.IMAGE_NAME }} .
           docker container stop ${{ vars.CONTAINER_NAME }}
-          docker container rm ${{ vars.CONTAINER_NAME }}
+          docker rmi -f $(sudo docker images | tail -n +2 | awk '$1 == "<none>" {print $'3'}') 
           docker container run -d --name ${{ vars.CONTAINER_NAME }} -p 3000:3000 ${{ vars.IMAGE_NAME }}
