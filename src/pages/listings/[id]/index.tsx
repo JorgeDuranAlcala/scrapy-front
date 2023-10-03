@@ -6,8 +6,6 @@ import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
 import CardTitle from '@mui/material/CardHeader'
 
-import { type GridValidRowModel } from '@mui/x-data-grid'
-
 // ** Third party imports
 import { useForm, FormProvider } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
@@ -54,12 +52,13 @@ const Listing = () => {
   }, [search])
 
   const {data, isLoading, ...posts} = useQuery({
-    queryKey: ['posts', filters, page, pageSize, debouncedSearch],
+    queryKey: ['posts', websiteName, filters, page, pageSize, debouncedSearch],
     queryFn: async() => await getPosts(
       {
         ...filters,
         search: debouncedSearch
       },
+      websiteName,
       page,
       pageSize
     ),
@@ -108,7 +107,7 @@ const Listing = () => {
         </CardContent>
         <ListingTable rows={(data && data.posts) || []} columnDefinition={listingColumns}
           {...{paginationModel, setPaginationModel}} totalRows={(data && data.total) || 0}
-          loading={isLoading} update={postUpdate.mutate}
+          loading={isLoading} update={postUpdate.mutate} editable={true}
         />
       </Card>
     </ListingLayout>
