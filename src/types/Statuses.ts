@@ -1,8 +1,8 @@
-export const STATUSES: [number, string][] = [
-  [1 , 'ninguno'],
-  [2 , 'nuevo'],
-  [4 , 'contacto'],
-  [5 , 'alta'],
-  [6 , 'baja'],
-  [7 , 'spam']
+export const STATUSES: [number | string, string][] = [
+  ['', 'Ninguno'],
+  [1 , 'Nuevo'],
+  [2 , 'Contacto'],
+  [3 , 'Alta'],
+  [4 , 'Baja'],
+  [5 , 'Spam']
 ]
