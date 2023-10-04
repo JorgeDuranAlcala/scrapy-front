@@ -23,15 +23,7 @@
   "admin": "Admin",
   "name-and-lastName": "$t(name) y $t(lastName)",
   "business-company-select_company": "$t(commercial-name_one {{context}} + (Población de tabla direcciones)",
-  "week-days": [
-    "Lunes",
-    "Martes",
-    "Miércoles",
-    "Jueves",
-    "Viernes",
-    "Sábado",
-    "Domingo"
-  ],
+  "week-days": ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"],
   "single": "Soltero(a)",
   "married": "Casado(a)",
   "divorced": "Divorciado(a)",
@@ -290,5 +282,6 @@
   "billing-alert": "Alerta facturación",
   "amortization": "Amortización",
   "related-account": "Cuenta relacionada",
-  "accounting-item": "Partida"
+  "accounting-item": "Partida",
+  "save-template": "Guardar plantilla"
 }

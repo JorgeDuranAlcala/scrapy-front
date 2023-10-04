@@ -18,15 +18,7 @@
     "spanish": "Spanish"
   },
   "business-company-select": "$t(commercial-name_one) {{context}} + (City from addresses table)",
-  "week-days": [
-    "Monday",
-    "Tuesday",
-    "Wednesday",
-    "Thursday",
-    "Friday",
-    "Saturday",
-    "Sunday"
-  ],
+  "week-days": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
   "single": "Single",
   "upload": "Upload",
   "upload_context": "$t(upload) $t({{context}})",
@@ -292,5 +284,6 @@
   "billing-alert": "Billing alert",
   "amortization": "Amortization",
   "related-account": "Associated account",
-  "accounting-item": "Accounting item"
+  "accounting-item": "Accounting item",
+  "save-template": "Save template"
 }
