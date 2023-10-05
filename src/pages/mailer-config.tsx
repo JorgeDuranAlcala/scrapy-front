@@ -8,13 +8,17 @@ import { useForm, FormProvider } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 
 // Custom component
-import { Mailer, MailerData } from 'src/components/Forms'
+import { FormButtons, Mailer, MailerData } from 'src/components/Forms'
 
 // Schema
 import { MailerSchema } from 'src/schemas'
 
 // Hooks
 import UseBgColor from 'src/@core/hooks/useBgColor'
+import { useMutation } from '@tanstack/react-query'
+import putConfigureEmail from 'src/services/notifications/putConfigureEmail'
+import { toast } from 'react-hot-toast'
+import { CircularProgress } from '@mui/material'
 
 const MailerConfig = () => {
   const mailerForm = useForm({
@@ -25,8 +29,22 @@ const MailerConfig = () => {
 
   const { primaryFilled } = UseBgColor()
 
+  const { mutate: mutateConfigureEmail, isLoading: isLoadingConfigureEmail } = useMutation({
+    mutationKey: ['configure-mail'],
+    mutationFn: async (data: MailerData) => {
+      return await putConfigureEmail(data)
+    },
+    onSuccess: () => {
+      toast.success('Datos de configuración de Email actualizados')
+      mailerForm.reset()
+    },
+    onError: () => {
+      toast.error('Algo fue mal al actualizar la configuración de Email')
+    }
+  })
+
   const onSubmit = (data: MailerData) => {
-    console.log('Mailer data: ', data)
+    mutateConfigureEmail(data)
   }
 
   return (
@@ -48,7 +66,11 @@ const MailerConfig = () => {
             <form onSubmit={mailerForm.handleSubmit(onSubmit)}>
               <Mailer />
               <Box pt={10} display='flex' gap={3}>
-                <Button type='submit' variant='contained'>
+                <Button
+                  type='submit'
+                  variant='contained'
+                  endIcon={isLoadingConfigureEmail && <CircularProgress color='secondary' size={16} />}
+                >
                   Guardar
                 </Button>
                 <Button
