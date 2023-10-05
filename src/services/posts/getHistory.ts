@@ -15,8 +15,9 @@ const getHistory = async ({email, page, perPage = 30} : data) => {
     }
   })
 
-  const history = response.data.map(({price_per_meter, date, ...rest}: any, i: number) => ({
+  const history = response.data.map(({price_per_meter, date, User, ...rest}: any, i: number) => ({
     id: i,
+    user: User,
     date: new Date(date),
     sqrMtrPrice: price_per_meter,
     ...rest,
