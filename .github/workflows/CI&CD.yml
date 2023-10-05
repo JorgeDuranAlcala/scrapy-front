@@ -3,8 +3,6 @@ name: Build for production branch
 on:
   push:
     branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
 
 jobs:
   build:
