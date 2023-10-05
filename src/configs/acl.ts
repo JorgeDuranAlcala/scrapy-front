@@ -19,6 +19,7 @@ const defineRulesFor = (role: string) => {
   can('see', 'user-pages')
   switch (role) {
     case "admin": {
+      can('edit', 'mailer')
       can('see', 'history')
       can('write', 'users')
       break
