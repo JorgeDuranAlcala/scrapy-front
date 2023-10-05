@@ -27,8 +27,7 @@ import Icon from 'src/@core/components/icon'
 import * as yup from 'yup'
 import { useForm, Controller } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
-import { useTranslation } from "react-i18next"
-
+import { useTranslation } from 'react-i18next'
 
 // ** Hooks
 import { useAuth } from 'src/hooks'
@@ -42,6 +41,7 @@ import BlankLayout from 'src/@core/layouts/BlankLayout'
 
 // ** Demo Imports
 import FooterIllustrationsV2 from 'src/views/pages/auth/FooterIllustrationsV2'
+import { APP_NAME } from 'src/configs'
 
 // ** Styled Components
 const LoginIllustration = styled('img')(({ theme }) => ({
@@ -195,11 +195,9 @@ const LoginPage = () => {
             </svg>
             <Box sx={{ my: 6 }}>
               <Typography sx={{ mb: 1.5, fontWeight: 500, fontSize: '1.625rem', lineHeight: 1.385 }}>
-                {`¡Bienvenido a ${themeConfig.templateName}! 👋🏻`}
+                {`¡Bienvenido a ${APP_NAME}! 👋🏻`}
               </Typography>
-              <Typography sx={{ color: 'text.secondary' }}>
-                {'¡Entre a su cuenta!'}
-              </Typography>
+              <Typography sx={{ color: 'text.secondary' }}>{'¡Entre a su cuenta!'}</Typography>
             </Box>
             <form noValidate autoComplete='off' onSubmit={handleSubmit(onSubmit)}>
               <FormControl fullWidth sx={{ mb: 4 }}>
@@ -223,7 +221,7 @@ const LoginPage = () => {
               </FormControl>
               <FormControl fullWidth sx={{ mb: 1.5 }}>
                 <InputLabel htmlFor='auth-login-v2-password' error={Boolean(errors.password)}>
-                Contraseña
+                  Contraseña
                 </InputLabel>
                 <Controller
                   name='password'
@@ -271,7 +269,7 @@ const LoginPage = () => {
                   label='Recuérdame'
                   control={<Checkbox checked={rememberMe} onChange={e => setRememberMe(e.target.checked)} />}
                 />
-                <LinkStyled href='/forgot-password'>Olvido de contraseña</LinkStyled>
+                <LinkStyled href='/forgot-password'>Olvidé la contraseña</LinkStyled>
               </Box>
               <Button fullWidth size='large' type='submit' variant='contained' sx={{ mb: 4 }}>
                 Login
