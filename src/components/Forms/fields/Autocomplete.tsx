@@ -13,11 +13,25 @@ type AutocompleteProps = {
   isOptionEqualToValue: (option: any, value: any) => any
   onInputChange?: (str: string) => void
   inputValue?: string
+  getOptionsLabel?: (option: any) => string
+  onSelectedValue?: (value: any) => void
 }
 
-const Autocomplete = ({ name, inputValue, label, loading, error, options, isOptionEqualToValue, onInputChange}: AutocompleteProps) => {
+const Autocomplete = ({
+  name,
+  inputValue,
+  label,
+  loading,
+  error,
+  options,
+  isOptionEqualToValue,
+  onInputChange,
+  getOptionsLabel,
+  onSelectedValue
+}: AutocompleteProps) => {
   const {
     control,
+
     formState: { errors }
   } = useFormContext()
 
@@ -26,35 +40,40 @@ const Autocomplete = ({ name, inputValue, label, loading, error, options, isOpti
       <Controller
         name={name}
         control={control}
-        render={({ field: { onChange, value, ...rest } }) => (
-          <MUIAutocomplete
-            {...rest}
-            loading={loading}
-            value={value}
-            options={options || []}
-            onChange={(event, newValue) => {
-              onChange(newValue || null)
-            }}
-            loadingText="Cargando..."
-            inputValue={inputValue}
-            onInputChange={(_, newValue) => {onInputChange && onInputChange(newValue)}}
-            getOptionLabel={option => option.name || ''}
-            isOptionEqualToValue={isOptionEqualToValue}
-            noOptionsText={error ? 'Error de busqueda, intente de nuevo' : 'Sin resultados'}
-            renderInput={params => (
-              <TextField
-                {...params}
-                label={label}
-                inputProps={{
-                  ...params.inputProps,
-                  autoComplete: 'off' // disable autocomplete and autofill
-                }}
-                error={Boolean(errors[name])}
-                helperText={errors[name] && 'Selecciona una poblacion'}
-              />
-            )}
-          />
-        )}
+        render={({ field: { onChange, value, ...rest } }) => {
+          return (
+            <MUIAutocomplete
+              {...rest}
+              loading={loading}
+              value={value}
+              options={options || []}
+              onChange={(event, newValue) => {
+                onSelectedValue && onSelectedValue(newValue)
+                onChange && onChange(newValue || null)
+              }}
+              loadingText='Cargando...'
+              inputValue={inputValue}
+              onInputChange={(_, newValue) => {
+                onInputChange && onInputChange(newValue)
+              }}
+              getOptionLabel={getOptionsLabel || (option => option.name || '')}
+              isOptionEqualToValue={isOptionEqualToValue}
+              noOptionsText={error ? 'Error de busqueda, intente de nuevo' : 'Sin resultados'}
+              renderInput={params => (
+                <TextField
+                  {...params}
+                  label={label}
+                  inputProps={{
+                    ...params.inputProps,
+                    autoComplete: 'off' // disable autocomplete and autofill
+                  }}
+                  error={Boolean(errors[name])}
+                  helperText={errors[name] && 'Selecciona una poblacion'}
+                />
+              )}
+            />
+          )
+        }}
       />
     </FormControl>
   )
