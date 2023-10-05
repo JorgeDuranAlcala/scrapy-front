@@ -15,6 +15,7 @@ type AutocompleteProps = {
   inputValue?: string
   getOptionsLabel?: (option: any) => string
   onSelectedValue?: (value: any) => void
+  size?: 'small' | 'medium'
 }
 
 const Autocomplete = ({
@@ -27,7 +28,8 @@ const Autocomplete = ({
   isOptionEqualToValue,
   onInputChange,
   getOptionsLabel,
-  onSelectedValue
+  onSelectedValue,
+  ...props
 }: AutocompleteProps) => {
   const {
     control,
@@ -43,34 +45,35 @@ const Autocomplete = ({
         render={({ field: { onChange, value, ...rest } }) => {
           return (
             <MUIAutocomplete
-              {...rest}
-              loading={loading}
-              value={value}
-              options={options || []}
-              onChange={(event, newValue) => {
-                onSelectedValue && onSelectedValue(newValue)
-                onChange && onChange(newValue || null)
+            {...rest}
+            loading={loading}
+            value={value}
+            options={options || []}
+            onChange={(event, newValue) => {
+              onSelectedValue && onSelectedValue(newValue)
+              onChange && onChange(newValue || null)
+            }}
+            loadingText='Cargando...'
+            inputValue={inputValue}
+            onInputChange={(_, newValue) => {
+              onInputChange && onInputChange(newValue)
+            }}
+            getOptionLabel={getOptionsLabel || (option => option.name || '')}
+            isOptionEqualToValue={isOptionEqualToValue}
+            noOptionsText={error ? 'Error de busqueda, intente de nuevo' : 'Sin resultados'}
+            renderInput={params => (
+              <TextField
+              {...params}
+              label={label}
+              inputProps={{
+                ...params.inputProps,
+                autoComplete: 'off' // disable autocomplete and autofill
               }}
-              loadingText='Cargando...'
-              inputValue={inputValue}
-              onInputChange={(_, newValue) => {
-                onInputChange && onInputChange(newValue)
-              }}
-              getOptionLabel={getOptionsLabel || (option => option.name || '')}
-              isOptionEqualToValue={isOptionEqualToValue}
-              noOptionsText={error ? 'Error de busqueda, intente de nuevo' : 'Sin resultados'}
-              renderInput={params => (
-                <TextField
-                  {...params}
-                  label={label}
-                  inputProps={{
-                    ...params.inputProps,
-                    autoComplete: 'off' // disable autocomplete and autofill
-                  }}
-                  error={Boolean(errors[name])}
-                  helperText={errors[name] && 'Selecciona una poblacion'}
-                />
+              error={Boolean(errors[name])}
+              helperText={errors[name] && 'Selecciona una poblacion'}
+              />
               )}
+              {...props}
             />
           )
         }}

@@ -128,6 +128,7 @@ export const SpecialFilters = memo(({ isScraping = false }: Props) => {
             <Grid item md={2} sm={12}>
               <FormControl fullWidth>
                 <Autocomplete
+                  size="small"
                   isOptionEqualToValue={(option, value) => option.email === value.email}
                   name='userData'
                   label='Usuario'
