@@ -26,6 +26,7 @@ import { STATUSES } from 'src/types'
 import { SpecialFilterSchema } from 'src/schemas'
 import { getMunicipalities } from 'src/services/scraping'
 import { getAll } from 'src/services'
+import { styled } from '@mui/system'
 
 export type SpecialFiltersData = InferType<typeof SpecialFilterSchema>
 
@@ -37,6 +38,36 @@ const CATEGORIES = ['Pisos', 'Casas', 'Chalets', 'Terrenos', 'Locales']
 type Props = {
   isScraping?: boolean
 }
+
+interface StyleProps {
+  isHistory?: boolean
+}
+
+const FilterContainer = styled('div')(({}) => ({
+  '@media (min-width: 0px)': {
+    width: '100%',
+    display: 'flex',
+    flexDirection: 'row',
+    gap: '13px',
+    flexWrap: 'wrap'
+  },
+  '@media (min-width: 900px)': {
+    width: 'inherit'
+  }
+}))
+
+const SearchContainer = styled('div')<StyleProps>(({ isHistory }) => {
+  return {
+    '@media (min-width: 0px)': {
+      width: isHistory ? '250px' : '100%',
+      flexGrow: isHistory ? '0' : '1',
+      display: 'flex'
+    },
+    '@media (min-width: 900px)': {
+      width: 'inherit'
+    }
+  }
+})
 
 export const SpecialFilters = memo(({ isScraping = false }: Props) => {
   const { user } = useAuth()
@@ -77,7 +108,7 @@ export const SpecialFilters = memo(({ isScraping = false }: Props) => {
   return (
     <Stack gap={5}>
       <Grid container spacing={3}>
-        <Grid item md={4} sm={12}>
+        <Grid item md={2} xs={6}>
           <FormControl fullWidth>
             <Autocomplete
               name='municipality'
@@ -93,23 +124,24 @@ export const SpecialFilters = memo(({ isScraping = false }: Props) => {
             />
           </FormControl>
         </Grid>
-        <Grid item md={2} sm={12}>
+        <Grid item md={2} xs={6}>
           <ControlledSelect name='zone' label='Zona' options={['ejemplo1', 'ejemplo2']} />
         </Grid>
-        <Grid item md={2} sm={12}>
+        <Grid item md={2} xs={6}>
           <ControlledSelect name='status' label='Estado' options={STATUSES} />
         </Grid>
-        <Grid item md={2} sm={12}>
+        <Grid item md={2} xs={6}>
           <ControlledSelect name='operation' label='Operación' allowEmpty={true} options={OPERATION} />
         </Grid>
-        <Grid item md={2} sm={12}>
+        <Grid item md={2} xs={6}>
           <ControlledSelect name='category' label='Categoría' allowEmpty={true} options={CATEGORIES} />
         </Grid>
       </Grid>
       <Divider />
-      <Stack direction='row' justifyContent='space-between' alignItems='center'>
-        <Grid container spacing={3} alignItems='center'>
-          <Grid item md={3} xs={12}>
+
+      <Stack direction='row' alignItems='center' justifyContent='space-between' flexWrap={'wrap'} gap={3}>
+        <FilterContainer>
+          <SearchContainer isHistory={asPath.includes('history')}>
             <FormControl fullWidth>
               <ControlledTextField
                 name='search'
@@ -117,18 +149,24 @@ export const SpecialFilters = memo(({ isScraping = false }: Props) => {
                 size='small'
                 fullWidth={true}
                 sx={{
-                  minWidth: '100%',
+                  minWidth: '250px',
                   width: '100%'
                 }}
               />
             </FormControl>
-          </Grid>
+          </SearchContainer>
 
           {asPath.includes('history') && (
-            <Grid item md={2} sm={12}>
-              <FormControl fullWidth>
+            <Stack>
+              <FormControl
+                fullWidth
+                sx={{
+                  minWidth: '200px',
+                  width: '100%'
+                }}
+              >
                 <Autocomplete
-                  size="small"
+                  size='small'
                   isOptionEqualToValue={(option, value) => option.email === value.email}
                   name='userData'
                   label='Usuario'
@@ -142,33 +180,37 @@ export const SpecialFilters = memo(({ isScraping = false }: Props) => {
                   inputValue={userData}
                 />
               </FormControl>
-            </Grid>
+            </Stack>
           )}
 
-          <Grid item md={2} sm={12}>
+          <Stack>
             <IconButton color='warning' onClick={() => setValue('is_vip', !is_vip)}>
               <Icon icon={`tabler:star${is_vip ? '-filled' : ''}`} />
             </IconButton>
-          </Grid>
-        </Grid>
-
-        {user?.is_admin && !asPath.includes('history') && (
-          <Stack direction='row' gap={5} alignItems='center'>
-            <Link href={`${asPath}history`} passHref>
-              <Button color='secondary' variant='outlined'>
-                Historial
-              </Button>
-            </Link>
-            <Button
-              variant='contained'
-              type='submit'
-              disabled={municipality.length === 0 || isScraping}
-              endIcon={isScraping && <CircularProgress size={16} />}
-            >
-              Actualizar
-            </Button>
           </Stack>
-        )}
+        </FilterContainer>
+
+        <Stack>
+          {!asPath.includes('history') && (
+            <Stack direction='row' gap={5} alignItems='center'>
+              {user?.is_admin && (
+                <Link href={`${asPath}history`} passHref>
+                  <Button color='secondary' variant='outlined'>
+                    Historial
+                  </Button>
+                </Link>
+              )}
+              <Button
+                variant='contained'
+                type='submit'
+                disabled={municipality.length === 0 || isScraping}
+                endIcon={isScraping && <CircularProgress size={16} />}
+              >
+                Actualizar
+              </Button>
+            </Stack>
+          )}
+        </Stack>
       </Stack>
     </Stack>
   )
