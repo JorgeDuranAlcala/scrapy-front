@@ -1,9 +1,7 @@
 import yup from 'src/@core/utils/customized-yup'
-import userSchema from './userSchema'
 
 const location = yup
-  .object()
-  .shape({
+  .object({
     id: yup.number(),
     name: yup.string()
   })
@@ -11,8 +9,7 @@ const location = yup
   .default(null)
 
 const userData = yup
-  .object()
-  .shape({
+  .object({
     id: yup.number(),
     fullname: yup.string(),
     email: yup.string()
