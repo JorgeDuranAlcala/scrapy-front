@@ -25,6 +25,7 @@ import { STATUSES } from 'src/types'
 
 import { SpecialFilterSchema } from 'src/schemas'
 import { getMunicipalities } from 'src/services/scraping'
+import { getAll } from 'src/services'
 
 export type SpecialFiltersData = InferType<typeof SpecialFilterSchema>
 
@@ -41,6 +42,7 @@ export const SpecialFilters = memo(({ isScraping = false }: Props) => {
   const { user } = useAuth()
   const { asPath } = useRouter()
   const [municipality, debouncedMunicipality, setMunicipality] = useDebouncedState('')
+  const [userData, debouncedUserData, setUserData] = useDebouncedState('', 500)
   const { setValue, watch } = useFormContext()
 
   const is_vip = watch('is_vip')
@@ -49,6 +51,23 @@ export const SpecialFilters = memo(({ isScraping = false }: Props) => {
     queryKey: ['municipalities', debouncedMunicipality],
     queryFn: async () => {
       return await getMunicipalities(debouncedMunicipality)
+    },
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false
+  })
+
+  const {
+    data: usersData,
+    isLoading: isLoadingUsers,
+    isError: isErrorUsers
+  } = useQuery({
+    queryKey: ['get-users', debouncedUserData],
+    queryFn: async () => {
+      return await getAll(1, 5, debouncedUserData)
+    },
+    select: data => {
+      return data.users || []
     },
     refetchOnMount: false,
     refetchOnWindowFocus: false,
@@ -89,17 +108,50 @@ export const SpecialFilters = memo(({ isScraping = false }: Props) => {
       </Grid>
       <Divider />
       <Stack direction='row' justifyContent='space-between' alignItems='center'>
-        <Stack direction='row' gap={3} alignItems={'center'}>
-          <ControlledTextField
-            name='search'
-            label='Buscar'
-            size='small'
-            sx={{ minWidth: '300px', maxWidth: '500px' }}
-          />
-          <IconButton color='warning' onClick={() => setValue('is_vip', !is_vip)}>
-            <Icon icon={`tabler:star${is_vip ? '-filled' : ''}`} />
-          </IconButton>
-        </Stack>
+        <Grid container spacing={3} alignItems='center'>
+          <Grid item md={3} xs={12}>
+            <FormControl fullWidth>
+              <ControlledTextField
+                name='search'
+                label='Buscar'
+                size='small'
+                fullWidth={true}
+                sx={{
+                  minWidth: '100%',
+                  width: '100%'
+                }}
+              />
+            </FormControl>
+          </Grid>
+
+          {asPath.includes('history') && (
+            <Grid item md={2} sm={12}>
+              <FormControl fullWidth>
+                <Autocomplete
+                  size="small"
+                  isOptionEqualToValue={(option, value) => option.email === value.email}
+                  name='userData'
+                  label='Usuario'
+                  options={usersData || []}
+                  loading={isLoadingUsers || userData !== debouncedUserData}
+                  error={isErrorUsers}
+                  getOptionsLabel={option => option.fullname || ''}
+                  onInputChange={str => {
+                    setUserData(str)
+                  }}
+                  inputValue={userData}
+                />
+              </FormControl>
+            </Grid>
+          )}
+
+          <Grid item md={2} sm={12}>
+            <IconButton color='warning' onClick={() => setValue('is_vip', !is_vip)}>
+              <Icon icon={`tabler:star${is_vip ? '-filled' : ''}`} />
+            </IconButton>
+          </Grid>
+        </Grid>
+
         {user?.is_admin && !asPath.includes('history') && (
           <Stack direction='row' gap={5} alignItems='center'>
             <Link href={`${asPath}history`} passHref>
@@ -107,8 +159,11 @@ export const SpecialFilters = memo(({ isScraping = false }: Props) => {
                 Historial
               </Button>
             </Link>
-            <Button variant='contained' type='submit' disabled={municipality.length === 0 || isScraping}
-              endIcon={isScraping && <CircularProgress size={16}/>}
+            <Button
+              variant='contained'
+              type='submit'
+              disabled={municipality.length === 0 || isScraping}
+              endIcon={isScraping && <CircularProgress size={16} />}
             >
               Actualizar
             </Button>

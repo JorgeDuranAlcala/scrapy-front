@@ -44,15 +44,17 @@ const ListingHistory = () => {
     resolver: yupResolver(SpecialFilterSchema)
   })
 
+  const { userData } = specialFilters.watch()
+
   const [paginationModel, setPaginationModel] = useState({
     page: 0,
     pageSize: 25
   })
 
   const { data, isLoading } = useQuery({
-    queryKey: ['get-history', paginationModel.page],
+    queryKey: ['get-history', paginationModel.page, userData?.email],
     queryFn: async () => {
-      return await getHistory({ page: paginationModel.page })
+      return await getHistory({ page: paginationModel.page, email: userData?.email })
     }
   })
 
