@@ -158,6 +158,12 @@ const UserDropdown = (props: Props) => {
                 Usuarios
               </Box>
             </MenuItemStyled>
+            <MenuItemStyled sx={{ p: 0 }} onClick={() => handleDropdownClose()}>
+              <Box sx={styles} component={Link} href='/mailer-config'>
+                <Icon icon='tabler:mail' />
+                Configuraciones
+              </Box>
+            </MenuItemStyled>
             <Divider sx={{ my: theme => `${theme.spacing(2)} !important` }} />
           </Box>
         )}
