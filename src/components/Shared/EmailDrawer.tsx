@@ -25,22 +25,23 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import yup from 'src/@core/utils/customized-yup'
 
 // ** Schemas
-import { EmailSchema } from 'src/schemas'
+import { EmailData, EmailSchema } from 'src/schemas'
 import Checkbox from '@mui/material/Checkbox'
 import { FormControlLabel, Switch } from '@mui/material'
-import { useQuery } from '@tanstack/react-query'
-import { getTemplateByName } from 'src/services/email-templates'
+import { useMutation, useQuery } from '@tanstack/react-query'
+import { getTemplateByName, postSendEmail } from 'src/services/email-templates'
+import { toast } from 'react-hot-toast'
 
 const emailFilter = createFilterOptions<string>()
 
 type emailData = {
-  to: string[]
+  reciever: string[]
   subject: string
   message: string
 }
 
 const defaultEmail: emailData = {
-  to: [],
+  reciever: [],
   subject: '',
   message: ''
 }
@@ -64,6 +65,7 @@ export const EmailDrawer = memo(({ open, toggle, storedFileHandling, recipients 
     mode: 'onBlur',
     resolver: yupResolver(EmailSchema)
   })
+
   const {
     formState: { errors },
     control,
@@ -75,12 +77,8 @@ export const EmailDrawer = memo(({ open, toggle, storedFileHandling, recipients 
 
   const handleRemoveFile = useFileRemove({ files, setFiles })
 
-  const onSubmit = (data: typeof defaultEmail) => {
-    console.log(data, files)
-  }
-
   useEffect(() => {
-    if (recipients.length > 0) resetField('to', { defaultValue: recipients })
+    if (recipients.length > 0) resetField('reciever', { defaultValue: recipients })
   }, [recipients])
 
   const handleClose = () => {
@@ -89,6 +87,23 @@ export const EmailDrawer = memo(({ open, toggle, storedFileHandling, recipients 
     emailFields.reset()
   }
 
+  const { mutate: sendEmailMutate } = useMutation({
+    mutationKey: ['send-email'],
+    mutationFn: postSendEmail,
+    onSuccess: () => {
+      emailFields.reset()
+      handleClose()
+      toast.success('Email enviado')
+    },
+    onError: () => {
+      toast.error('Error al enviar el email')
+    }
+  })
+
+  const onSubmit = (data: emailData) => {
+    console.log(data)
+    sendEmailMutate(data)
+  }
   return (
     <FormProvider {...emailFields}>
       <Drawer
@@ -103,7 +118,7 @@ export const EmailDrawer = memo(({ open, toggle, storedFileHandling, recipients 
           <Stack spacing={5} padding={5}>
             <Typography variant='h6'>{t('email-request')}</Typography>
             <Controller
-              name='to'
+              name='reciever'
               control={control}
               render={({ field: { value, onChange } }) => (
                 <Autocomplete
@@ -129,8 +144,8 @@ export const EmailDrawer = memo(({ open, toggle, storedFileHandling, recipients 
                   renderInput={params => (
                     <TextField
                       {...params}
-                      error={Boolean(errors.to)}
-                      helperText={errors.to && t('no-emails-selected')}
+                      error={Boolean(errors.reciever)}
+                      helperText={errors.reciever && t('no-emails-selected')}
                       variant='outlined'
                       label={t('to') as string}
                     />
