@@ -35,6 +35,13 @@ const formDataModuleSupport = (body: any, options: restRequestOptions = {}) => {
   const formData = new FormData()
   const data = body as { [key: string]: any }
   for (const [key, value] of Object.entries(data)) {
+    if (value instanceof Array) {
+      value.forEach(item => {
+        formData.append(key, item)
+      })
+      continue
+    }
+
     formData.append(key, value)
   }
   return formData
