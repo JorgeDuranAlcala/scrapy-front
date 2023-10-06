@@ -24,22 +24,41 @@ const defaultHeaders = {
   accept: 'application/json'
 }
 
+/**
+ * This function will check if the body isn't a object
+ * and if the header is multipart/form-data
+ * If it isn't a object or the header isn't multipart/form-data
+ * return a formData object
+ */
+const formDataModuleSupport = (body: any, options: restRequestOptions = {}) => {
+  if (options.headers?.['Content-Type'] !== 'multipart/form-data' || typeof body !== 'object') return body
+  const formData = new FormData()
+  const data = body as { [key: string]: any }
+  for (const [key, value] of Object.entries(data)) {
+    formData.append(key, value)
+  }
+  return formData
+}
+
+/*
+ * This function will generate the body for the request
+ */
+export const generateBody = (body: any) =>
+  typeof body === 'string' || body instanceof FormData ? body : JSON.stringify(body)
+
 export async function restRequest(method: HTTPMethod = 'GET', path = '', options: restRequestOptions = {}) {
   // Destructure options variable
   let { headers } = options
   const { body, params = {} } = options
 
-  headers = { ...headers, ...defaultHeaders }
+  headers = { ...defaultHeaders, ...headers }
 
   const response = await axios({
     url: process.env.NEXT_PUBLIC_BACKEND_URL + path,
     method,
-    headers: {
-      ...defaultHeaders,
-      ...headers
-    },
+    headers,
     params,
-    data: typeof body == 'string' ? body : JSON.stringify(body)
+    data: generateBody(body)
   })
 
   return response.data
@@ -51,6 +70,8 @@ export async function restRequestAuth(method: HTTPMethod = 'GET', path = '', opt
   if (!token) throw 'No token'
 
   const { headers } = options
+
+  options.body = formDataModuleSupport(options.body, options)
 
   const request = (auth: string) => {
     const headerAuth = 'Bearer ' + auth
