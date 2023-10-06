@@ -26,24 +26,24 @@ import yup from 'src/@core/utils/customized-yup'
 
 // ** Schemas
 import { EmailData, EmailSchema } from 'src/schemas'
-import Checkbox from '@mui/material/Checkbox'
-import { FormControlLabel, Switch } from '@mui/material'
-import { useMutation, useQuery } from '@tanstack/react-query'
-import { getTemplateByName, postSendEmail } from 'src/services/email-templates'
+import { Switch } from '@mui/material'
+import { useMutation } from '@tanstack/react-query'
+import { postSendEmail } from 'src/services/email-templates'
 import { toast } from 'react-hot-toast'
 
 const emailFilter = createFilterOptions<string>()
 
-type emailData = {
+/* type emailData = {
   reciever: string[]
   subject: string
   message: string
 }
-
-const defaultEmail: emailData = {
+ */
+const defaultEmail: EmailData = {
   reciever: [],
   subject: '',
-  message: ''
+  message: '',
+  attachment: []
 }
 
 export const EmailDrawer = memo(({ open, toggle, storedFileHandling, recipients = [] }: EmailDrawerProps) => {
@@ -100,9 +100,11 @@ export const EmailDrawer = memo(({ open, toggle, storedFileHandling, recipients 
     }
   })
 
-  const onSubmit = (data: emailData) => {
-    console.log(data)
-    sendEmailMutate(data)
+  const onSubmit = (data: EmailData) => {
+    sendEmailMutate({
+      ...data,
+      attachment: files
+    })
   }
   return (
     <FormProvider {...emailFields}>
@@ -128,7 +130,7 @@ export const EmailDrawer = memo(({ open, toggle, storedFileHandling, recipients 
                   }}
                   multiple
                   filterOptions={(options, params) => {
-                    const filtered = emailFilter(options, params)
+                    const filtered = emailFilter(options as string[], params)
                     const { inputValue } = params
                     // Suggest the creation of a new value
                     const isExisting = options.some(option => inputValue === option)
