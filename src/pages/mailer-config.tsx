@@ -69,6 +69,7 @@ const MailerConfig = () => {
                 <Button
                   type='submit'
                   variant='contained'
+                  disabled={isLoadingConfigureEmail}
                   endIcon={isLoadingConfigureEmail && <CircularProgress color='secondary' size={16} />}
                 >
                   Guardar
