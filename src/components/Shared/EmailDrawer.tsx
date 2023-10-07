@@ -1,4 +1,4 @@
-import { useState, useEffect, memo } from 'react'
+import { useState, useEffect, memo, useMemo } from 'react'
 
 import Button from '@mui/material/Button'
 import Drawer from '@mui/material/Drawer'
@@ -25,20 +25,16 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import yup from 'src/@core/utils/customized-yup'
 
 // ** Schemas
-import { EmailData, EmailSchema } from 'src/schemas'
-import { Switch } from '@mui/material'
-import { useMutation } from '@tanstack/react-query'
-import { postSendEmail } from 'src/services/email-templates'
+import { EmailData, EmailSchema, TemplateData } from 'src/schemas'
+import { CircularProgress, Switch } from '@mui/material'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { getTemplateByName, postSendEmail, updateEmailTemplate } from 'src/services/email-templates'
 import { toast } from 'react-hot-toast'
+import { useRouter } from 'next/router'
+import { getTemplateNameByUrl } from 'src/utils'
 
 const emailFilter = createFilterOptions<string>()
 
-/* type emailData = {
-  reciever: string[]
-  subject: string
-  message: string
-}
- */
 const defaultEmail: EmailData = {
   reciever: [],
   subject: '',
@@ -48,10 +44,12 @@ const defaultEmail: EmailData = {
 
 export const EmailDrawer = memo(({ open, toggle, storedFileHandling, recipients = [] }: EmailDrawerProps) => {
   const { user } = useAuth()
+  const { asPath } = useRouter()
+  const queryClient = useQueryClient()
 
   // ** State
   const [files, setFiles] = useState<FileProp[]>([])
-  const [saveTemplate, setSaveTemplate] = useState<boolean>(true)
+  const [saveTemplate, setSaveTemplate] = useState<boolean>(false)
 
   // ** Hooks
   const { getRootProps, getInputProps } = useDropzone({
@@ -73,12 +71,14 @@ export const EmailDrawer = memo(({ open, toggle, storedFileHandling, recipients 
   } = emailFields
   const { t } = useTranslation()
   const { primaryLight } = useBgColor()
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [options, setOptions] = useState<string[]>([])
 
   const handleRemoveFile = useFileRemove({ files, setFiles })
 
   useEffect(() => {
     if (recipients.length > 0) resetField('reciever', { defaultValue: recipients })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [recipients])
 
   const handleClose = () => {
@@ -87,11 +87,10 @@ export const EmailDrawer = memo(({ open, toggle, storedFileHandling, recipients 
     emailFields.reset()
   }
 
-  const { mutate: sendEmailMutate } = useMutation({
+  const { mutate: sendEmailMutate, isLoading: isLoadingSendEmail } = useMutation({
     mutationKey: ['send-email'],
     mutationFn: postSendEmail,
     onSuccess: () => {
-      emailFields.reset()
       handleClose()
       toast.success('Email enviado')
     },
@@ -100,11 +99,49 @@ export const EmailDrawer = memo(({ open, toggle, storedFileHandling, recipients 
     }
   })
 
+  useQuery({
+    queryKey: ['get-template', getTemplateNameByUrl(asPath)],
+    queryFn: async () => {
+      return await getTemplateByName(getTemplateNameByUrl(asPath) as string)
+    },
+    onSuccess: (data: TemplateData[]) => {
+      const { subject, message } = data?.[0]
+
+      emailFields.reset({
+        reciever: emailFields.getValues().reciever || [],
+        subject: subject || '',
+        message: message || ''
+      })
+    },
+    enabled: !!getTemplateNameByUrl(asPath),
+    refetchOnWindowFocus: false
+  })
+
+  const { mutate: updateTemplateMutate, isLoading: isLoadingUpdateTemplate } = useMutation({
+    mutationKey: ['update-template'],
+    mutationFn: updateEmailTemplate,
+    onSuccess: () => {
+      toast.success('Plantilla de email actualizada')
+      setSaveTemplate(false)
+      queryClient.invalidateQueries(['get-template', getTemplateNameByUrl(asPath)])
+    },
+    onError: () => {
+      toast.error('Error al actualizar la plantilla')
+    }
+  })
+
   const onSubmit = (data: EmailData) => {
     sendEmailMutate({
       ...data,
       attachment: files
     })
+    if (saveTemplate) {
+      updateTemplateMutate({
+        message: emailFields.getValues('message') || '',
+        subject: emailFields.getValues('subject') || '',
+        name: getTemplateNameByUrl(asPath) || ''
+      })
+    }
   }
   return (
     <FormProvider {...emailFields}>
@@ -124,6 +161,7 @@ export const EmailDrawer = memo(({ open, toggle, storedFileHandling, recipients 
               control={control}
               render={({ field: { value, onChange } }) => (
                 <Autocomplete
+                  disabled={isLoadingSendEmail || isLoadingUpdateTemplate}
                   value={value}
                   onChange={(event, newValue) => {
                     onChange(newValue.slice())
@@ -155,8 +193,19 @@ export const EmailDrawer = memo(({ open, toggle, storedFileHandling, recipients 
                 />
               )}
             />
-            <ControlledTextField name={'subject'} label={'subject'} />
-            <ControlledTextField name={'message'} label={'message'} multiline type={'textarea'} rows={10} />
+            <ControlledTextField
+              name={'subject'}
+              label={'subject'}
+              disabled={isLoadingSendEmail || isLoadingUpdateTemplate}
+            />
+            <ControlledTextField
+              name={'message'}
+              label={'message'}
+              multiline
+              type={'textarea'}
+              rows={10}
+              disabled={isLoadingSendEmail || isLoadingUpdateTemplate}
+            />
             <Stack direction='row' justifyContent='space-between' gap={4}>
               <Button
                 sx={{
@@ -164,6 +213,7 @@ export const EmailDrawer = memo(({ open, toggle, storedFileHandling, recipients 
                   textTransform: 'none'
                 }}
                 {...getRootProps()}
+                disabled={isLoadingSendEmail || isLoadingUpdateTemplate}
                 startIcon={<Icon icon='tabler:upload' fontSize='1.25rem' />}
               >
                 {t('attach')}
@@ -174,17 +224,27 @@ export const EmailDrawer = memo(({ open, toggle, storedFileHandling, recipients 
                   <Typography align='center' variant='body1'>
                     {t('save-template')}
                   </Typography>
-                  <Switch checked={saveTemplate} onChange={() => setSaveTemplate(!saveTemplate)} />
+                  <Switch
+                    disabled={isLoadingUpdateTemplate || isLoadingSendEmail}
+                    checked={saveTemplate}
+                    onChange={() => setSaveTemplate(!saveTemplate)}
+                  />
                 </Stack>
               )}
             </Stack>
             <Stack sx={{ maxHeight: 200, overflowY: 'scroll' }}>
               {files.map(file => (
-                <FileListItem key={file.name} file={file} handleRemoveFile={handleRemoveFile} />
+                <FileListItem
+                  key={file.name}
+                  file={file}
+                  handleRemoveFile={handleRemoveFile}
+                  disabled={isLoadingSendEmail || isLoadingUpdateTemplate}
+                />
               ))}
               {storedFileHandling &&
                 storedFileHandling.storedFiles.map(storedFile => (
                   <FileListItem
+                    disabled={isLoadingSendEmail || isLoadingUpdateTemplate}
                     key={storedFile.name}
                     file={storedFile}
                     handleRemoveFile={storedFileHandling.removeStoredFile}
@@ -192,10 +252,23 @@ export const EmailDrawer = memo(({ open, toggle, storedFileHandling, recipients 
                 ))}
             </Stack>
             <div>
-              <Button variant='contained' type='submit' sx={{ mr: 4 }}>
+              <Button
+                variant='contained'
+                type='submit'
+                sx={{ mr: 4 }}
+                disabled={isLoadingSendEmail || isLoadingUpdateTemplate}
+                endIcon={
+                  (isLoadingSendEmail || isLoadingUpdateTemplate) && <CircularProgress color='secondary' size={16} />
+                }
+              >
                 {t('send')}
               </Button>
-              <Button variant='outlined' color='secondary' onClick={handleClose}>
+              <Button
+                variant='outlined'
+                color='secondary'
+                onClick={handleClose}
+                disabled={isLoadingSendEmail || isLoadingUpdateTemplate}
+              >
                 {t('cancel')}
               </Button>
             </div>
