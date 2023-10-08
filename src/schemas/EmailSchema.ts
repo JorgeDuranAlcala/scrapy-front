@@ -1,9 +1,13 @@
 import yup from 'src/@core/utils/customized-yup'
+import { InferType } from 'yup'
 
-const EmailSchema = yup.object().shape({
-  to: yup.array().of(yup.string()).min(1),
+const EmailSchema = yup.object({
+  reciever: yup.array().of(yup.string()).min(1),
   subject: yup.string().min(1),
-  message: yup.string()
+  message: yup.string(),
+  attachment: yup.array().optional()
 })
+
+export type EmailData = InferType<typeof EmailSchema>
 
 export default EmailSchema

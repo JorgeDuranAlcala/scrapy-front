@@ -1,20 +1,20 @@
-import { useState, useEffect, memo } from 'react'
+import { useState, useEffect, memo, useMemo } from 'react'
 
-import Button from "@mui/material/Button"
-import Drawer from "@mui/material/Drawer"
-import Stack from "@mui/material/Stack"
+import Button from '@mui/material/Button'
+import Drawer from '@mui/material/Drawer'
+import Stack from '@mui/material/Stack'
 
-import Typography from "@mui/material/Typography"
+import Typography from '@mui/material/Typography'
 import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete'
-import TextField  from '@mui/material/TextField'
+import TextField from '@mui/material/TextField'
 
-import { ControlledTextField } from "src/components/Forms"
-import Icon from "src/@core/components/icon"
-import { FileListItem } from "./FileListItem"
+import { ControlledTextField } from 'src/components/Forms'
+import Icon from 'src/@core/components/icon'
+import { FileListItem } from './FileListItem'
 import { FileProp } from 'src/components/Shared'
 
 //** Hooks
-import { useFileRemove } from 'src/hooks'
+import { useAuth, useFileRemove } from 'src/hooks'
 import useBgColor from 'src/@core/hooks/useBgColor'
 
 // ** Third Party Imports
@@ -25,26 +25,31 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import yup from 'src/@core/utils/customized-yup'
 
 // ** Schemas
-import { EmailSchema } from 'src/schemas'
+import { EmailData, EmailSchema, TemplateData } from 'src/schemas'
+import { CircularProgress, Switch } from '@mui/material'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { getTemplateByName, postSendEmail, updateEmailTemplate } from 'src/services/email-templates'
+import { toast } from 'react-hot-toast'
+import { useRouter } from 'next/router'
+import { getTemplateNameByUrl } from 'src/utils'
 
 const emailFilter = createFilterOptions<string>()
 
-type emailData = {
-  to: string[]
-  subject: string
-  message: string
-}
-
-const defaultEmail: emailData = {
-  to: [],
+const defaultEmail: EmailData = {
+  reciever: [],
   subject: '',
-  message: ''
+  message: '',
+  attachment: []
 }
 
-export const EmailDrawer = memo(({open, toggle, storedFileHandling, recipients =[]}: EmailDrawerProps) => {
+export const EmailDrawer = memo(({ open, toggle, storedFileHandling, recipients = [] }: EmailDrawerProps) => {
+  const { user } = useAuth()
+  const { asPath } = useRouter()
+  const queryClient = useQueryClient()
 
   // ** State
   const [files, setFiles] = useState<FileProp[]>([])
+  const [saveTemplate, setSaveTemplate] = useState<boolean>(false)
 
   // ** Hooks
   const { getRootProps, getInputProps } = useDropzone({
@@ -53,128 +58,220 @@ export const EmailDrawer = memo(({open, toggle, storedFileHandling, recipients =
     }
   })
 
-
   const emailFields = useForm({
     defaultValues: defaultEmail,
     mode: 'onBlur',
     resolver: yupResolver(EmailSchema)
   })
-  const { formState: {errors}, control, resetField }= emailFields
+
+  const {
+    formState: { errors },
+    control,
+    resetField
+  } = emailFields
   const { t } = useTranslation()
   const { primaryLight } = useBgColor()
-  const [ options, setOptions ] = useState<string[]>([])
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [options, setOptions] = useState<string[]>([])
 
-  const handleRemoveFile = useFileRemove({files, setFiles})
-
-  const onSubmit = (data: typeof defaultEmail) => {
-    console.log(data, files)
-  }
+  const handleRemoveFile = useFileRemove({ files, setFiles })
 
   useEffect(() => {
-    if(recipients.length > 0)
-      resetField('to', {defaultValue: recipients})
+    if (recipients.length > 0) resetField('reciever', { defaultValue: recipients })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [recipients])
 
   const handleClose = () => {
-    toggle();
-    setFiles([]);
+    toggle()
+    setFiles([])
     emailFields.reset()
   }
 
+  const { mutate: sendEmailMutate, isLoading: isLoadingSendEmail } = useMutation({
+    mutationKey: ['send-email'],
+    mutationFn: postSendEmail,
+    onSuccess: () => {
+      handleClose()
+      toast.success('Email enviado')
+    },
+    onError: () => {
+      toast.error('Error al enviar el email')
+    }
+  })
+
+  useQuery({
+    queryKey: ['get-template', getTemplateNameByUrl(asPath)],
+    queryFn: async () => {
+      return await getTemplateByName(getTemplateNameByUrl(asPath) as string)
+    },
+    onSuccess: (data: TemplateData[]) => {
+      const { subject, message } = data?.[0]
+
+      emailFields.reset({
+        reciever: emailFields.getValues().reciever || [],
+        subject: subject || '',
+        message: message || ''
+      })
+    },
+    enabled: !!getTemplateNameByUrl(asPath),
+    refetchOnWindowFocus: false
+  })
+
+  const { mutate: updateTemplateMutate, isLoading: isLoadingUpdateTemplate } = useMutation({
+    mutationKey: ['update-template'],
+    mutationFn: updateEmailTemplate,
+    onSuccess: () => {
+      toast.success('Plantilla de email actualizada')
+      setSaveTemplate(false)
+      queryClient.invalidateQueries(['get-template', getTemplateNameByUrl(asPath)])
+    },
+    onError: () => {
+      toast.error('Error al actualizar la plantilla')
+    }
+  })
+
+  const onSubmit = (data: EmailData) => {
+    sendEmailMutate({
+      ...data,
+      attachment: files
+    })
+    if (saveTemplate) {
+      updateTemplateMutate({
+        message: emailFields.getValues('message') || '',
+        subject: emailFields.getValues('subject') || '',
+        name: getTemplateNameByUrl(asPath) || ''
+      })
+    }
+  }
   return (
     <FormProvider {...emailFields}>
       <Drawer
-          open={open}
-          anchor='right'
-          variant='temporary'
-          onClose={handleClose}
-          sx={{ '& .MuiDrawer-paper': { width: [300, 400] } }}
-          ModalProps={{ keepMounted: true }}
+        open={open}
+        anchor='right'
+        variant='temporary'
+        onClose={handleClose}
+        sx={{ '& .MuiDrawer-paper': { width: [300, 400] } }}
+        ModalProps={{ keepMounted: true }}
       >
         <form onSubmit={emailFields.handleSubmit(onSubmit)}>
-          <Stack spacing={5} padding={5} >
+          <Stack spacing={5} padding={5}>
             <Typography variant='h6'>{t('email-request')}</Typography>
-              <Controller
-                name='to'
-                control={control}
-                render={({field: {value, onChange}}) => (
-                  <Autocomplete
-                    value={value}
-                    onChange={(event, newValue) => {
-                      onChange(newValue.slice())
-                    }}
-                    multiple
-                    filterOptions={(options, params) => {
-                      const filtered = emailFilter(options, params)
-                      const { inputValue } = params;
-                      // Suggest the creation of a new value
-                      const isExisting = options.some((option) => inputValue === option);
-
-                      try {
-                        yup.string().email().validateSync(inputValue)
-                        if (!isExisting && inputValue !== '')
-                          filtered.push(inputValue)
-                      }catch{}
-
-                      return filtered;
-                    }}
-                    options={options}
-                    renderInput={(params) => (
-                      <TextField
-                        {...params}
-                        error={Boolean(errors.to)}
-                        helperText={errors.to && t('no-emails-selected')}
-                        variant="outlined"
-                        label={t('to') as string}
-                      />
-                    )}
-                  />
-                )}
-              />
-              <ControlledTextField name={'subject'} label={'subject'}/>
-              <ControlledTextField name={'message'} label={'message'}
-                multiline
-                type={'textarea'}
-                rows={10}
-              />
-              <div>
-                <Button
-                  sx={{
-                    ...primaryLight,
-                    textTransform: 'none'
+            <Controller
+              name='reciever'
+              control={control}
+              render={({ field: { value, onChange } }) => (
+                <Autocomplete
+                  disabled={isLoadingSendEmail || isLoadingUpdateTemplate}
+                  value={value}
+                  onChange={(event, newValue) => {
+                    onChange(newValue.slice())
                   }}
-                  {...getRootProps()}
-                  startIcon={<Icon icon='tabler:upload' fontSize='1.25rem' />}>
-                    {t('attach')}
-                    <input {...getInputProps()}/>
-                </Button>
-              </div>
-              <Stack sx={{maxHeight: 200, overflowY: "scroll"}}>
-                {files.map(file => (
+                  multiple
+                  filterOptions={(options, params) => {
+                    const filtered = emailFilter(options as string[], params)
+                    const { inputValue } = params
+                    // Suggest the creation of a new value
+                    const isExisting = options.some(option => inputValue === option)
+
+                    try {
+                      yup.string().email().validateSync(inputValue)
+                      if (!isExisting && inputValue !== '') filtered.push(inputValue)
+                    } catch {}
+
+                    return filtered
+                  }}
+                  options={options}
+                  renderInput={params => (
+                    <TextField
+                      {...params}
+                      error={Boolean(errors.reciever)}
+                      helperText={errors.reciever && t('no-emails-selected')}
+                      variant='outlined'
+                      label={t('to') as string}
+                    />
+                  )}
+                />
+              )}
+            />
+            <ControlledTextField
+              name={'subject'}
+              label={'subject'}
+              disabled={isLoadingSendEmail || isLoadingUpdateTemplate}
+            />
+            <ControlledTextField
+              name={'message'}
+              label={'message'}
+              multiline
+              type={'textarea'}
+              rows={10}
+              disabled={isLoadingSendEmail || isLoadingUpdateTemplate}
+            />
+            <Stack direction='row' justifyContent='space-between' gap={4}>
+              <Button
+                sx={{
+                  ...primaryLight,
+                  textTransform: 'none'
+                }}
+                {...getRootProps()}
+                disabled={isLoadingSendEmail || isLoadingUpdateTemplate}
+                startIcon={<Icon icon='tabler:upload' fontSize='1.25rem' />}
+              >
+                {t('attach')}
+                <input {...getInputProps()} />
+              </Button>
+              {user?.is_admin && (
+                <Stack direction='row' alignItems='center'>
+                  <Typography align='center' variant='body1'>
+                    {t('save-template')}
+                  </Typography>
+                  <Switch
+                    disabled={isLoadingUpdateTemplate || isLoadingSendEmail}
+                    checked={saveTemplate}
+                    onChange={() => setSaveTemplate(!saveTemplate)}
+                  />
+                </Stack>
+              )}
+            </Stack>
+            <Stack sx={{ maxHeight: 200, overflowY: 'scroll' }}>
+              {files.map(file => (
+                <FileListItem
+                  key={file.name}
+                  file={file}
+                  handleRemoveFile={handleRemoveFile}
+                  disabled={isLoadingSendEmail || isLoadingUpdateTemplate}
+                />
+              ))}
+              {storedFileHandling &&
+                storedFileHandling.storedFiles.map(storedFile => (
                   <FileListItem
-                    key={file.name}
-                    file={file}
-                    handleRemoveFile={handleRemoveFile}/>
+                    disabled={isLoadingSendEmail || isLoadingUpdateTemplate}
+                    key={storedFile.name}
+                    file={storedFile}
+                    handleRemoveFile={storedFileHandling.removeStoredFile}
+                  />
                 ))}
-                { storedFileHandling &&
-                  storedFileHandling.storedFiles.map(storedFile => (
-                    <FileListItem
-                      key={storedFile.name}
-                      file={storedFile}
-                      handleRemoveFile={storedFileHandling.removeStoredFile}/>
-                ))
+            </Stack>
+            <div>
+              <Button
+                variant='contained'
+                type='submit'
+                sx={{ mr: 4 }}
+                disabled={isLoadingSendEmail || isLoadingUpdateTemplate}
+                endIcon={
+                  (isLoadingSendEmail || isLoadingUpdateTemplate) && <CircularProgress color='secondary' size={16} />
                 }
-              </Stack>
-              <div>
-                <Button variant='contained' type="submit" sx={{ mr: 4 }}>
-                  {t('send')}
-                </Button>
-                <Button variant='outlined' color='secondary'
-                  onClick={handleClose}
-                >
-                  {t('cancel')}
-                </Button>
-              </div>
+              >
+                {t('send')}
+              </Button>
+              <Button
+                variant='outlined'
+                color='secondary'
+                onClick={handleClose}
+                disabled={isLoadingSendEmail || isLoadingUpdateTemplate}
+              >
+                {t('cancel')}
+              </Button>
+            </div>
           </Stack>
         </form>
       </Drawer>
@@ -186,7 +283,7 @@ type EmailDrawerProps = {
   open: boolean
   toggle: () => void
   recipients?: string[]
-  storedFileHandling?:{
+  storedFileHandling?: {
     storedFiles: FileProp[]
     removeStoredFile: (file: FileProp) => void
   }
