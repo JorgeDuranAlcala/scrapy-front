@@ -10,6 +10,7 @@ export interface FileProp {
   name: string
   type?: string
   size?: number
+  downloadLink?: string
 }
 
 export const FileListItem = ({ file, handleRemoveFile, disabled }: FileListItemProps) => {
