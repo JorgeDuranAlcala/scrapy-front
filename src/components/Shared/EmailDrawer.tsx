@@ -245,7 +245,7 @@ export const EmailDrawer = memo(({ open, toggle, storedFileHandling, recipients 
                 storedFileHandling.storedFiles.map(storedFile => (
                   <FileListItem
                     disabled={isLoadingSendEmail || isLoadingUpdateTemplate}
-                    key={storedFile.name}
+                    key={storedFile.name + storedFile.id}
                     file={storedFile}
                     handleRemoveFile={storedFileHandling.removeStoredFile}
                   />

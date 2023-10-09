@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction } from 'react'
+import { Dispatch, SetStateAction, memo } from 'react'
 
 // ** MUI Imports
 import Box from '@mui/material/Box'
@@ -16,10 +16,7 @@ import { useFileRemove } from 'src/hooks'
 
 import { FileListItem, FileProp } from './FileListItem'
 
-import { useTranslation } from 'react-i18next'
-
-const FileUploader = ({files, setFiles, documentSaveRoute}: Props) => {
-  const { t } = useTranslation()
+const FileUploader = ({files, setFiles, submit}: Props) => {
   // ** Hooks
   const { getRootProps, getInputProps } = useDropzone({
     multiple: true,
@@ -33,7 +30,7 @@ const FileUploader = ({files, setFiles, documentSaveRoute}: Props) => {
   const removeAllFiles = () => { setFiles([])}
 
   const fileList = files.map((file: FileProp) => {
-    return <FileListItem key={file.name + file.size}
+    return <FileListItem key={file.name + (file.id || '') + file.size}
       file={file}
       handleRemoveFile={handleFileRemove}/>
   })
@@ -64,7 +61,7 @@ const FileUploader = ({files, setFiles, documentSaveRoute}: Props) => {
               <Icon icon='tabler:upload' fontSize='1.75rem' />
             </Box>
             <Typography variant='h5' sx={{ mb: 2.5 }}>
-              {t('file-upload-instructions')}
+                Arrastra los archivos o haz click en el recuadro para subir archivos
             </Typography>
           </Box>
       </Box>
@@ -75,9 +72,9 @@ const FileUploader = ({files, setFiles, documentSaveRoute}: Props) => {
         <>
           <div className='buttons'>
             <Button color='error' variant='outlined' onClick={removeAllFiles}>
-              {t('remove-all')}
+              Quitar todo
             </Button>
-            <Button variant='contained'>{t('upload')}</Button>
+            <Button variant='contained' onClick={submit}>Subir</Button>
           </div>
         </>
       ) : null}
@@ -88,7 +85,7 @@ const FileUploader = ({files, setFiles, documentSaveRoute}: Props) => {
 type Props = {
   files: FileProp[],
   setFiles: Dispatch<SetStateAction<FileProp[]>>,
-  documentSaveRoute: string
+  submit: () => void
 }
 
-export default FileUploader
+export default memo(FileUploader)
