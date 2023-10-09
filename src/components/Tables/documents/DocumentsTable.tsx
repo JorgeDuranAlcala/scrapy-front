@@ -1,45 +1,23 @@
-import { useState, useCallback } from 'react'
+import { memo, Dispatch, SetStateAction } from 'react'
 
 import Box from '@mui/material/Box'
-import { DataGrid, esES, useGridApiRef } from '@mui/x-data-grid'
+import { DataGrid, esES, useGridApiRef  } from '@mui/x-data-grid'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import toast from 'react-hot-toast'
 
-import { useTranslation } from 'react-i18next'
-
-import DocumentsColumns from './DocumentsColumns'
 import { useDisclosure, useFileRemove } from 'src/hooks'
+
 import { EmailDrawer, DeleteModal, type FileProp } from 'src/components/Shared'
 
-const TABLE_MOCK_DATA = [
-  {
-    id: '1',
-    name: 'test',
-    description: '',
-    uploadedBy: 'test@gmail.com',
-    uploadDate: new Date()
-  },
-  {
-    id: '2',
-    name: 'test2',
-    description: '',
-    uploadedBy: 'test@gmail.com',
-    uploadDate: new Date()
-  },
-  {
-    id: '3',
-    name: 'test3',
-    description: 'prueba',
-    uploadedBy: 'test@gmail.com',
-    uploadDate: new Date()
-  }
-]
+import { deleteDocuments } from 'src/services'
 
-const DocumentsTable = ({search}: DocumentsTableProps) => {
-  const [storedFiles, setStoredFiles] = useState<FileProp[]>([])
+import DocumentsColumns from './DocumentsColumns'
+
+const DocumentsTable = ({rows, storedFiles, setStoredFiles, api}: DocumentsTableProps) => {
   const [emailDrawerOpen, handleEmailDrawer] = useDisclosure()
   const [deleteModalOpen, handleDeleteModal] = useDisclosure()
-  const { i18n } = useTranslation()
-  const api = useGridApiRef()
   const removeFile = useFileRemove({ files: storedFiles, setFiles: setStoredFiles })
+  const queryClient = useQueryClient()
 
   const handleSelectFiles = (rowID?: string) => {
     const selectedFiles: FileProp[] = []
@@ -60,18 +38,26 @@ const DocumentsTable = ({search}: DocumentsTableProps) => {
     handleEmailDrawer.open()
   }
 
-  const downloadFiles = (rowID: string) => {
-    const selectedFiles= handleSelectFiles(rowID)
-    console.log("download the files", selectedFiles)
-  }
-
   const deleteFile = (rowID: string) => {
     handleSelectFiles(rowID)
     handleDeleteModal.open()
   }
 
-  const handleDeleteFile = () => {
-    console.log("DELETE FILES", storedFiles)
+  const delDocuments = useMutation({
+    mutationKey: ['delete-documents'],
+    mutationFn: deleteDocuments,
+    onSuccess: () => {
+      api.current.setRowSelectionModel([])
+      toast.success('Acción completada')
+      queryClient.refetchQueries(['documents'])
+      handleDeleteModal.close()
+    }
+  })
+
+  const FilesDeleteHandler = () => {
+    const documentIds: string[] = []
+    storedFiles.forEach(({id}) => id && documentIds.push(id))
+    delDocuments.mutate({documentIds})
   }
 
   const handleRemoveFile = (file: FileProp) => {
@@ -81,7 +67,7 @@ const DocumentsTable = ({search}: DocumentsTableProps) => {
     api.current.setRowSelectionModel(uncheck)
   }
 
-  const tableCols = DocumentsColumns({ openMailModal, downloadFiles, deleteFile })
+  const tableCols = DocumentsColumns({ openMailModal, deleteFile })
 
   return (
     <>
@@ -93,15 +79,18 @@ const DocumentsTable = ({search}: DocumentsTableProps) => {
           removeStoredFile: handleRemoveFile
         }}
       />
-      <DeleteModal handleDelete={handleDeleteFile} modalOpen={deleteModalOpen}
+      <DeleteModal handleDelete={FilesDeleteHandler} modalOpen={deleteModalOpen}
         close={handleDeleteModal.close} name='document' count={storedFiles.length}
         gender={storedFiles.length === 1 ? 'este' : 'estos'}
       />
-      <Box mt={5} sx={{ width: '100%' }}>
+      <Box mt={5} sx={{ width: '100%', height: 430 }}>
         <DataGrid
-          autoHeight
           apiRef={api}
-          rows={TABLE_MOCK_DATA}
+          rows={rows}
+          onRowSelectionModelChange={(rowIds) => {
+            if(rowIds.length === 0) setStoredFiles([])
+            else rowIds.forEach((id) => handleSelectFiles(id as string))
+          }}
           columns={tableCols}
           initialState={{
             pagination: {
@@ -113,16 +102,25 @@ const DocumentsTable = ({search}: DocumentsTableProps) => {
           disableRowSelectionOnClick
           checkboxSelection
           pageSizeOptions={[25]}
-          localeText={i18n.language === 'es' ? esES.components.MuiDataGrid.defaultProps.localeText : undefined}
+          localeText={esES.components.MuiDataGrid.defaultProps.localeText}
         />
       </Box>
     </>
   )
 }
 
-type DocumentsTableProps = {
-  search: string
-  filter?: string
+type DocumentData = {
+  id: string,
+  name: string,
+  viewLink: string,
+  downloadLink: string
 }
 
-export default DocumentsTable
+type DocumentsTableProps = {
+  rows: DocumentData[]
+  api: ReturnType<typeof useGridApiRef>
+  storedFiles: FileProp[]
+  setStoredFiles: Dispatch<SetStateAction<FileProp[]>>
+}
+
+export default memo(DocumentsTable)

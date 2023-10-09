@@ -1,5 +1,3 @@
-import Link from 'next/link'
-
 import Box from "@mui/material/Box"
 import Stack from '@mui/material/Stack'
 import MuiLink from '@mui/material/Link'
@@ -11,12 +9,11 @@ import { useTranslation } from 'react-i18next'
 import { ActionButton, EditableColumn } from 'src/components/Shared'
 
 type optionActions = {
-  downloadFiles: (id: string) => void
   openMailModal: (rowID: string) => void
   deleteFile:(id: string) => void
 }
 
-const DocumentsColumns = ({openMailModal, downloadFiles, deleteFile}: optionActions): GridColDef[] => {
+const DocumentsColumns = ({openMailModal, deleteFile}: optionActions): GridColDef[] => {
   const { t, i18n } = useTranslation()
 
   return [
@@ -26,8 +23,8 @@ const DocumentsColumns = ({openMailModal, downloadFiles, deleteFile}: optionActi
       filterable: false,
       sortable: false,
       width: 250,
-      renderCell: ({row: {name}}) => (
-        <MuiLink component={Link} href={'#'}>
+      renderCell: ({row: {name, viewLink}}) => (
+        <MuiLink component='a' href={viewLink} target='blank'>
           {name}
         </MuiLink>
       )
@@ -38,7 +35,7 @@ const DocumentsColumns = ({openMailModal, downloadFiles, deleteFile}: optionActi
       sortable: false,
       filterable: false,
       editable: true,
-      width: 440,
+      width: 480,
       renderCell: ({row: {description}}) =>
         <Tooltip placement="top" title={t('document-description-edit')}>
           <Box display="flex" minWidth="100%" minHeight="100%" alignItems="center">
@@ -52,15 +49,15 @@ const DocumentsColumns = ({openMailModal, downloadFiles, deleteFile}: optionActi
       headerName: t('uploaded-by') as string,
       sortable: false,
       filterable: false,
-      width: 220
+      width: 180
     },
     {
-      field: 'uploadDate',
+      field: 'createdAt',
       headerName: t('upload-date') as string,
       sortable: false,
       filterable: false,
-      width: 200,
-      renderCell: ({row: {uploadDate}}) => uploadDate.toLocaleDateString(i18n.language)
+      valueFormatter: ({value}) => value.slice(0,10),
+      width: 180,
     },
     {
       field: 'options',
@@ -68,15 +65,15 @@ const DocumentsColumns = ({openMailModal, downloadFiles, deleteFile}: optionActi
       width: 200,
       filterable: false,
       sortable: false,
-      renderCell: ({id}) =>
+      renderCell: ({id, row: {downloadLink}}) =>
       <Stack justifyContent='start' direction='row' spacing={0.25}>
-        <ActionButton title={t('download')} icon='tabler:download'
-          buttonProps={{onClick: () => { downloadFiles(id as string) }}}
+        <ActionButton title={'Descargar'} icon='tabler:download'
+          buttonProps={{href: downloadLink, download: true}}
         />
-        <ActionButton  title={t('delete')} icon='tabler:trash'
+        <ActionButton  title='Eliminar' icon='tabler:trash'
           buttonProps={{ onClick: () => deleteFile(id as string) }}
         />
-        <ActionButton title={t('send-email')} icon='tabler:mail'
+        <ActionButton title='Enviar email' icon='tabler:mail'
           buttonProps={{onClick: () => { openMailModal(id as string) }}}
         />
       </Stack>
