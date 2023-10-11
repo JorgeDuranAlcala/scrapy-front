@@ -30,17 +30,26 @@ const MailerConfig = () => {
 
   const {
     mutateConfigureEmail: { mutate: mutateConfigureEmail, isLoading: isLoadingConfigureMutateEmail },
-    configureEmailQuery: { data: configureEmailData, isSuccess: isSuccessConfigureEmail }
+    configureEmailQuery: {
+      data: configureEmailData,
+      isSuccess: isSuccessConfigureEmail,
+      isLoading: isLoadingConfigureEmail
+    }
   } = useMail()
 
   const onSubmit = (data: MailerData) => {
-    mutateConfigureEmail(data)
+    mutateConfigureEmail(data, {
+      onSuccess: () => {
+        mailerForm.setValue('password', '')
+      }
+    })
   }
 
   useEffect(() => {
-    mailerForm.reset({
-      ...configureEmailData
-    })
+    mailerForm.setValue('email', configureEmailData?.email || '')
+    mailerForm.setValue('securityProtocol', configureEmailData?.securityProtocol || '')
+    mailerForm.setValue('smtpHost', configureEmailData?.smtpHost || '')
+    mailerForm.setValue('smtpPort', configureEmailData?.smtpPort || '')
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isSuccessConfigureEmail])
 
@@ -61,12 +70,12 @@ const MailerConfig = () => {
         <CardContent>
           <FormProvider {...mailerForm}>
             <form onSubmit={mailerForm.handleSubmit(onSubmit)}>
-              <Mailer />
+              <Mailer isGettingData={isLoadingConfigureEmail} />
               <Box pt={10} display='flex' gap={3}>
                 <Button
                   type='submit'
                   variant='contained'
-                  disabled={isLoadingConfigureMutateEmail}
+                  disabled={isLoadingConfigureMutateEmail || isLoadingConfigureEmail}
                   endIcon={isLoadingConfigureMutateEmail && <CircularProgress color='secondary' size={16} />}
                 >
                   Guardar
@@ -74,6 +83,7 @@ const MailerConfig = () => {
                 <Button
                   color='secondary'
                   variant='outlined'
+                  disabled={isLoadingConfigureMutateEmail || isLoadingConfigureEmail}
                   onClick={() => {
                     mailerForm.reset()
                   }}
