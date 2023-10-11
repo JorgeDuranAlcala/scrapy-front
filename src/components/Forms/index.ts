@@ -1,4 +1,6 @@
-export * from './FormButtons';
-export * from './Mailer';
-export * from './User';
-export * from './fields';
+export * from './FormButtons'
+export * from './Mailer'
+export * from './User'
+export * from './fields'
+export { default as ForgotPasswordForm } from './ForgotPassword'
+export { default as RepeatPasswordForm } from './RepeatPassword'

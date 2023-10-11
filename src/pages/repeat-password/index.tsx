@@ -21,7 +21,7 @@ import FooterIllustrationsV2 from 'src/views/pages/auth/FooterIllustrationsV2'
 import { FormProvider, useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { RepeatPasswordData, RepeatPasswordSchema } from 'src/schemas'
-import RepeatPasswordForm from 'src/components/Forms/RepeatPassword'
+import { RepeatPasswordForm } from 'src/components/Forms'
 
 // Styled Components
 const ForgotPasswordIllustration = styled('img')(({ theme }) => ({
