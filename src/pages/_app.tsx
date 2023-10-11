@@ -18,16 +18,11 @@ import type { EmotionCache } from '@emotion/cache'
 import { defaultACLObj } from 'src/configs/acl'
 import themeConfig from 'src/configs/themeConfig'
 
-
 // ** Third Party Import
 import { Toaster } from 'react-hot-toast'
 
 // ** Tanstack query
-import {
-  Hydrate,
-  QueryClient,
-  QueryClientProvider,
-} from '@tanstack/react-query'
+import { Hydrate, QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
 // ** Component Imports
 import UserLayout from 'src/layouts/UserLayout'
@@ -113,10 +108,8 @@ const Guard = ({ children, authGuard, guestGuard }: GuardProps) => {
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-const AllProviders = ({ children }: PropsWithChildren) => {
-  return (
-      <AuthProvider>{children}</AuthProvider>
-  )
+const AllProviders = ({ children, isAuth }: PropsWithChildren & { isAuth: boolean }) => {
+  return <AuthProvider isAuthGuard={isAuth}>{children}</AuthProvider>
 }
 
 // ** Configure JSS & ClassName
@@ -155,7 +148,7 @@ const App = (props: ExtendedAppProps) => {
 
       <QueryClientProvider client={queryClient}>
         <Hydrate state={pageProps.dehydratedState}>
-          <AllProviders>
+          <AllProviders isAuth={authGuard}>
             <SettingsProvider {...(setConfig ? { pageSettings: setConfig() } : {})}>
               <SettingsConsumer>
                 {({ settings }) => {
@@ -165,7 +158,7 @@ const App = (props: ExtendedAppProps) => {
                         <Guard authGuard={authGuard} guestGuard={guestGuard}>
                           <AclGuard aclAbilities={aclAbilities} guestGuard={guestGuard}>
                             {getLayout(<Component {...pageProps} />)}
-                            <ReactQueryDevtools/>
+                            <ReactQueryDevtools />
                           </AclGuard>
                         </Guard>
                       </WindowWrapper>
