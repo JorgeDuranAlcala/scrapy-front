@@ -8,17 +8,15 @@ import { useForm, FormProvider } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 
 // Custom component
-import { FormButtons, Mailer, MailerData } from 'src/components/Forms'
+import { Mailer, MailerData } from 'src/components/Forms'
 
 // Schema
 import { MailerSchema } from 'src/schemas'
 
 // Hooks
 import UseBgColor from 'src/@core/hooks/useBgColor'
-import { useMutation } from '@tanstack/react-query'
-import putConfigureEmail from 'src/services/notifications/putConfigureEmail'
-import { toast } from 'react-hot-toast'
 import { CircularProgress } from '@mui/material'
+import useMail from 'src/hooks/useMail'
 
 const MailerConfig = () => {
   const mailerForm = useForm({
@@ -29,22 +27,17 @@ const MailerConfig = () => {
 
   const { primaryFilled } = UseBgColor()
 
-  const { mutate: mutateConfigureEmail, isLoading: isLoadingConfigureEmail } = useMutation({
-    mutationKey: ['configure-mail'],
-    mutationFn: async (data: MailerData) => {
-      return await putConfigureEmail(data)
-    },
-    onSuccess: () => {
-      toast.success('Datos de configuración de Email actualizados')
-      mailerForm.reset()
-    },
-    onError: () => {
-      toast.error('Algo fue mal al actualizar la configuración de Email')
-    }
-  })
+  const {
+    mutateConfigureEmail: { mutate: mutateConfigureEmail, isLoading: isLoadingConfigureMutateEmail },
+    configureEmailQuery: { data: configureEmailData, isLoading: isLoadingConfigureEmail }
+  } = useMail()
 
   const onSubmit = (data: MailerData) => {
-    mutateConfigureEmail(data)
+    mutateConfigureEmail(data, {
+      onSuccess: () => {
+        mailerForm.reset()
+      }
+    })
   }
 
   return (
@@ -69,7 +62,7 @@ const MailerConfig = () => {
                 <Button
                   type='submit'
                   variant='contained'
-                  endIcon={isLoadingConfigureEmail && <CircularProgress color='secondary' size={16} />}
+                  endIcon={isLoadingConfigureMutateEmail && <CircularProgress color='secondary' size={16} />}
                 >
                   Guardar
                 </Button>
