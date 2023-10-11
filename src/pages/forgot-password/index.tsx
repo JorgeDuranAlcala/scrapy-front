@@ -20,6 +20,10 @@ import BlankLayout from 'src/@core/layouts/BlankLayout'
 
 // ** Demo Imports
 import FooterIllustrationsV2 from 'src/views/pages/auth/FooterIllustrationsV2'
+import { FormProvider, useForm } from 'react-hook-form'
+import { yupResolver } from '@hookform/resolvers/yup'
+import { ForgotPasswordData, ForgotPasswordSchema } from 'src/schemas'
+import { ForgotPasswordForm } from 'src/components/Forms'
 
 // Styled Components
 const ForgotPasswordIllustration = styled('img')(({ theme }) => ({
@@ -63,6 +67,16 @@ const ForgotPassword = () => {
 
   // ** Vars
   const hidden = useMediaQuery(theme.breakpoints.down('md'))
+
+  const forgotPasswordForm = useForm({
+    defaultValues: ForgotPasswordSchema.getDefault(),
+    mode: 'onChange',
+    resolver: yupResolver(ForgotPasswordSchema)
+  })
+
+  const onSubmit = (data: ForgotPasswordData) => {
+    console.log(data)
+  }
 
   return (
     <Box className='content-right' sx={{ backgroundColor: 'background.paper' }}>
@@ -133,18 +147,17 @@ const ForgotPassword = () => {
                 Introduce tu correo electrónico y te enviaremos instrucciones para restablecer tu contraseña.
               </Typography>
             </Box>
-            <form noValidate autoComplete='off' onSubmit={e => e.preventDefault()}>
-              <TextField autoFocus type='email' label='Email' sx={{ display: 'flex', mb: 4 }} />
-              <Button fullWidth size='large' type='submit' variant='contained' sx={{ mb: 4 }}>
-                Enviar enlace para restablecer
-              </Button>
-              <Typography sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', '& svg': { mr: 1 } }}>
-                <LinkStyled href='/login'>
-                  <Icon fontSize='1.25rem' icon='tabler:chevron-left' />
-                  <span>Volver a inicio de sesión</span>
-                </LinkStyled>
-              </Typography>
-            </form>
+            <FormProvider {...forgotPasswordForm}>
+              <form onSubmit={forgotPasswordForm.handleSubmit(onSubmit)}>
+                <ForgotPasswordForm />
+              </form>
+            </FormProvider>
+            <Typography sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', '& svg': { mr: 1 } }}>
+              <LinkStyled href='/login'>
+                <Icon fontSize='1.25rem' icon='tabler:chevron-left' />
+                <span>Volver a inicio de sesión</span>
+              </LinkStyled>
+            </Typography>
           </Box>
         </Box>
       </RightWrapper>
