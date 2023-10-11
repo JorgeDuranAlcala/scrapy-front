@@ -3,16 +3,17 @@ import { DataGrid, esES, GridValidRowModel } from '@mui/x-data-grid'
 import React, { useState } from 'react'
 import { DeleteModal } from 'src/components'
 import { useDisclosure } from 'src/hooks'
+import useSpam from 'src/hooks/useSpam'
 import ListingSpamColumns from './ListingSpamColumns'
 
 const ListingSpamTable = ({
-  handleDelete,
   rows,
-  isLoading
+  isLoading,
+  idPage
 }: {
-  handleDelete: (id: string) => void
   rows: GridValidRowModel[]
   isLoading: boolean
+  idPage: string | string[] | undefined
 }) => {
   const [paginationModel] = useState({
     page: 0,
@@ -24,8 +25,16 @@ const ListingSpamTable = ({
 
   const [selectedPhone, setSelectedPhone] = useState<string>('')
 
+  const {
+    mutateDeleteSpamQuery: { isLoading: isLoadingDelete, mutate: mutateDeleteSpam }
+  } = useSpam({ idPage: idPage as string | undefined })
+
   const handleDeleteModal = () => {
-    handleDelete(selectedPhone)
+    mutateDeleteSpam(selectedPhone, {
+      onSuccess: () => {
+        handleDeleteOpenModal.close()
+      }
+    })
   }
 
   const handleSelectedPhone = (phone: string) => {
@@ -53,7 +62,7 @@ const ListingSpamTable = ({
               }
             }
           }}
-          loading={isLoading}
+          loading={isLoading || isLoadingDelete}
           disableRowSelectionOnClick
           pageSizeOptions={[pageSize]}
           paginationModel={paginationModel}

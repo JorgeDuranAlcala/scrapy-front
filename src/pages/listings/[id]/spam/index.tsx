@@ -11,7 +11,6 @@ const Spam = () => {
   } = useRouter()
 
   const {
-    mutateDeleteSpamQuery: { isLoading: isLoadingDelete, mutate: mutateDeleteSpam },
     spamQuery: { data: dataSpam, isLoading: isLoadingSpam }
   } = useSpam({ idPage: idPage as string | undefined })
 
@@ -23,17 +22,11 @@ const Spam = () => {
     }))
   }
 
-  const handleDelete = (id: string) => mutateDeleteSpam(id as string)
-
   return (
     <ListingLayout>
       <Card>
         <CardTitle title='spam' sx={{ textTransform: 'uppercase' }} />
-        <ListingSpamTable
-          isLoading={isLoadingSpam || isLoadingDelete}
-          handleDelete={handleDelete}
-          rows={generateRows(dataSpam || [])}
-        />
+        <ListingSpamTable isLoading={isLoadingSpam} rows={generateRows(dataSpam || [])} idPage={idPage} />
       </Card>
     </ListingLayout>
   )
