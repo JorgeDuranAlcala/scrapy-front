@@ -19,7 +19,7 @@ const transformResponse = (data?: ResponseGetConfigureEmail) => {
   }
 
   return {
-    email: data?.MAIL_ADDRESS || '',
+    email: data?.MAIL_USERNAME || '',
     smtpHost: data?.MAIL_SERVER || '',
     smtpPort: data?.MAIL_PORT || '',
     securityProtocol: data?.MAIL_PROTOCOL?.toUpperCase() || ''
@@ -28,7 +28,6 @@ const transformResponse = (data?: ResponseGetConfigureEmail) => {
 
 const getConfigureEmail = async () => {
   const response: ResponseGetConfigureEmailData = await restRequestAuth('GET', '/notify/settings')
-
   return transformResponse(response.data)
 }
 
