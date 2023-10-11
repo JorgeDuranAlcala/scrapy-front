@@ -17,6 +17,7 @@ import { MailerSchema } from 'src/schemas'
 import UseBgColor from 'src/@core/hooks/useBgColor'
 import { CircularProgress } from '@mui/material'
 import useMail from 'src/hooks/useMail'
+import { useEffect } from 'react'
 
 const MailerConfig = () => {
   const mailerForm = useForm({
@@ -29,16 +30,19 @@ const MailerConfig = () => {
 
   const {
     mutateConfigureEmail: { mutate: mutateConfigureEmail, isLoading: isLoadingConfigureMutateEmail },
-    configureEmailQuery: { data: configureEmailData, isLoading: isLoadingConfigureEmail }
+    configureEmailQuery: { data: configureEmailData, isSuccess: isSuccessConfigureEmail }
   } = useMail()
 
   const onSubmit = (data: MailerData) => {
-    mutateConfigureEmail(data, {
-      onSuccess: () => {
-        mailerForm.reset()
-      }
-    })
+    mutateConfigureEmail(data)
   }
+
+  useEffect(() => {
+    mailerForm.reset({
+      ...configureEmailData
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isSuccessConfigureEmail])
 
   return (
     <div>
