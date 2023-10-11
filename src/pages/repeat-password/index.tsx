@@ -148,16 +148,14 @@ const RepeatPassword = () => {
             <FormProvider {...repeatPasswordForm}>
               <form onSubmit={repeatPasswordForm.handleSubmit(onSubmit)}>
                 <RepeatPasswordForm />
-                <Typography
-                  sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', '& svg': { mr: 1 } }}
-                >
-                  <LinkStyled href='/login'>
-                    <Icon fontSize='1.25rem' icon='tabler:chevron-left' />
-                    <span>Volver al login</span>
-                  </LinkStyled>
-                </Typography>
               </form>
             </FormProvider>
+            <Typography sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', '& svg': { mr: 1 } }}>
+              <LinkStyled href='/login'>
+                <Icon fontSize='1.25rem' icon='tabler:chevron-left' />
+                <span>Volver al login</span>
+              </LinkStyled>
+            </Typography>
           </Box>
         </Box>
       </RightWrapper>
