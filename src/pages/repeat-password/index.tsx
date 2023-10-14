@@ -5,8 +5,6 @@ import { ReactNode } from 'react'
 import Link from 'next/link'
 
 // ** MUI Components
-import Button from '@mui/material/Button'
-import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import Box, { BoxProps } from '@mui/material/Box'
 import useMediaQuery from '@mui/material/useMediaQuery'
@@ -22,8 +20,8 @@ import BlankLayout from 'src/@core/layouts/BlankLayout'
 import FooterIllustrationsV2 from 'src/views/pages/auth/FooterIllustrationsV2'
 import { FormProvider, useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
-import { ForgotPasswordData, ForgotPasswordSchema } from 'src/schemas'
-import { ForgotPasswordForm } from 'src/components/Forms'
+import { RepeatPasswordData, RepeatPasswordSchema } from 'src/schemas'
+import { RepeatPasswordForm } from 'src/components/Forms'
 
 // Styled Components
 const ForgotPasswordIllustration = styled('img')(({ theme }) => ({
@@ -61,21 +59,21 @@ const LinkStyled = styled(Link)(({ theme }) => ({
   color: theme.palette.primary.main
 }))
 
-const ForgotPassword = () => {
+const RepeatPassword = () => {
   // ** Hooks
   const theme = useTheme()
 
   // ** Vars
   const hidden = useMediaQuery(theme.breakpoints.down('md'))
 
-  const forgotPasswordForm = useForm({
-    defaultValues: ForgotPasswordSchema.getDefault(),
+  const repeatPasswordForm = useForm({
+    defaultValues: RepeatPasswordSchema.getDefault(),
     mode: 'onChange',
-    resolver: yupResolver(ForgotPasswordSchema)
+    resolver: yupResolver(RepeatPasswordSchema)
   })
 
-  const onSubmit = (data: ForgotPasswordData) => {
-    console.log(data)
+  const onSubmit = (data: RepeatPasswordData) => {
+    console.log('on submit', data)
   }
 
   return (
@@ -141,21 +139,21 @@ const ForgotPassword = () => {
             </svg>
             <Box sx={{ my: 6 }}>
               <Typography sx={{ mb: 1.5, fontWeight: 500, fontSize: '1.625rem', lineHeight: 1.385 }}>
-                ¿Has olvidado la contraseña? 🔒
+                Escribe tu nueva contraseña
               </Typography>
               <Typography sx={{ color: 'text.secondary' }}>
-                Introduce tu correo electrónico y te enviaremos instrucciones para restablecer tu contraseña.
+                Debes escribir tu contraseña nueva y confirmarla para restablecer tu cuenta
               </Typography>
             </Box>
-            <FormProvider {...forgotPasswordForm}>
-              <form onSubmit={forgotPasswordForm.handleSubmit(onSubmit)}>
-                <ForgotPasswordForm />
+            <FormProvider {...repeatPasswordForm}>
+              <form onSubmit={repeatPasswordForm.handleSubmit(onSubmit)}>
+                <RepeatPasswordForm />
               </form>
             </FormProvider>
             <Typography sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', '& svg': { mr: 1 } }}>
               <LinkStyled href='/login'>
                 <Icon fontSize='1.25rem' icon='tabler:chevron-left' />
-                <span>Volver a inicio de sesión</span>
+                <span>Volver al login</span>
               </LinkStyled>
             </Typography>
           </Box>
@@ -165,9 +163,9 @@ const ForgotPassword = () => {
   )
 }
 
-ForgotPassword.getLayout = (page: ReactNode) => <BlankLayout>{page}</BlankLayout>
+RepeatPassword.getLayout = (page: ReactNode) => <BlankLayout>{page}</BlankLayout>
 
-ForgotPassword.guestGuard = true
-ForgotPassword.authGuard = false
+RepeatPassword.guestGuard = true
+RepeatPassword.authGuard = false
 
-export default ForgotPassword
+export default RepeatPassword
