@@ -200,6 +200,9 @@ export const SpecialFilters = memo(({ isScraping = false }: Props) => {
                   </Button>
                 </Link>
               )}
+              <Link href={`${asPath}spam`} passHref>
+                <Button variant='contained'>Spam</Button>
+              </Link>
               <Button
                 variant='contained'
                 type='submit'

@@ -1,9 +1,7 @@
 import { AbilityBuilder, PureAbility } from '@casl/ability'
 
-
 export type Subjects = string
 export type Actions = 'manage' | 'write' | 'read'
-
 
 export type AppAbility = PureAbility<[Actions, Subjects]>
 export const AppAbility = PureAbility as any
@@ -17,14 +15,17 @@ const defineRulesFor = (role: string) => {
   const { can, rules } = new AbilityBuilder(AppAbility)
 
   can('see', 'user-pages')
+  can('see', 'spam')
   switch (role) {
-    case "admin": {
+    case 'admin': {
       can('edit', 'mailer')
       can('see', 'history')
       can('write', 'users')
+
       break
     }
-    case "normal":{}
+    case 'normal': {
+    }
   }
 
   return rules
