@@ -3,9 +3,11 @@
  *  to call the templates
  */
 export const templateUrl = {
-  '/listings/yaencontre/': 'post',
-  '/users/': 'user'
+  user: new RegExp('^/users/.*', 'mi'),
+  document: new RegExp('^/listings/yaencontre/documents/[[0-9]+/.*', 'mi'),
+  post: new RegExp('^/listings/yaencontre/.*', 'mi')
 }
 
-export const getTemplateNameByUrl = (name: string) =>
-  Object.keys(templateUrl).includes(name) ? templateUrl[name as keyof typeof templateUrl] : null
+export const getTemplateNameByUrl = (name: string) => {
+  return Object.keys(templateUrl).find(item => templateUrl[item as keyof typeof templateUrl].test(name)) || null
+}

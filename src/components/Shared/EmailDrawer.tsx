@@ -43,15 +43,17 @@ const defaultEmail: EmailData = {
 }
 
 export const EmailDrawer = memo(({ open, toggle, storedFileHandling, recipients = [] }: EmailDrawerProps) => {
-  const { user } = useAuth()
-  const { asPath } = useRouter()
-  const queryClient = useQueryClient()
-
   // ** State
   const [files, setFiles] = useState<FileProp[]>([])
   const [saveTemplate, setSaveTemplate] = useState<boolean>(false)
+  const [options, setOptions] = useState<string[]>([])
 
   // ** Hooks
+  const queryClient = useQueryClient()
+  const { user } = useAuth()
+  const { asPath } = useRouter()
+  const { t } = useTranslation()
+  const { primaryLight } = useBgColor()
   const { getRootProps, getInputProps } = useDropzone({
     onDrop: (acceptedFiles: FileProp[]) => {
       setFiles(acceptedFiles.map((file: FileProp) => Object.assign(file)))
@@ -69,17 +71,34 @@ export const EmailDrawer = memo(({ open, toggle, storedFileHandling, recipients 
     control,
     resetField
   } = emailFields
-  const { t } = useTranslation()
-  const { primaryLight } = useBgColor()
+
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [options, setOptions] = useState<string[]>([])
 
   const handleRemoveFile = useFileRemove({ files, setFiles })
 
-  useEffect(() => {
-    if (recipients.length > 0) resetField('reciever', { defaultValue: recipients })
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [recipients])
+  const generateEmailMessage = (data: EmailData) => {
+    return storedFileHandling && storedFileHandling.storedFiles.length > 0
+      ? (data.message?.concat(
+          '\n\n\n Archivos Adjuntos: \n\n',
+          storedFileHandling.storedFiles.map(({ name, downloadLink }) => `${name}: ${downloadLink}`).join('\n')
+        ) as string)
+      : data.message
+  }
+
+  const onSubmit = (data: EmailData) => {
+    sendEmailMutate({
+      ...data,
+      message: generateEmailMessage(data),
+      attachment: files
+    })
+    if (saveTemplate) {
+      updateTemplateMutate({
+        message: emailFields.getValues('message') || '',
+        subject: emailFields.getValues('subject') || '',
+        name: getTemplateNameByUrl(asPath) || ''
+      })
+    }
+  }
 
   const handleClose = () => {
     toggle()
@@ -130,19 +149,11 @@ export const EmailDrawer = memo(({ open, toggle, storedFileHandling, recipients 
     }
   })
 
-  const onSubmit = (data: EmailData) => {
-    sendEmailMutate({
-      ...data,
-      attachment: files
-    })
-    if (saveTemplate) {
-      updateTemplateMutate({
-        message: emailFields.getValues('message') || '',
-        subject: emailFields.getValues('subject') || '',
-        name: getTemplateNameByUrl(asPath) || ''
-      })
-    }
-  }
+  useEffect(() => {
+    if (recipients.length > 0) resetField('reciever', { defaultValue: recipients })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [recipients])
+
   return (
     <FormProvider {...emailFields}>
       <Drawer
