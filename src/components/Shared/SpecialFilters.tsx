@@ -108,7 +108,7 @@ export const SpecialFilters = memo(({ isScraping = false }: Props) => {
   return (
     <Stack gap={5}>
       <Grid container spacing={3}>
-        <Grid item md={2} xs={6}>
+        <Grid item md={4} xs={6}>
           <FormControl fullWidth>
             <Autocomplete
               name='municipality'
