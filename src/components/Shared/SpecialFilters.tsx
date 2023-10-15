@@ -24,7 +24,7 @@ import { useAuth, useDebouncedState } from 'src/hooks'
 import { STATUSES } from 'src/types'
 
 import { SpecialFilterSchema } from 'src/schemas'
-import { getMunicipalities } from 'src/services/scraping'
+import { getMunicipalities, getZones } from 'src/services/scraping'
 import { getAll } from 'src/services'
 import { styled } from '@mui/system'
 
@@ -72,17 +72,25 @@ const SearchContainer = styled('div')<StyleProps>(({ isHistory }) => {
 export const SpecialFilters = memo(({ isScraping = false }: Props) => {
   const { user } = useAuth()
   const { asPath } = useRouter()
-  const [municipality, debouncedMunicipality, setMunicipality] = useDebouncedState('')
+  const [municipalitySearch, debouncedMunicipality, setMunicipality] = useDebouncedState('')
   const [userData, debouncedUserData, setUserData] = useDebouncedState('', 500)
   const { setValue, watch } = useFormContext()
 
-  const is_vip = watch('is_vip')
+  const [is_vip, municipality] = watch(['is_vip', 'municipality'])
 
   const municipalities = useQuery({
     queryKey: ['municipalities', debouncedMunicipality],
     queryFn: async () => {
       return await getMunicipalities(debouncedMunicipality)
     },
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false
+  })
+
+  const zones = useQuery({
+    queryKey: ['zones', municipality],
+    queryFn: async () => await getZones(municipality.name),
     refetchOnMount: false,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false
@@ -120,12 +128,24 @@ export const SpecialFilters = memo(({ isScraping = false }: Props) => {
               onInputChange={(str: string) => {
                 setMunicipality(str)
               }}
-              inputValue={municipality}
+              inputValue={municipalitySearch}
             />
           </FormControl>
         </Grid>
         <Grid item md={2} xs={6}>
-          <ControlledSelect name='zone' label='Zona' options={['ejemplo1', 'ejemplo2']} />
+        <FormControl fullWidth>
+            <Autocomplete
+              name='zone'
+              label='Zona'
+              isOptionEqualToValue={(option, value) => option.name === value.name}
+              loading={zones.isLoading}
+              options={zones.data || []}
+              error={zones.isError}
+              onInputChange={(str: string) => {
+                setMunicipality(str)
+              }}
+            />
+          </FormControl>
         </Grid>
         <Grid item md={2} xs={6}>
           <ControlledSelect name='status' label='Estado' options={STATUSES} />
@@ -206,7 +226,7 @@ export const SpecialFilters = memo(({ isScraping = false }: Props) => {
               <Button
                 variant='contained'
                 type='submit'
-                disabled={municipality.length === 0 || isScraping}
+                disabled={municipalitySearch.length === 0 || isScraping}
                 endIcon={isScraping && <CircularProgress size={16} />}
               >
                 Actualizar
