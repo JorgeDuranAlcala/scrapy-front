@@ -1,6 +1,5 @@
 import { authConfig } from 'src/configs'
 import { restRequestAuth } from 'src/services/rest-requests'
-import {type User } from 'src/types'
 
 // ** Storage Service
 import { get } from 'src/services'
@@ -14,6 +13,8 @@ async function getUserData() /*Promise<UserData>*/ {
 
   if(!user || !token || !refreshToken)
     throw "not signed in!"
+
+  await restRequestAuth('POST', '/users/validate')
 
   return JSON.parse(user)
 }
