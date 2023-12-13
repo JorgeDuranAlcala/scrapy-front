@@ -1,4 +1,4 @@
-import { memo } from 'react'
+import { memo, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 
@@ -33,7 +33,7 @@ export type SpecialFiltersData = InferType<typeof SpecialFilterSchema>
 export const defaultSpecialFilters = SpecialFilterSchema.getDefault()
 
 const OPERATION = ['Venta', 'Alquiler', 'Alquiler vacacional']
-const CATEGORIES = ['Pisos', 'Casas', 'Chalets', 'Terrenos', 'Locales']
+const CATEGORIES = ['Piso', 'Casa', 'Chalets', 'Terrenos', 'Local']
 
 type Props = {
   isScraping?: boolean
@@ -96,6 +96,14 @@ export const SpecialFilters = memo(({ isScraping = false }: Props) => {
     refetchOnReconnect: false
   })
 
+  useEffect(() => {
+    if (municipality?.name) {
+      zones.refetch({
+        queryKey: ['zones', municipality]
+      })
+    }
+  }, [municipality])
+
   const {
     data: usersData,
     isLoading: isLoadingUsers,
@@ -133,7 +141,7 @@ export const SpecialFilters = memo(({ isScraping = false }: Props) => {
           </FormControl>
         </Grid>
         <Grid item md={2} xs={6}>
-        <FormControl fullWidth>
+          <FormControl fullWidth>
             <Autocomplete
               name='zone'
               label='Zona'

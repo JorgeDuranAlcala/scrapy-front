@@ -93,7 +93,8 @@ export async function restRequestAuth(method: HTTPMethod = 'GET', path = '', opt
   }
 
   try {
-    return await request(token)
+    const data = await request(token)
+    console.log(data)
   } catch (e: any) {
     if (e.response.data.msg === 'Token has expired') {
       const newToken = await refreshJWT()

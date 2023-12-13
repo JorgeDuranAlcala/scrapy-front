@@ -33,7 +33,7 @@ const Listing = () => {
     page: 0,
     pageSize: 25
   })
-  const [, debouncedSearch, setSearch ] = useDebouncedState('')
+  const [, debouncedSearch, setSearch] = useDebouncedState('')
   const { query } = useRouter()
   const websiteName = query.id
   const { page, pageSize } = paginationModel
@@ -44,36 +44,62 @@ const Listing = () => {
     resolver: yupResolver(SpecialFilterSchema)
   })
 
-  const {search, ...filters} = specialFilters.watch()
+  const { search, ...filters } = specialFilters.watch()
 
   useEffect(() => {
-    if(search !== debouncedSearch)
-      setSearch(search)
+    if (search !== debouncedSearch) setSearch(search)
   }, [search])
 
-  const {data, isLoading, ...posts} = useQuery({
+  /*         {
+          municipality: { name: '', id: undefined },
+          zone: '',
+          category: '',
+          operation: '',
+          status: '',
+          search: debouncedSearch
+        }, */
+  const { data, isLoading, ...posts } = useQuery({
     queryKey: ['posts', websiteName, filters, page, pageSize, debouncedSearch],
-    queryFn: async() => await getPosts(
-      {
-        ...filters,
-        search: debouncedSearch
-      },
-      websiteName,
-      page,
-      pageSize
-    ),
+    queryFn: async () => await getPosts(websiteName, page, pageSize),
     keepPreviousData: true,
     refetchOnMount: false,
     refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
+    refetchOnReconnect: false
   })
+
+  const [filterdData, setFilteredData] = useState([])
+
+  useEffect(() => {
+    setFilteredData(data?.posts)
+  }, [data?.posts])
+
+  /**
+   * this is how you can filter data from the api
+   */
+  useEffect(() => {
+    let newData = []
+    if (filters.operation)
+      newData = data?.posts.filter((post: any) => filters.operation.toLowerCase() === post.operation)
+    if (filters.category) newData = newData?.filter((post: any) => filters.category.toLowerCase() === post.category)
+    if (filters.municipality?.name)
+      newData = newData?.filter((post: any) => filters.municipality?.name === post.municipality)
+    console.log('newData', newData)
+    setFilteredData(newData)
+  }, [filters.operation, filters.municipality?.name, filters.category, data?.posts])
+
+  /*   useEffect(() => {
+    if (filters.municipality?.name) {
+      const newData = data?.posts.filter((post: any) => filters.municipality?.name === post.municipality)
+      setFilteredData(newData)
+    }
+  }, [filters.municipality?.name, data?.posts]) */
 
   const scrapeData = useMutation({
     mutationKey: ['scrape'],
     mutationFn: scrape,
     onSuccess: () => {
       posts.refetch()
-    },
+    }
   })
 
   const postUpdate = useMutation({
@@ -82,16 +108,15 @@ const Listing = () => {
     onSuccess: () => {
       toast.success('Dato actualizado')
     },
-    onError: (e) => {
+    onError: e => {
       console.log(e)
       toast.error('Backend no permite editar este dato')
     }
   })
 
   const onSubmit = (data: SpecialFiltersData) => {
-    if(typeof websiteName === 'string')
-      scrapeData.mutate({filters: data, website: websiteName})
-    else console.log("Page is loading")
+    if (typeof websiteName === 'string') scrapeData.mutate({ filters: data, website: websiteName })
+    else console.log('Page is loading')
   }
 
   return (
@@ -105,18 +130,23 @@ const Listing = () => {
             </form>
           </FormProvider>
         </CardContent>
-        <ListingTable rows={(data && data.posts) || []} columnDefinition={listingColumns}
-          {...{paginationModel, setPaginationModel}} totalRows={(data && data.total) || 0}
-          loading={isLoading} update={postUpdate.mutate} editable={true}
+        <ListingTable
+          rows={filterdData || []}
+          columnDefinition={listingColumns}
+          {...{ paginationModel, setPaginationModel }}
+          totalRows={(data && data.total) || 0}
+          loading={isLoading}
+          update={postUpdate.mutate}
+          editable={true}
         />
       </Card>
     </ListingLayout>
   )
 }
 
-Listing.acl={
-  action:'see',
-  subject:'user-pages'
+Listing.acl = {
+  action: 'see',
+  subject: 'user-pages'
 }
 
 export default Listing

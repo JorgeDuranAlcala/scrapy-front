@@ -1,4 +1,4 @@
-import { restRequestAuth } from "src/services/rest-requests";
+import { restRequestAuth } from 'src/services/rest-requests'
 
 type Municipality = {
   province_id: number
@@ -8,8 +8,8 @@ type Municipality = {
 
 const getMunicipalities = async (search: string): Promise<Municipality[]> => {
   const term = search && search.length > 0 ? search : undefined
-  const response = await restRequestAuth('GET', `/municipalities`, {
-    params: {term}
+  const response = await restRequestAuth('GET', `/municipalities?term=`, {
+    params: { term }
   })
   return response.data
 }
