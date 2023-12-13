@@ -34,6 +34,7 @@ import { useDisclosure } from 'src/hooks'
 
 import { UserTableFormDrawer, UserTableRow } from './components'
 import { AxiosError } from 'axios'
+import { DNIGen } from 'src/utils/dni'
 
 type Props = {
   rows: UserFormData[]
@@ -116,6 +117,7 @@ const UserTable = ({ rows, setSearch, search, refetch }: Props) => {
   }
 
   const onSubmit = (data: FieldValues) => {
+    data = { ...data, dni: DNIGen(Number(data.dni)) }
     if (!id) createUser.mutate(data as UserFormData)
     else updateUser.mutate(data as UserFormData)
   }
